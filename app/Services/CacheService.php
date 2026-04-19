@@ -1,12 +1,15 @@
 <?php
 
+// ABOUTME: Service for managing cache operations with error handling and fallbacks
+// ABOUTME: Updated for schema-based tenancy - provides tenant-aware caching utilities
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
-class CacheService
+class CacheService extends BaseService
 {
     protected $defaultTtl = 3600; // 1 hour
 

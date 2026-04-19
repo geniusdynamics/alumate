@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Stancl\Tenancy\Contracts\Domain as DomainContract;
-use Stancl\Tenancy\Contracts\Tenant;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
 use Stancl\Tenancy\Database\Concerns\InvalidatesTenantsResolverCache;
 use Stancl\Tenancy\Events;

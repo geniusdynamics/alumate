@@ -13,8 +13,8 @@ class InstitutionCustomizationController extends Controller
     public function index()
     {
         $institution = auth()->user()->institution;
-        
-        if (!$institution) {
+
+        if (! $institution) {
             abort(403, 'No institution associated with this account');
         }
 
@@ -56,7 +56,7 @@ class InstitutionCustomizationController extends Controller
                 Storage::disk('public')->delete(str_replace('/storage/', '', $institution->banner_url));
             }
             $bannerPath = $request->file('banner')->store('institutions/banners', 'public');
-            $updateData['banner_url'] = '/storage/' . $bannerPath;
+            $updateData['banner_url'] = '/storage/'.$bannerPath;
         }
 
         // Update colors
@@ -91,7 +91,7 @@ class InstitutionCustomizationController extends Controller
         ]);
 
         $institution->update([
-            'feature_flags' => $validated['features']
+            'feature_flags' => $validated['features'],
         ]);
 
         return back()->with('success', 'Feature settings updated successfully');
@@ -112,7 +112,7 @@ class InstitutionCustomizationController extends Controller
 
         $settings = $institution->settings ?? [];
         $settings['custom_fields'] = $validated['custom_fields'];
-        
+
         $institution->update(['settings' => $settings]);
 
         return back()->with('success', 'Custom fields updated successfully');
@@ -133,7 +133,7 @@ class InstitutionCustomizationController extends Controller
 
         $settings = $institution->settings ?? [];
         $settings['workflows'] = $validated['workflows'];
-        
+
         $institution->update(['settings' => $settings]);
 
         return back()->with('success', 'Workflows updated successfully');
@@ -153,7 +153,7 @@ class InstitutionCustomizationController extends Controller
 
         $settings = $institution->settings ?? [];
         $settings['reporting'] = $validated['reporting_config'];
-        
+
         $institution->update(['settings' => $settings]);
 
         return back()->with('success', 'Reporting configuration updated successfully');
@@ -171,7 +171,7 @@ class InstitutionCustomizationController extends Controller
         ]);
 
         $institution->update([
-            'integration_settings' => $validated['integrations']
+            'integration_settings' => $validated['integrations'],
         ]);
 
         return back()->with('success', 'Integration settings updated successfully');
@@ -186,7 +186,7 @@ class InstitutionCustomizationController extends Controller
 
         return response()->json([
             'success' => true,
-            'config' => $config
+            'config' => $config,
         ]);
     }
 
@@ -196,53 +196,53 @@ class InstitutionCustomizationController extends Controller
             'social_timeline' => [
                 'name' => 'Social Timeline',
                 'description' => 'Enable social posts and timeline features',
-                'category' => 'social'
+                'category' => 'social',
             ],
             'job_matching' => [
                 'name' => 'Job Matching',
                 'description' => 'AI-powered job matching and recommendations',
-                'category' => 'career'
+                'category' => 'career',
             ],
             'mentorship' => [
                 'name' => 'Mentorship Program',
                 'description' => 'Alumni mentorship matching and management',
-                'category' => 'career'
+                'category' => 'career',
             ],
             'events' => [
                 'name' => 'Events Management',
                 'description' => 'Event creation, RSVP, and management',
-                'category' => 'engagement'
+                'category' => 'engagement',
             ],
             'fundraising' => [
                 'name' => 'Fundraising Tools',
                 'description' => 'Donation campaigns and giving tracking',
-                'category' => 'fundraising'
+                'category' => 'fundraising',
             ],
             'analytics' => [
                 'name' => 'Advanced Analytics',
                 'description' => 'Detailed reporting and insights',
-                'category' => 'analytics'
+                'category' => 'analytics',
             ],
             'messaging' => [
                 'name' => 'Direct Messaging',
                 'description' => 'Private messaging between alumni',
-                'category' => 'communication'
+                'category' => 'communication',
             ],
             'video_calling' => [
                 'name' => 'Video Calling',
                 'description' => 'Integrated video conferencing',
-                'category' => 'communication'
+                'category' => 'communication',
             ],
             'success_stories' => [
                 'name' => 'Success Stories',
                 'description' => 'Alumni achievement showcases',
-                'category' => 'engagement'
+                'category' => 'engagement',
             ],
             'custom_branding' => [
                 'name' => 'Custom Branding',
                 'description' => 'Institution-specific branding and themes',
-                'category' => 'customization'
-            ]
+                'category' => 'customization',
+            ],
         ];
     }
 
@@ -252,27 +252,28 @@ class InstitutionCustomizationController extends Controller
             'email_marketing' => [
                 'name' => 'Email Marketing',
                 'providers' => ['mailchimp', 'constant_contact', 'sendgrid'],
-                'description' => 'Integrate with email marketing platforms'
+                'description' => 'Integrate with email marketing platforms',
             ],
             'crm' => [
                 'name' => 'CRM Integration',
                 'providers' => ['salesforce', 'hubspot', 'pipedrive'],
-                'description' => 'Connect with customer relationship management systems'
+                'description' => 'Connect with customer relationship management systems',
             ],
             'calendar' => [
                 'name' => 'Calendar Integration',
                 'providers' => ['google_calendar', 'outlook', 'apple_calendar'],
-                'description' => 'Sync events with calendar systems'
+                'description' => 'Sync events with calendar systems',
             ],
             'sso' => [
                 'name' => 'Single Sign-On',
                 'providers' => ['saml', 'oauth2', 'ldap'],
-                'description' => 'Enable single sign-on authentication'
+                'description' => 'Enable single sign-on authentication',
             ],
             'payment' => [
                 'name' => 'Payment Processing',
                 'providers' => ['stripe', 'paypal', 'square'],
-                'description' => 'Process donations and event payments'
-            ]
+                'description' => 'Process donations and event payments',
+            ],
         ];
-    }}
+    }
+}

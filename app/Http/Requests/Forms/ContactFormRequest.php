@@ -15,7 +15,7 @@ class ContactFormRequest extends BaseFormRequest
                 'name' => 'required|string|min:2|max:100|regex:/^[a-zA-Z\s\-\'\.]+$/',
                 'organization' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\-&,\.\/]+$/',
                 'email' => 'required|email:rfc,dns|max:255',
-                'phone' => ['nullable', new \App\Rules\PhoneNumber()],
+                'phone' => ['nullable', new \App\Rules\PhoneNumber],
                 'contact_role' => 'required|in:alumni,prospective_student,current_student,institution_staff,employer,partner,media,vendor,researcher,consultant,other',
                 'inquiry_category' => 'required|in:general,technical_support,account_issues,billing,sales,demo_request,partnership,events,career_services,alumni_directory,mentorship,fundraising,media,bug_report,feature_request,privacy,accessibility,integration,training,other',
                 'priority_level' => 'required|in:low,medium,high,urgent',
@@ -24,7 +24,7 @@ class ContactFormRequest extends BaseFormRequest
                 'message' => 'required|string|min:20|max:5000',
                 'attachments_needed' => 'boolean',
                 'follow_up_consent' => 'required|accepted',
-                
+
                 // Additional fields for better categorization
                 'affected_users' => 'nullable|integer|min:1|max:100000',
                 'error_details' => 'nullable|string|max:2000',
@@ -34,7 +34,7 @@ class ContactFormRequest extends BaseFormRequest
                 'screenshot_description' => 'nullable|string|max:500',
                 'urgency_justification' => 'nullable|string|max:1000',
                 'business_impact' => 'nullable|in:none,low,medium,high,critical',
-                'deadline' => 'nullable|date|after:today|before:' . date('Y-m-d', strtotime('+1 year')),
+                'deadline' => 'nullable|date|after:today|before:'.date('Y-m-d', strtotime('+1 year')),
                 'budget_available' => 'nullable|in:none,<1k,1k-5k,5k-25k,25k-100k,>100k,tbd',
                 'timeline_expectations' => 'nullable|in:immediate,same_day,within_week,within_month,flexible',
                 'previous_ticket_number' => 'nullable|string|max:50|regex:/^[A-Z0-9\-]+$/',
@@ -133,17 +133,17 @@ class ContactFormRequest extends BaseFormRequest
         $priority = $this->input('priority_level');
         $category = $this->input('inquiry_category');
         $urgencyJustification = $this->input('urgency_justification');
-        
+
         // High/urgent priority should have justification
         if (in_array($priority, ['high', 'urgent']) && empty($urgencyJustification)) {
             $validator->errors()->add('urgency_justification', 'Please provide justification for high/urgent priority requests.');
         }
-        
+
         // Certain categories should match priority levels
         if ($category === 'bug_report' && $priority === 'low') {
             $validator->errors()->add('priority_level', 'Bug reports typically require medium or higher priority.');
         }
-        
+
         if ($category === 'general' && $priority === 'urgent') {
             $validator->errors()->add('priority_level', 'General inquiries are typically not urgent.');
         }
@@ -157,12 +157,12 @@ class ContactFormRequest extends BaseFormRequest
         $category = $this->input('inquiry_category');
         $errorDetails = $this->input('error_details');
         $stepsToReproduce = $this->input('steps_to_reproduce');
-        
+
         // Technical support should have error details
         if (in_array($category, ['technical_support', 'bug_report', 'account_issues']) && empty($errorDetails)) {
             $validator->errors()->add('error_details', 'Please provide error details for technical issues.');
         }
-        
+
         // Bug reports should have reproduction steps
         if ($category === 'bug_report' && empty($stepsToReproduce)) {
             $validator->errors()->add('steps_to_reproduce', 'Please provide steps to reproduce the bug.');
@@ -178,17 +178,17 @@ class ContactFormRequest extends BaseFormRequest
         $businessImpact = $this->input('business_impact');
         $deadline = $this->input('deadline');
         $timelineExpectations = $this->input('timeline_expectations');
-        
+
         // Urgent priority should have high business impact
-        if ($priority === 'urgent' && !in_array($businessImpact, ['high', 'critical'])) {
+        if ($priority === 'urgent' && ! in_array($businessImpact, ['high', 'critical'])) {
             $validator->errors()->add('business_impact', 'Urgent requests should have high or critical business impact.');
         }
-        
+
         // Immediate timeline with low priority is inconsistent
         if ($timelineExpectations === 'immediate' && $priority === 'low') {
             $validator->errors()->add('timeline_expectations', 'Immediate timeline expectations require higher priority.');
         }
-        
+
         // Deadline within 24 hours should be urgent
         if ($deadline && strtotime($deadline) < strtotime('+1 day') && $priority !== 'urgent') {
             $validator->errors()->add('priority_level', 'Requests with tight deadlines should be marked as urgent.');
@@ -204,14 +204,14 @@ class ContactFormRequest extends BaseFormRequest
         $gdprRequest = $this->input('gdpr_request');
         $dataExportNeeded = $this->input('data_export_needed');
         $accountDeletionRequest = $this->input('account_deletion_request');
-        
+
         // Privacy category should have privacy-related flags
-        if ($category === 'privacy' && !($gdprRequest || $dataExportNeeded || $accountDeletionRequest)) {
+        if ($category === 'privacy' && ! ($gdprRequest || $dataExportNeeded || $accountDeletionRequest)) {
             $validator->errors()->add('inquiry_category', 'Privacy inquiries should specify the type of privacy request.');
         }
-        
+
         // Account deletion should be high priority
-        if ($accountDeletionRequest && !in_array($this->input('priority_level'), ['high', 'urgent'])) {
+        if ($accountDeletionRequest && ! in_array($this->input('priority_level'), ['high', 'urgent'])) {
             $validator->errors()->add('priority_level', 'Account deletion requests should be high or urgent priority.');
         }
     }
@@ -222,16 +222,16 @@ class ContactFormRequest extends BaseFormRequest
     protected function prepareForValidation(): void
     {
         parent::prepareForValidation();
-        
+
         // Auto-detect browser and device info if not provided
-        if (!$this->input('browser_info')) {
+        if (! $this->input('browser_info')) {
             $this->merge(['browser_info' => $this->userAgent()]);
         }
-        
+
         // Set default values for boolean fields
         $booleanFields = ['attachments_needed', 'api_usage', 'gdpr_request', 'data_export_needed', 'account_deletion_request'];
         foreach ($booleanFields as $field) {
-            if (!$this->has($field)) {
+            if (! $this->has($field)) {
                 $this->merge([$field => false]);
             }
         }

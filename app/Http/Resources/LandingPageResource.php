@@ -10,7 +10,6 @@ class LandingPageResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  Request  $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -102,8 +101,6 @@ class LandingPageResource extends JsonResource
 
     /**
      * Get usage statistics with derived metrics
-     *
-     * @return array
      */
     protected function getUsageStats(): array
     {
@@ -123,9 +120,6 @@ class LandingPageResource extends JsonResource
 
     /**
      * Calculate performance rating based on conversion rate
-     *
-     * @param float $conversionRate
-     * @return string
      */
     protected function calculatePerformanceRating(float $conversionRate): string
     {

@@ -1,4 +1,6 @@
 <?php
+// ABOUTME: Service for managing mentorship matching, requests, and sessions
+// ABOUTME: Updated for schema-based tenancy - handles mentorship operations within tenant context
 
 namespace App\Services;
 
@@ -12,7 +14,7 @@ use App\Notifications\SessionScheduledNotification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
-class MentorshipService
+class MentorshipService extends BaseService
 {
     public function matchMentorToMentee(User $mentee, array $criteria = []): Collection
     {

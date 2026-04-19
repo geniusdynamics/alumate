@@ -1,0 +1,269 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alumni-platform-service
+  labels:
+    app: alumni-platform
+    component: web
+    service: alumni
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: alumni-platform
+    component: web
+  sessionAffinity: None
+  loadBalancerIP: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graduate-tracking-service
+  labels:
+    app: graduate-tracking
+    component: web
+    service: graduate-tracking
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: graduate-tracking
+    component: web
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: component-library-service
+  labels:
+    app: component-library
+    component: web
+    service: component-library
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: component-library
+    component: web
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: page-builder-service
+  labels:
+    app: page-builder
+    component: web
+    service: page-builder
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: page-builder
+    component: web
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alumni-platform-internal
+  labels:
+    app: alumni-platform
+    component: web
+    service: alumni
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: octane
+  selector:
+    app: alumni-platform
+    component: web
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alumate-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - alumate.example.com
+    secretName: alumate-tls
+  rules:
+  - host: alumate.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: alumate-service
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: alumate-service
+            port:
+              number: 80
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: alumate-internal
+            port:
+              number: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-service
+  labels:
+    app: redis-cluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: redis-cluster
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alumni-platform-redis-sidecar
+  labels:
+    app: alumni-platform
+    component: redis-sidecar
+    service: analytics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis-analytics
+  selector:
+    app: alumni-platform
+    component: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-api-service
+  labels:
+    app: alumni-platform
+    component: analytics-api
+    service: analytics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: analytics-api
+  selector:
+    app: alumni-platform
+    component: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  labels:
+    app: postgres
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alumate-storage-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-secret
+type: Opaque
+data:
+  password: <base64-encoded-redis-password>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  username: <base64-encoded-db-username>
+  password: <base64-encoded-db-password>
+  database: <base64-encoded-db-name>
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: alumate-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: alumate
+      component: web

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\TemplateAnalyticsService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -21,10 +21,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Get template analytics data
-     *
-     * @param Request $request
-     * @param int $templateId
-     * @return JsonResponse
      */
     public function getTemplateAnalytics(Request $request, int $templateId): JsonResponse
     {
@@ -52,9 +48,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Get analytics dashboard data for templates
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getAnalyticsDashboard(Request $request): JsonResponse
     {
@@ -81,10 +74,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Generate template performance report
-     *
-     * @param Request $request
-     * @param int $templateId
-     * @return JsonResponse
      */
     public function generateTemplateReport(Request $request, int $templateId): JsonResponse
     {
@@ -120,9 +109,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Generate comparative analysis between templates
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function generateComparativeAnalysis(Request $request): JsonResponse
     {
@@ -159,10 +145,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Get template earnings data
-     *
-     * @param Request $request
-     * @param int $templateId
-     * @return JsonResponse
      */
     public function getTemplateEarnings(Request $request, int $templateId): JsonResponse
     {
@@ -204,10 +186,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Export template analytics data
-     *
-     * @param Request $request
-     * @param int $templateId
-     * @return JsonResponse
      */
     public function exportTemplateAnalytics(Request $request, int $templateId): JsonResponse
     {
@@ -254,10 +232,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Get real-time analytics metrics
-     *
-     * @param Request $request
-     * @param int $templateId
-     * @return JsonResponse
      */
     public function getRealTimeMetrics(Request $request, int $templateId): JsonResponse
     {
@@ -284,9 +258,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Get performance metrics report
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getPerformanceMetrics(Request $request): JsonResponse
     {
@@ -312,9 +283,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Get GDPR compliance statistics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getGdprComplianceStats(Request $request): JsonResponse
     {
@@ -340,9 +308,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Export user data for GDPR portability
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function exportUserData(Request $request): JsonResponse
     {
@@ -375,9 +340,6 @@ class TemplateAnalyticsController extends Controller
 
     /**
      * Delete user data for GDPR right to erasure
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function deleteUserData(Request $request): JsonResponse
     {

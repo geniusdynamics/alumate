@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\PublishedSite;
 use App\Models\LandingPage;
-use App\Models\SiteDeployment;
+use App\Models\PublishedSite;
 use App\Services\PublishingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Publishing Controller
@@ -27,18 +26,14 @@ class PublishingController extends Controller
 
     /**
      * Get published sites for the tenant
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
         $query = PublishedSite::query()
             ->with(['landingPage', 'deployments'])
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->search, fn($q) =>
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('slug', 'like', '%' . $request->search . '%')
+            ->when($request->status, fn ($q) => $q->where('status', $request->status))
+            ->when($request->search, fn ($q) => $q->where('name', 'like', '%'.$request->search.'%')
+                ->orWhere('slug', 'like', '%'.$request->search.'%')
             )
             ->orderBy('created_at', 'desc');
 
@@ -51,15 +46,12 @@ class PublishingController extends Controller
             'meta' => [
                 'total_published' => PublishedSite::where('status', 'published')->count(),
                 'total_deploying' => PublishedSite::where('deployment_status', 'deploying')->count(),
-            ]
+            ],
         ]);
     }
 
     /**
      * Create a new published site
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -74,7 +66,7 @@ class PublishingController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -86,7 +78,7 @@ class PublishingController extends Controller
             if ($existingSite) {
                 return response()->json([
                     'message' => 'Published site already exists for this landing page',
-                    'published_site' => $existingSite
+                    'published_site' => $existingSite,
                 ], 409);
             }
 
@@ -103,35 +95,32 @@ class PublishingController extends Controller
 
             return response()->json([
                 'published_site' => $publishedSite->load(['landingPage']),
-                'message' => 'Published site created successfully'
+                'message' => 'Published site created successfully',
             ], 201);
 
         } catch (\Exception $e) {
             Log::error('Failed to create published site', [
                 'error' => $e->getMessage(),
-                'request' => $request->all()
+                'request' => $request->all(),
             ]);
 
             return response()->json([
                 'message' => 'Failed to create published site',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Get a specific published site
-     *
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function show(PublishedSite $publishedSite): JsonResponse
     {
         return response()->json([
             'published_site' => $publishedSite->load([
                 'landingPage',
-                'deployments' => fn($q) => $q->latest()->limit(10),
-                'analytics' => fn($q) => $q->latest()->limit(30)
+                'deployments' => fn ($q) => $q->latest()->limit(10),
+                'analytics' => fn ($q) => $q->latest()->limit(30),
             ]),
             'performance_stats' => $publishedSite->getPerformanceStats(),
         ]);
@@ -139,10 +128,6 @@ class PublishingController extends Controller
 
     /**
      * Update a published site
-     *
-     * @param Request $request
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function update(Request $request, PublishedSite $publishedSite): JsonResponse
     {
@@ -150,13 +135,13 @@ class PublishingController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'domain' => 'nullable|string|max:255',
             'subdomain' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
-            'status' => 'sometimes|in:' . implode(',', PublishedSite::STATUSES),
+            'status' => 'sometimes|in:'.implode(',', PublishedSite::STATUSES),
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -167,37 +152,31 @@ class PublishingController extends Controller
 
         return response()->json([
             'published_site' => $publishedSite->fresh(),
-            'message' => 'Published site updated successfully'
+            'message' => 'Published site updated successfully',
         ]);
     }
 
     /**
      * Delete a published site
-     *
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function destroy(PublishedSite $publishedSite): JsonResponse
     {
         // Check if site is currently deploying
         if ($publishedSite->isDeploying()) {
             return response()->json([
-                'message' => 'Cannot delete site that is currently deploying'
+                'message' => 'Cannot delete site that is currently deploying',
             ], 422);
         }
 
         $publishedSite->delete();
 
         return response()->json([
-            'message' => 'Published site deleted successfully'
+            'message' => 'Published site deleted successfully',
         ]);
     }
 
     /**
      * Publish a site
-     *
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function publish(PublishedSite $publishedSite): JsonResponse
     {
@@ -206,27 +185,24 @@ class PublishingController extends Controller
 
             return response()->json([
                 'published_site' => $publishedSite->fresh(),
-                'message' => 'Site published successfully'
+                'message' => 'Site published successfully',
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to publish site', [
                 'site_id' => $publishedSite->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'message' => 'Failed to publish site',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Unpublish a site
-     *
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function unpublish(PublishedSite $publishedSite): JsonResponse
     {
@@ -235,35 +211,31 @@ class PublishingController extends Controller
 
             return response()->json([
                 'published_site' => $publishedSite->fresh(),
-                'message' => 'Site unpublished successfully'
+                'message' => 'Site unpublished successfully',
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to unpublish site', [
                 'site_id' => $publishedSite->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'message' => 'Failed to unpublish site',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Deploy a site
-     *
-     * @param Request $request
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function deploy(Request $request, PublishedSite $publishedSite): JsonResponse
     {
         $request->validate([
             'build_options' => 'nullable|array',
             'build_options.minify' => 'boolean',
-            'build_options.format' => 'in:' . implode(',', PublishingService::OUTPUT_FORMATS),
+            'build_options.format' => 'in:'.implode(',', PublishingService::OUTPUT_FORMATS),
         ]);
 
         try {
@@ -286,7 +258,7 @@ class PublishingController extends Controller
             return response()->json([
                 'published_site' => $publishedSite->fresh(),
                 'deployment' => $deploymentResult,
-                'message' => 'Site deployed successfully'
+                'message' => 'Site deployed successfully',
             ]);
 
         } catch (\Exception $e) {
@@ -295,21 +267,18 @@ class PublishingController extends Controller
 
             Log::error('Site deployment failed', [
                 'site_id' => $publishedSite->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'message' => 'Site deployment failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Get deployment history for a site
-     *
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function deployments(PublishedSite $publishedSite): JsonResponse
     {
@@ -324,16 +293,12 @@ class PublishingController extends Controller
                 'total_deployments' => $publishedSite->deployments()->count(),
                 'successful_deployments' => $publishedSite->deployments()->where('status', 'deployed')->count(),
                 'failed_deployments' => $publishedSite->deployments()->where('status', 'failed')->count(),
-            ]
+            ],
         ]);
     }
 
     /**
      * Get analytics for a site
-     *
-     * @param Request $request
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function analytics(Request $request, PublishedSite $publishedSite): JsonResponse
     {
@@ -356,15 +321,12 @@ class PublishingController extends Controller
                 'total_unique_visitors' => $analytics->sum('unique_visitors'),
                 'avg_bounce_rate' => $analytics->avg('bounce_rate'),
                 'avg_session_duration' => $analytics->avg('avg_session_duration'),
-            ]
+            ],
         ]);
     }
 
     /**
      * Preview site before deployment
-     *
-     * @param PublishedSite $publishedSite
-     * @return JsonResponse
      */
     public function preview(PublishedSite $publishedSite): JsonResponse
     {
@@ -375,18 +337,18 @@ class PublishingController extends Controller
             return response()->json([
                 'preview_html' => $buildData['html'],
                 'build_manifest' => $buildData['manifest'],
-                'message' => 'Site preview generated successfully'
+                'message' => 'Site preview generated successfully',
             ]);
 
         } catch (\Exception $e) {
             Log::error('Site preview failed', [
                 'site_id' => $publishedSite->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'message' => 'Failed to generate site preview',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

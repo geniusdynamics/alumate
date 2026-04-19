@@ -13,8 +13,11 @@ class TemplateUsageMilestoneNotification extends Notification implements ShouldQ
     use Queueable;
 
     protected $template;
+
     protected $milestone;
+
     protected $user;
+
     protected $additionalData;
 
     public function __construct($template, $user = null, $additionalData = [])
@@ -77,10 +80,10 @@ class TemplateUsageMilestoneNotification extends Notification implements ShouldQ
             ->subject("🎉 Congratulations: '{$this->template->name}' reached {$this->milestone} uses!")
             ->greeting("Hi {$notifiable->name}!")
             ->line("Fantastic news! Your template '{$this->template->name}' has reached a major milestone.")
-            ->line("**Template Achievement:**")
+            ->line('**Template Achievement:**')
             ->line("{$milestoneText} uses across your tenant")
-            ->line("Category: " . ucfirst($this->template->category))
-            ->line("Audience: " . ucfirst($this->template->audience_type))
+            ->line('Category: '.ucfirst($this->template->category))
+            ->line('Audience: '.ucfirst($this->template->audience_type))
             ->when($this->milestone >= 100, function ($mail) {
                 return $mail->line('🏆 Congratulations on reaching the 100+ usage mark!');
             })

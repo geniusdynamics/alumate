@@ -20,17 +20,17 @@ class PhoneNumber implements ValidationRule
 
         // Remove all non-digit characters except +
         $cleanPhone = preg_replace('/[^\d+]/', '', $value);
-        
+
         // Check if it's a valid international format
         if (preg_match('/^\+[1-9]\d{1,14}$/', $cleanPhone)) {
             return; // Valid international format
         }
-        
+
         // Check if it's a valid US format (10-11 digits)
         if (preg_match('/^1?\d{10}$/', $cleanPhone)) {
             return; // Valid US format
         }
-        
+
         // Enhanced international patterns with more countries
         $patterns = [
             '/^\+1[2-9]\d{2}[2-9]\d{2}\d{4}$/', // US/Canada: +1NXXNXXXXXX
@@ -82,51 +82,57 @@ class PhoneNumber implements ValidationRule
             '/^\+57[3]\d{9}$/',                 // Colombia: +57XXXXXXXXXX
             '/^\+51[9]\d{8}$/',                 // Peru: +51XXXXXXXXX
         ];
-        
+
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $cleanPhone)) {
                 return; // Valid format found
             }
         }
-        
+
         // Additional validation for minimum/maximum length
         $length = strlen($cleanPhone);
         if ($length < 7) {
             $fail('The :attribute is too short. Please enter a valid phone number.');
+
             return;
         }
-        
+
         if ($length > 15) {
             $fail('The :attribute is too long. Please enter a valid phone number.');
+
             return;
         }
-        
+
         // Check for obviously invalid patterns
         if (preg_match('/^0+$|^1+$|^2+$|^3+$|^4+$|^5+$|^6+$|^7+$|^8+$|^9+$/', $cleanPhone)) {
             $fail('The :attribute cannot be all the same digit.');
+
             return;
         }
-        
+
         if (preg_match('/^123456|^654321|^111111|^000000|^987654|^555555/', $cleanPhone)) {
             $fail('The :attribute appears to be a test or invalid number.');
+
             return;
         }
-        
+
         // Check for sequential numbers (likely fake)
         if (preg_match('/^(012345|123456|234567|345678|456789|567890|098765|987654|876543|765432|654321|543210)/', $cleanPhone)) {
             $fail('The :attribute appears to contain sequential digits which are not valid.');
+
             return;
         }
-        
+
         // Check for emergency numbers
         $emergencyNumbers = ['911', '999', '112', '000', '101', '102', '103', '108', '119'];
         foreach ($emergencyNumbers as $emergency) {
             if (str_contains($cleanPhone, $emergency)) {
                 $fail('The :attribute cannot be an emergency number.');
+
                 return;
             }
         }
-        
+
         $fail('The :attribute must be a valid phone number. Please include country code for international numbers.');
     }
 }

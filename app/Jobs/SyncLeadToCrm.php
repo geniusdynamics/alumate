@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Lead;
 use App\Models\CrmIntegration;
+use App\Models\Lead;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Log;
 
 class SyncLeadToCrm implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
+
     public $backoff = [60, 300, 900]; // 1 min, 5 min, 15 min
 
     /**
@@ -36,21 +37,21 @@ class SyncLeadToCrm implements ShouldQueue
         try {
             Log::info('Starting CRM sync for lead', [
                 'lead_id' => $this->lead->id,
-                'provider' => $this->integration->provider
+                'provider' => $this->integration->provider,
             ]);
 
             // Get CRM client
             $client = $this->integration->getApiClient();
-            
+
             // Map lead data according to integration field mappings
             $mappedData = $this->mapLeadData();
-            
+
             // Add CRM-specific data
             $crmData = array_merge($mappedData, [
                 'lead_score' => $this->lead->score,
                 'source' => 'form_submission',
                 'tags' => $this->crmConfig['tags'] ?? [],
-                'submitted_at' => $this->lead->created_at->toISOString()
+                'submitted_at' => $this->lead->created_at->toISOString(),
             ]);
 
             // Sync to CRM
@@ -60,20 +61,20 @@ class SyncLeadToCrm implements ShouldQueue
                 $this->lead->addActivity('crm_update', 'Lead updated in CRM', null, [
                     'provider' => $this->integration->provider,
                     'crm_id' => $this->lead->crm_id,
-                    'result' => $result
+                    'result' => $result,
                 ]);
             } else {
                 // Create new lead
                 $result = $client->createLead($crmData);
                 $this->lead->update([
                     'crm_id' => $result['id'] ?? null,
-                    'synced_at' => now()
+                    'synced_at' => now(),
                 ]);
-                
+
                 $this->lead->addActivity('crm_create', 'Lead created in CRM', null, [
                     'provider' => $this->integration->provider,
                     'crm_id' => $result['id'] ?? null,
-                    'result' => $result
+                    'result' => $result,
                 ]);
             }
 
@@ -82,13 +83,13 @@ class SyncLeadToCrm implements ShouldQueue
                 'success' => true,
                 'lead_id' => $this->lead->id,
                 'result' => $result,
-                'synced_at' => now()->toISOString()
+                'synced_at' => now()->toISOString(),
             ]);
 
             Log::info('CRM sync completed successfully', [
                 'lead_id' => $this->lead->id,
                 'provider' => $this->integration->provider,
-                'crm_id' => $result['id'] ?? null
+                'crm_id' => $result['id'] ?? null,
             ]);
 
         } catch (\Exception $e) {
@@ -96,7 +97,7 @@ class SyncLeadToCrm implements ShouldQueue
                 'lead_id' => $this->lead->id,
                 'provider' => $this->integration->provider,
                 'error' => $e->getMessage(),
-                'attempt' => $this->attempts()
+                'attempt' => $this->attempts(),
             ]);
 
             // Update integration sync result with error
@@ -105,14 +106,14 @@ class SyncLeadToCrm implements ShouldQueue
                 'lead_id' => $this->lead->id,
                 'error' => $e->getMessage(),
                 'attempt' => $this->attempts(),
-                'failed_at' => now()->toISOString()
+                'failed_at' => now()->toISOString(),
             ]);
 
             // Add activity for failed sync
             $this->lead->addActivity('crm_sync_failed', 'CRM sync failed', $e->getMessage(), [
                 'provider' => $this->integration->provider,
                 'attempt' => $this->attempts(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             throw $e; // Re-throw to trigger retry
@@ -141,11 +142,11 @@ class SyncLeadToCrm implements ShouldQueue
             'email' => 'email',
             'phone' => 'phone',
             'company' => 'company',
-            'job_title' => 'jobtitle'
+            'job_title' => 'jobtitle',
         ];
 
         foreach ($defaultMappings as $localField => $crmField) {
-            if (!isset($mappedData[$crmField])) {
+            if (! isset($mappedData[$crmField])) {
                 $value = $this->getLeadFieldValue($localField);
                 if ($value !== null) {
                     $mappedData[$crmField] = $value;
@@ -188,14 +189,14 @@ class SyncLeadToCrm implements ShouldQueue
             'lead_id' => $this->lead->id,
             'provider' => $this->integration->provider,
             'error' => $exception->getMessage(),
-            'attempts' => $this->attempts()
+            'attempts' => $this->attempts(),
         ]);
 
         // Mark lead as sync failed
         $this->lead->addActivity('crm_sync_failed_permanent', 'CRM sync failed permanently', $exception->getMessage(), [
             'provider' => $this->integration->provider,
             'attempts' => $this->attempts(),
-            'error' => $exception->getMessage()
+            'error' => $exception->getMessage(),
         ]);
 
         // Update integration with permanent failure
@@ -204,7 +205,7 @@ class SyncLeadToCrm implements ShouldQueue
             'lead_id' => $this->lead->id,
             'error' => $exception->getMessage(),
             'attempts' => $this->attempts(),
-            'permanently_failed_at' => now()->toISOString()
+            'permanently_failed_at' => now()->toISOString(),
         ]);
     }
 }

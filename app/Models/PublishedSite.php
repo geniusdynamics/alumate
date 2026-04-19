@@ -1,7 +1,11 @@
 <?php
 
+// ABOUTME: PublishedSite model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Represents published landing page sites with deployment tracking and performance monitoring
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,7 +24,7 @@ class PublishedSite extends Model
 
     protected $fillable = [
         'landing_page_id',
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'name',
         'slug',
         'domain',
@@ -102,35 +106,25 @@ class PublishedSite extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
-        });
+        // Schema-based tenancy - no global scope needed as data is isolated by schema
+        // Tenant context is handled by TenantContextService
 
         // Auto-generate slug if not provided
         static::creating(function ($site) {
             if (empty($site->slug)) {
-                $site->slug = $site->generateUniqueSlug($site->name, $site->tenant_id);
+                $site->slug = $site->generateUniqueSlug($site->name);
             }
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
+     * Note: With schema-based tenancy, this method returns the query unchanged
      */
     public function scopeForTenant($query, int $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // Schema-based tenancy: data is already isolated by schema
+        return $query;
     }
 
     /**
@@ -158,11 +152,11 @@ class PublishedSite extends Model
     }
 
     /**
-     * Get the tenant that owns this published site
+     * Get the current tenant context (schema-based tenancy)
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return TenantContextService::getCurrentTenant();
     }
 
     /**
@@ -218,7 +212,7 @@ class PublishedSite extends Model
      */
     public function getFullPublicUrl(): string
     {
-        if (!$this->isPublished()) {
+        if (! $this->isPublished()) {
             return '';
         }
 
@@ -231,6 +225,7 @@ class PublishedSite extends Model
         if ($this->subdomain && config('database.multi_tenant')) {
             try {
                 $tenantDomain = tenant()->domain;
+
                 return "https://{$this->subdomain}.{$tenantDomain}";
             } catch (\Exception $e) {
                 // Fallback to static URL
@@ -309,16 +304,16 @@ class PublishedSite extends Model
     }
 
     /**
-     * Generate a unique slug for the site
+     * Generate a unique slug for the site (schema-based tenancy)
      */
-    protected function generateUniqueSlug(string $name, int $tenantId): string
+    protected function generateUniqueSlug(string $name): string
     {
         $baseSlug = Str::slug($name);
         $slug = $baseSlug;
         $counter = 1;
 
-        while ($this->slugExists($slug, $tenantId)) {
-            $slug = $baseSlug . '-' . $counter;
+        while ($this->slugExists($slug)) {
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -326,11 +321,11 @@ class PublishedSite extends Model
     }
 
     /**
-     * Check if a slug exists for the tenant
+     * Check if a slug exists (schema-based tenancy)
      */
-    protected function slugExists(string $slug, int $tenantId): bool
+    protected function slugExists(string $slug): bool
     {
-        $query = static::where('tenant_id', $tenantId)->where('slug', $slug);
+        $query = static::where('slug', $slug);
 
         if ($this->exists) {
             $query->where('id', '!=', $this->id);
@@ -363,14 +358,14 @@ class PublishedSite extends Model
     {
         return [
             'landing_page_id' => 'required|exists:landing_pages,id',
-            'tenant_id' => 'required|exists:tenants,id',
+            // 'tenant_id' => 'required|exists:tenants,id', // Removed for schema-based tenancy
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
             'domain' => 'nullable|string|max:255',
             'subdomain' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
             'custom_domains' => 'nullable|array',
-            'status' => 'required|in:' . implode(',', self::STATUSES),
-            'deployment_status' => 'required|in:' . implode(',', self::DEPLOYMENT_STATUSES),
+            'status' => 'required|in:'.implode(',', self::STATUSES),
+            'deployment_status' => 'required|in:'.implode(',', self::DEPLOYMENT_STATUSES),
             'build_hash' => 'nullable|string|max:255',
             'cdn_url' => 'nullable|string|url|max:255',
             'static_url' => 'nullable|string|url|max:255',
@@ -397,7 +392,7 @@ class PublishedSite extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:published_sites,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:published_sites,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:published_sites,slug';
         }

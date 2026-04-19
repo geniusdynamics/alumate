@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\BrandCustomizerService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class BrandCustomizerController extends Controller
@@ -21,9 +20,9 @@ class BrandCustomizerController extends Controller
     public function getData(): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $data = $this->brandCustomizerService->getBrandData($tenantId);
-        
+
         return response()->json($data);
     }
 
@@ -34,13 +33,13 @@ class BrandCustomizerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'logos' => 'required|array|max:10',
-            'logos.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120'
+            'logos.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -61,10 +60,10 @@ class BrandCustomizerController extends Controller
     public function setPrimaryLogo(string $logoId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = $this->brandCustomizerService->setPrimaryLogo($logoId, $tenantId);
-        
-        if (!$result) {
+
+        if (! $result) {
             return response()->json(['message' => 'Logo not found'], 404);
         }
 
@@ -77,10 +76,10 @@ class BrandCustomizerController extends Controller
     public function optimizeLogo(string $logoId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $optimizedLogo = $this->brandCustomizerService->optimizeLogo($logoId, $tenantId);
-        
-        if (!$optimizedLogo) {
+
+        if (! $optimizedLogo) {
             return response()->json(['message' => 'Logo not found'], 404);
         }
 
@@ -93,10 +92,10 @@ class BrandCustomizerController extends Controller
     public function deleteLogo(string $logoId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = $this->brandCustomizerService->deleteLogo($logoId, $tenantId);
-        
-        if (!$result) {
+
+        if (! $result) {
             return response()->json(['message' => 'Logo not found'], 404);
         }
 
@@ -112,20 +111,20 @@ class BrandCustomizerController extends Controller
             'name' => 'required|string|max:255',
             'value' => 'required|string|regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/',
             'type' => 'required|in:primary,secondary,accent,neutral,semantic',
-            'usageGuidelines' => 'nullable|string|max:1000'
+            'usageGuidelines' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $color = $this->brandCustomizerService->createColor($request->validated(), $tenantId);
-        
+
         return response()->json($color, 201);
     }
 
@@ -138,21 +137,21 @@ class BrandCustomizerController extends Controller
             'name' => 'required|string|max:255',
             'value' => 'required|string|regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/',
             'type' => 'required|in:primary,secondary,accent,neutral,semantic',
-            'usageGuidelines' => 'nullable|string|max:1000'
+            'usageGuidelines' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $color = $this->brandCustomizerService->updateColor($colorId, $request->validated(), $tenantId);
-        
-        if (!$color) {
+
+        if (! $color) {
             return response()->json(['message' => 'Color not found'], 404);
         }
 
@@ -165,10 +164,10 @@ class BrandCustomizerController extends Controller
     public function deleteColor(string $colorId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = $this->brandCustomizerService->deleteColor($colorId, $tenantId);
-        
-        if (!$result) {
+
+        if (! $result) {
             return response()->json(['message' => 'Color not found'], 404);
         }
 
@@ -182,20 +181,20 @@ class BrandCustomizerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'fonts' => 'required|array|max:10',
-            'fonts.*' => 'required|file|mimes:woff,woff2,ttf,otf|max:2048'
+            'fonts.*' => 'required|file|mimes:woff,woff2,ttf,otf|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $fontUrl = $this->brandCustomizerService->uploadFonts($request->file('fonts'), $tenantId);
-        
+
         return response()->json(['fontUrl' => $fontUrl]);
     }
 
@@ -216,20 +215,20 @@ class BrandCustomizerController extends Controller
             'styles.*' => 'string|in:normal,italic,oblique',
             'fallbacks' => 'required|array|min:1',
             'fallbacks.*' => 'string|max:255',
-            'loadingStrategy' => 'required|in:preload,swap,lazy'
+            'loadingStrategy' => 'required|in:preload,swap,lazy',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $font = $this->brandCustomizerService->createFont($request->validated(), $tenantId);
-        
+
         return response()->json($font, 201);
     }
 
@@ -250,21 +249,21 @@ class BrandCustomizerController extends Controller
             'styles.*' => 'string|in:normal,italic,oblique',
             'fallbacks' => 'required|array|min:1',
             'fallbacks.*' => 'string|max:255',
-            'loadingStrategy' => 'required|in:preload,swap,lazy'
+            'loadingStrategy' => 'required|in:preload,swap,lazy',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $font = $this->brandCustomizerService->updateFont($fontId, $request->validated(), $tenantId);
-        
-        if (!$font) {
+
+        if (! $font) {
             return response()->json(['message' => 'Font not found'], 404);
         }
 
@@ -277,10 +276,10 @@ class BrandCustomizerController extends Controller
     public function setPrimaryFont(string $fontId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = $this->brandCustomizerService->setPrimaryFont($fontId, $tenantId);
-        
-        if (!$result) {
+
+        if (! $result) {
             return response()->json(['message' => 'Font not found'], 404);
         }
 
@@ -293,10 +292,10 @@ class BrandCustomizerController extends Controller
     public function deleteFont(string $fontId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = $this->brandCustomizerService->deleteFont($fontId, $tenantId);
-        
-        if (!$result) {
+
+        if (! $result) {
             return response()->json(['message' => 'Font not found'], 404);
         }
 
@@ -319,20 +318,20 @@ class BrandCustomizerController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
             'isDefault' => 'boolean',
-            'autoApplyToExisting' => 'boolean'
+            'autoApplyToExisting' => 'boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $template = $this->brandCustomizerService->createTemplate($request->validated(), $tenantId);
-        
+
         return response()->json($template, 201);
     }
 
@@ -352,21 +351,21 @@ class BrandCustomizerController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
             'isDefault' => 'boolean',
-            'autoApplyToExisting' => 'boolean'
+            'autoApplyToExisting' => 'boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $template = $this->brandCustomizerService->updateTemplate($templateId, $request->validated(), $tenantId);
-        
-        if (!$template) {
+
+        if (! $template) {
             return response()->json(['message' => 'Template not found'], 404);
         }
 
@@ -379,10 +378,10 @@ class BrandCustomizerController extends Controller
     public function applyTemplate(string $templateId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = $this->brandCustomizerService->applyTemplate($templateId, $tenantId);
-        
-        if (!$result) {
+
+        if (! $result) {
             return response()->json(['message' => 'Template not found'], 404);
         }
 
@@ -395,10 +394,10 @@ class BrandCustomizerController extends Controller
     public function duplicateTemplate(string $templateId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $newTemplate = $this->brandCustomizerService->duplicateTemplate($templateId, $tenantId);
-        
-        if (!$newTemplate) {
+
+        if (! $newTemplate) {
             return response()->json(['message' => 'Template not found'], 404);
         }
 
@@ -412,24 +411,24 @@ class BrandCustomizerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'guidelines' => 'required|array',
-            'assets' => 'required|array'
+            'assets' => 'required|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $report = $this->brandCustomizerService->runConsistencyCheck(
             $request->input('guidelines'),
             $request->input('assets'),
             $tenantId
         );
-        
+
         return response()->json($report);
     }
 
@@ -439,10 +438,10 @@ class BrandCustomizerController extends Controller
     public function autoFixIssue(string $issueId): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = $this->brandCustomizerService->autoFixIssue($issueId, $tenantId);
-        
-        if (!$result['success']) {
+
+        if (! $result['success']) {
             return response()->json(['message' => 'Issue not found or cannot be auto-fixed'], 404);
         }
 
@@ -464,20 +463,20 @@ class BrandCustomizerController extends Controller
             'maxBodySize' => 'integer|min:8|max:32',
             'enforceLogoPlacement' => 'boolean',
             'minLogoSize' => 'integer|min:16|max:200',
-            'logoClearSpace' => 'numeric|min:0.5|max:5'
+            'logoClearSpace' => 'numeric|min:0.5|max:5',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $guidelines = $this->brandCustomizerService->updateGuidelines($request->validated(), $tenantId);
-        
+
         return response()->json($guidelines);
     }
 
@@ -489,25 +488,25 @@ class BrandCustomizerController extends Controller
         $validator = Validator::make($request->all(), [
             'assets' => 'required|array',
             'guidelines' => 'required|array',
-            'format' => 'required|in:zip,json,css'
+            'format' => 'required|in:zip,json,css',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $tenantId = auth()->user()->tenant_id;
-        
+
         $exportPath = $this->brandCustomizerService->exportAssets(
             $request->input('assets'),
             $request->input('guidelines'),
             $request->input('format'),
             $tenantId
         );
-        
+
         return response()->download($exportPath)->deleteFileAfterSend();
     }
 }

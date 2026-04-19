@@ -33,7 +33,7 @@ class CacheServiceTest extends TestCase
         Cache::shouldReceive('put')->andReturn(true);
         Cache::shouldReceive('has')->andReturn(false);
 
-        $this->cacheService = new CacheService();
+        $this->cacheService = app(CacheService::class);
     }
 
     /**

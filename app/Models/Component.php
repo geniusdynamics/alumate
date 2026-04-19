@@ -1,7 +1,11 @@
 <?php
 
+// ABOUTME: Component model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages UI components with automatic tenant context resolution
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -66,24 +70,20 @@ class Component extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically (skip in testing)
-        try {
-            if (app()->bound('auth') && auth()->check() && auth()->user() && auth()->user()->tenant_id) {
-                static::addGlobalScope('tenant', function ($builder) {
-                    $builder->where('tenant_id', auth()->user()->tenant_id);
-                });
-            }
-        } catch (\Exception $e) {
-            // Skip tenant scoping in test environment or when auth is not available
-        }
+        // Apply tenant context for schema-based tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            app(TenantContextService::class)->applyTenantContext($builder);
+        });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (for schema-based tenancy)
+     * Note: This is primarily for administrative purposes
      */
-    public function scopeForTenant($query, int $tenantId)
+    public function scopeForTenant($query, string $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, this would switch schema context
+        return app(TenantContextService::class)->scopeToTenant($query, $tenantId);
     }
 
     /**
@@ -111,11 +111,12 @@ class Component extends Model
     }
 
     /**
-     * Get the tenant that owns the component
+     * Get the current tenant context
+     * Note: In schema-based tenancy, tenant relationship is contextual
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**
@@ -299,6 +300,21 @@ class Component extends Model
                 'format_numbers' => 'boolean',
             ],
             'ctas' => [
+                'type' => 'sometimes|string',
+                'buttonConfig' => 'sometimes|array',
+                'buttonConfig.text' => 'required_with:buttonConfig|string|max:100',
+                'buttonConfig.url' => 'nullable|string|max:255',
+                'buttonConfig.style' => 'sometimes|string|in:primary,secondary,outline,text',
+                'buttonConfig.size' => 'sometimes|string|in:small,medium,large,xl,lg,md,sm',
+                'bannerConfig' => 'sometimes|array',
+                'bannerConfig.title' => 'nullable|string|max:255',
+                'bannerConfig.subtitle' => 'nullable|string|max:500',
+                'bannerConfig.layout' => 'sometimes|string|in:center-aligned,left-aligned,right-aligned,full-width',
+                'bannerConfig.height' => 'sometimes|string|in:small,medium,large,full',
+                'inlineLinkConfig' => 'sometimes|array',
+                'inlineLinkConfig.text' => 'nullable|string|max:100',
+                'inlineLinkConfig.url' => 'nullable|string|max:255',
+                'inlineLinkConfig.style' => 'sometimes|string|in:arrow,button,text',
                 'style' => Rule::in(['primary', 'secondary', 'outline', 'text']),
                 'size' => Rule::in(['small', 'medium', 'large']),
                 'track_conversions' => 'boolean',
@@ -366,7 +382,7 @@ class Component extends Model
         return $this->getConfigValue('responsive', [
             'desktop' => [],
             'tablet' => [],
-            'mobile' => []
+            'mobile' => [],
         ]);
     }
 
@@ -386,6 +402,7 @@ class Component extends Model
     public function getDeviceConfig(string $device): array
     {
         $responsiveConfig = $this->getResponsiveConfig();
+
         return $responsiveConfig[$device] ?? [];
     }
 
@@ -395,9 +412,10 @@ class Component extends Model
     public function hasResponsiveConfig(): bool
     {
         $responsiveConfig = $this->getResponsiveConfig();
-        return !empty($responsiveConfig['desktop']) || 
-               !empty($responsiveConfig['tablet']) || 
-               !empty($responsiveConfig['mobile']);
+
+        return ! empty($responsiveConfig['desktop']) ||
+               ! empty($responsiveConfig['tablet']) ||
+               ! empty($responsiveConfig['mobile']);
     }
 
     /**
@@ -408,7 +426,7 @@ class Component extends Model
         return $this->getConfigValue('accessibility', [
             'semanticTag' => 'div',
             'keyboardNavigation' => ['focusable' => false],
-            'motionPreferences' => ['respectReducedMotion' => true]
+            'motionPreferences' => ['respectReducedMotion' => true],
         ]);
     }
 
@@ -428,7 +446,7 @@ class Component extends Model
         return $this->getConfigValue('grouping', [
             'tags' => [$this->category],
             'relationships' => [],
-            'grapeJSCategory' => $this->getGrapeJSCategoryName()
+            'grapeJSCategory' => $this->getGrapeJSCategoryName(),
         ]);
     }
 
@@ -464,7 +482,7 @@ class Component extends Model
         return $this->getConfigValue('constraints', [
             'responsive' => [],
             'accessibility' => [],
-            'performance' => []
+            'performance' => [],
         ]);
     }
 
@@ -485,10 +503,10 @@ class Component extends Model
             'deviceManager' => [
                 'desktop' => ['width' => 1200, 'height' => 800, 'widthMedia' => 'min-width: 1024px'],
                 'tablet' => ['width' => 768, 'height' => 1024, 'widthMedia' => 'min-width: 768px and max-width: 1023px'],
-                'mobile' => ['width' => 375, 'height' => 667, 'widthMedia' => 'max-width: 767px']
+                'mobile' => ['width' => 375, 'height' => 667, 'widthMedia' => 'max-width: 767px'],
             ],
             'styleManager' => ['sectors' => []],
-            'traitManager' => ['traits' => []]
+            'traitManager' => ['traits' => []],
         ]);
     }
 
@@ -506,7 +524,8 @@ class Component extends Model
     public function isMobileOptimized(): bool
     {
         $mobileConfig = $this->getDeviceConfig('mobile');
-        return !empty($mobileConfig) || $this->hasConfigKey('mobileOptimized');
+
+        return ! empty($mobileConfig) || $this->hasConfigKey('mobileOptimized');
     }
 
     /**
@@ -515,9 +534,10 @@ class Component extends Model
     public function hasAccessibilityFeatures(): bool
     {
         $accessibility = $this->getAccessibilityMetadata();
-        return !empty($accessibility['ariaLabel']) || 
-               !empty($accessibility['keyboardNavigation']) ||
-               !empty($accessibility['screenReaderText']);
+
+        return ! empty($accessibility['ariaLabel']) ||
+               ! empty($accessibility['keyboardNavigation']) ||
+               ! empty($accessibility['screenReaderText']);
     }
 
     /**
@@ -543,19 +563,19 @@ class Component extends Model
     {
         $variants = [];
         $devices = ['desktop', 'tablet', 'mobile'];
-        
+
         foreach ($devices as $device) {
             $deviceConfig = $this->getDeviceConfig($device);
             $baseConfig = $this->config ?? [];
-            
+
             $variants[] = [
                 'device' => $device,
                 'config' => array_merge($baseConfig, $deviceConfig),
-                'enabled' => !empty($deviceConfig),
-                'inheritFromParent' => empty($deviceConfig)
+                'enabled' => ! empty($deviceConfig),
+                'inheritFromParent' => empty($deviceConfig),
             ];
         }
-        
+
         return $variants;
     }
 
@@ -566,29 +586,29 @@ class Component extends Model
     {
         $errors = [];
         $warnings = [];
-        
+
         $responsiveConfig = $this->getResponsiveConfig();
-        
+
         // Check for mobile optimization
         if (empty($responsiveConfig['mobile'])) {
             $warnings[] = 'Component lacks mobile-specific configuration';
         }
-        
+
         // Check for accessibility metadata
         $accessibility = $this->getAccessibilityMetadata();
         if (empty($accessibility['ariaLabel']) && empty($accessibility['ariaLabelledBy'])) {
             $warnings[] = 'Component should have accessible name (aria-label or aria-labelledby)';
         }
-        
+
         // Check for semantic HTML usage
         if ($accessibility['semanticTag'] === 'div') {
             $warnings[] = 'Consider using semantic HTML elements instead of generic div';
         }
-        
+
         return [
             'valid' => empty($errors),
             'errors' => $errors,
-            'warnings' => $warnings
+            'warnings' => $warnings,
         ];
     }
 
@@ -602,7 +622,7 @@ class Component extends Model
             'last_used_at' => $this->last_used_at,
             'instances_count' => $this->instances()->count(),
             'is_popular' => $this->usage_count > 10,
-            'recently_used' => $this->last_used_at && $this->last_used_at->isAfter(now()->subDays(7))
+            'recently_used' => $this->last_used_at && $this->last_used_at->isAfter(now()->subDays(7)),
         ];
     }
 

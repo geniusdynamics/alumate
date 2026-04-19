@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Exceptions\TemplateValidationException;
-use App\Exceptions\TemplateSecurityException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -17,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 class EnhancedTemplateValidator
 {
     protected TemplateStructureSanitizer $sanitizer;
+
     protected TemplateSecurityValidator $securityValidator;
 
     protected array $schemaDefinitions = [
@@ -32,7 +31,7 @@ class EnhancedTemplateValidator
                 'hero' => ['title', 'subtitle', 'background', 'cta'],
                 'statistics' => ['items'],
                 'testimonials' => ['items'],
-            ]
+            ],
         ],
         'landing_page' => [
             'max_sections' => 10,
@@ -61,16 +60,16 @@ class EnhancedTemplateValidator
 
     public function __construct()
     {
-        $this->sanitizer = new TemplateStructureSanitizer();
-        $this->securityValidator = new TemplateSecurityValidator();
+        $this->sanitizer = new TemplateStructureSanitizer;
+        $this->securityValidator = new TemplateSecurityValidator;
     }
 
     /**
      * Comprehensive template validation
      *
-     * @param array $templateStructure Template structure to validate
-     * @param string $templateType Template type (landing, homepage, email, etc.)
-     * @param array $validationOptions Additional validation options
+     * @param  array  $templateStructure  Template structure to validate
+     * @param  string  $templateType  Template type (landing, homepage, email, etc.)
+     * @param  array  $validationOptions  Additional validation options
      * @return array Validation results with detailed feedback
      */
     public function validateTemplate(array $templateStructure, string $templateType = 'landing_page', array $validationOptions = []): array
@@ -125,9 +124,9 @@ class EnhancedTemplateValidator
             // Overall validity
             $results['valid'] = empty($results['errors']);
 
-            if (!$results['valid']) {
+            if (! $results['valid']) {
                 throw new TemplateValidationException(
-                    "Template validation failed with " . count($results['errors']) . " errors"
+                    'Template validation failed with '.count($results['errors']).' errors'
                 );
             }
 
@@ -155,6 +154,7 @@ class EnhancedTemplateValidator
                 'type' => 'empty_structure',
                 'message' => 'Template structure cannot be empty',
             ];
+
             return $errors;
         }
 
@@ -163,7 +163,7 @@ class EnhancedTemplateValidator
 
         // Check required fields
         foreach ($commonSchema['required_fields'] as $field) {
-            if (!isset($structure[$field]) || empty($structure[$field])) {
+            if (! isset($structure[$field]) || empty($structure[$field])) {
                 $errors[] = [
                     'type' => 'missing_field',
                     'field' => $field,
@@ -193,7 +193,7 @@ class EnhancedTemplateValidator
         // Check required section fields
         $requiredFields = $this->schemaDefinitions['common']['section_fields'];
         foreach ($requiredFields as $field) {
-            if ($field === 'type' && (!isset($section[$field]) || empty($section[$field]))) {
+            if ($field === 'type' && (! isset($section[$field]) || empty($section[$field]))) {
                 $errors[] = [
                     'type' => 'invalid_section',
                     'section_index' => $index,
@@ -214,7 +214,7 @@ class EnhancedTemplateValidator
 
         // Check allowed section types for specific template types
         if (isset($templateSchema['allowed_section_types']) && isset($section['type'])) {
-            if (!in_array($section['type'], $templateSchema['allowed_section_types'])) {
+            if (! in_array($section['type'], $templateSchema['allowed_section_types'])) {
                 $templateTypeName = isset($templateSchema['template_type']) ? $templateSchema['template_type'] : 'template type';
                 $errors[] = [
                     'type' => 'invalid_section_type',
@@ -238,7 +238,7 @@ class EnhancedTemplateValidator
         $configSchema = $this->schemaDefinitions['common']['config_schema'][$sectionType] ?? [];
 
         foreach ($configSchema as $field => $rules) {
-            if (!isset($config[$field]) || empty($config[$field])) {
+            if (! isset($config[$field]) || empty($config[$field])) {
                 $errors[] = [
                     'type' => 'missing_config_field',
                     'field' => $field,
@@ -288,7 +288,7 @@ class EnhancedTemplateValidator
         if (isset($templateSchema['required_section_types'])) {
             $availableTypes = $this->extractSectionTypes($structure);
             foreach ($templateSchema['required_section_types'] as $requiredType) {
-                if (!in_array($requiredType, $availableTypes)) {
+                if (! in_array($requiredType, $availableTypes)) {
                     $errors[] = [
                         'type' => 'missing_required_section_type',
                         'section_type' => $requiredType,
@@ -317,7 +317,7 @@ class EnhancedTemplateValidator
         foreach ($sections as $index => $section) {
             // Check alt text for images
             if ($section['type'] === 'image' && isset($section['config'])) {
-                if (!isset($section['config']['alt']) || empty($section['config']['alt'])) {
+                if (! isset($section['config']['alt']) || empty($section['config']['alt'])) {
                     $accessibilityResults['warnings'][] = [
                         'type' => 'missing_alt_text',
                         'section_index' => $index,
@@ -351,15 +351,15 @@ class EnhancedTemplateValidator
 
         $recommendedTypes = $this->schemaDefinitions[$templateType]['recommended_section_types'] ?? [];
 
-        if (!empty($recommendedTypes)) {
+        if (! empty($recommendedTypes)) {
             $availableTypes = $this->extractSectionTypes($structure);
             $missingTypes = array_diff($recommendedTypes, $availableTypes);
 
-            if (!empty($missingTypes)) {
+            if (! empty($missingTypes)) {
                 $warnings[] = [
                     'type' => 'missing_recommended_sections',
                     'missing_types' => $missingTypes,
-                    'message' => 'Consider adding these recommended section types: ' . implode(', ', $missingTypes),
+                    'message' => 'Consider adding these recommended section types: '.implode(', ', $missingTypes),
                 ];
             }
         }
@@ -387,7 +387,7 @@ class EnhancedTemplateValidator
         // Check for large images or videos
         foreach ($sections as $index => $section) {
             if (in_array($section['type'], ['image', 'video']) && isset($section['config'])) {
-                if (!isset($section['config']['width']) || $section['config']['width'] > 1920) {
+                if (! isset($section['config']['width']) || $section['config']['width'] > 1920) {
                     $suggestions[] = [
                         'type' => 'optimize_media',
                         'section_index' => $index,
@@ -443,6 +443,7 @@ class EnhancedTemplateValidator
     public function sanitizeAndValidate(array $structure, string $templateType = 'landing_page'): array
     {
         $sanitizedStructure = $this->sanitizer->sanitize($structure);
+
         return $this->validateTemplate($sanitizedStructure, $templateType);
     }
 

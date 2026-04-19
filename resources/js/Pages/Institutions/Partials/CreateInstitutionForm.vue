@@ -1,6 +1,5 @@
-<script setup>
+﻿<script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
 const form = useForm({
     id: '',
@@ -20,9 +19,7 @@ const submit = () => {
         <header>
             <h2 class="text-lg font-medium text-gray-900">Create Institution</h2>
 
-            <p class="mt-1 text-sm text-gray-600">
-                Create a new institution.
-            </p>
+            <p class="mt-1 text-sm text-gray-600">Create a new institution.</p>
         </header>
 
         <form @submit.prevent="submit" class="mt-6 space-y-6">
@@ -53,3 +50,4 @@ const submit = () => {
         </form>
     </section>
 </template>
+

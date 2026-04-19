@@ -24,7 +24,7 @@ class TestimonialRequest extends FormRequest
     public function rules(): array
     {
         $testimonialId = $this->route('testimonial')?->id;
-        
+
         $rules = [
             'author_name' => 'required|string|max:255|min:2',
             'author_title' => 'nullable|string|max:255',
@@ -87,12 +87,12 @@ class TestimonialRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             // Validate video testimonial requirements
-            if ($this->filled('video_url') && !$this->filled('video_thumbnail')) {
+            if ($this->filled('video_url') && ! $this->filled('video_thumbnail')) {
                 $validator->errors()->add('video_thumbnail', 'Video testimonials require a thumbnail image.');
             }
 
             // Validate that video thumbnail is only provided with video URL
-            if ($this->filled('video_thumbnail') && !$this->filled('video_url')) {
+            if ($this->filled('video_thumbnail') && ! $this->filled('video_url')) {
                 $validator->errors()->add('video_url', 'Video thumbnail requires a video URL.');
             }
 
@@ -109,12 +109,12 @@ class TestimonialRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default status for new testimonials
-        if ($this->isMethod('POST') && !$this->has('status')) {
+        if ($this->isMethod('POST') && ! $this->has('status')) {
             $this->merge(['status' => 'pending']);
         }
 
         // Set tenant_id from authenticated user if not provided
-        if ($this->isMethod('POST') && !$this->has('tenant_id') && auth()->check()) {
+        if ($this->isMethod('POST') && ! $this->has('tenant_id') && auth()->check()) {
             $this->merge(['tenant_id' => auth()->user()->tenant_id]);
         }
 

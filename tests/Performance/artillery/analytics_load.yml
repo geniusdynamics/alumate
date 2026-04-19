@@ -1,0 +1,192 @@
+config:
+  target: 'http://127.0.0.1:8080'
+  phases:
+    # Warm-up phase
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm-up"
+    # Main load testing phase
+    - duration: 300
+      arrivalRate: 20
+      name: "Main Load"
+    # Peak load phase
+    - duration: 120
+      arrivalRate: 50
+      name: "Peak Load"
+    # Cool-down phase
+    - duration: 60
+      arrivalRate: 5
+      name: "Cool-down"
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+  processor: "./artillery-processor.js"
+
+scenarios:
+  # Learning Analytics Dashboard Load Test
+  - name: "Learning Analytics Dashboard"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/analytics/learning/index"
+          qs:
+            period: "weekly"
+            include_trends: "true"
+            metrics: "engagement,completion,certification"
+          expect:
+            - statusCode: 200
+          capture:
+            json: "$.data.total_users"
+            as: "total_users"
+      - think: 2
+      - get:
+          url: "/api/analytics/learning/index"
+          qs:
+            period: "monthly"
+            include_trends: "false"
+            metrics: "engagement"
+          expect:
+            - statusCode: 200
+
+  # Insights API Load Test
+  - name: "Insights API"
+    weight: 35
+    flow:
+      - get:
+          url: "/api/insights"
+          qs:
+            date_from: "{{ dateFormat '2024-01-01' }}"
+            date_to: "{{ dateFormat '2024-12-31' }}"
+            group_by: "week"
+            include_anomalies: "true"
+          expect:
+            - statusCode: 200
+          capture:
+            json: "$.data.total_events"
+            as: "total_events"
+      - think: 3
+      - get:
+          url: "/api/insights"
+          qs:
+            date_from: "{{ dateFormat '2024-06-01' }}"
+            date_to: "{{ dateFormat '2024-12-31' }}"
+            group_by: "month"
+            include_anomalies: "false"
+          expect:
+            - statusCode: 200
+
+  # Analytics Metrics Load Test
+  - name: "Analytics Metrics"
+    weight: 15
+    flow:
+      - get:
+          url: "/api/analytics/metrics"
+          qs:
+            period: "weekly"
+            include_cache_stats: "true"
+          expect:
+            - statusCode: 200
+          capture:
+            json: "$.data.cache_hit_rate"
+            as: "cache_hit_rate"
+      - think: 1
+      - get:
+          url: "/api/analytics/metrics"
+          qs:
+            period: "monthly"
+            include_cache_stats: "false"
+          expect:
+            - statusCode: 200
+
+  # Mixed Analytics Load Test
+  - name: "Mixed Analytics Operations"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/analytics/learning/index"
+          qs:
+            period: "daily"
+            include_trends: "false"
+          expect:
+            - statusCode: 200
+      - think: 1
+      - get:
+          url: "/api/insights"
+          qs:
+            date_from: "{{ dateFormat '2024-09-01' }}"
+            date_to: "{{ dateFormat '2024-09-30' }}"
+            group_by: "day"
+          expect:
+            - statusCode: 200
+      - think: 2
+      - get:
+          url: "/api/analytics/metrics"
+          qs:
+            period: "daily"
+          expect:
+            - statusCode: 200
+
+# Environment variables for Artillery
+environments:
+  development:
+    target: 'http://127.0.0.1:8080'
+    variables:
+      tenant_id: 'default'
+
+  staging:
+    target: 'https://staging-api.alumate.test'
+    variables:
+      tenant_id: 'staging'
+
+  production:
+    target: 'https://api.alumate.com'
+    variables:
+      tenant_id: 'production'
+
+# Custom metrics and reporting
+metrics:
+  custom:
+    - name: "Response Time P50"
+      type: "histogram"
+      buckets: [100, 200, 300, 500, 1000, 2000, 5000]
+    - name: "Response Time P95"
+      type: "histogram"
+      buckets: [200, 400, 600, 1000, 2000, 5000, 10000]
+    - name: "Error Rate"
+      type: "counter"
+    - name: "Throughput"
+      type: "rate"
+
+# Reporting configuration
+reporting:
+  - module: 'artillery-plugin-metrics-by-endpoint'
+    options:
+      outputFormat: 'json'
+      metrics:
+        - 'http.response_time'
+        - 'http.status_code'
+        - 'vusers.created'
+        - 'vusers.completed'
+  - module: 'artillery-plugin-publish-metrics'
+    options:
+      format: 'json'
+      destination: './tests/reports/artillery-results.json'
+
+# Plugins
+plugins:
+  metrics-by-endpoint: {}
+  publish-metrics:
+    format: 'json'
+    destination: './tests/reports/artillery-metrics.json'
+
+# Ensure proper cleanup
+ensure:
+  - selector: 'response.statusCode'
+    value: 200
+    threshold: 95
+  - selector: 'response.time'
+    value: 1000
+    threshold: 95
+  - selector: 'vusers.failed'
+    value: 5
+    threshold: 100

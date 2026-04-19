@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Skill;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -122,7 +123,22 @@ class SkillsController extends Controller
             'updated_at' => now(),
         ]);
 
-        // TODO: Send notification to endorser
+        // Send notification to endorser
+        $notificationService = app(NotificationService::class);
+        $notificationService->create(
+            user: $endorser,
+            type: \App\Models\Notification::TYPE_SKILL_ENDORSEMENT,
+            title: 'New Endorsement Request',
+            message: "{$user->name} has requested your endorsement for {$skill->name}.",
+            data: [
+                'requester_id' => $user->id,
+                'requester_name' => $user->name,
+                'skill_name' => $skill->name,
+                'skill_id' => $skill->id,
+            ],
+            actionUrl: '/skills/endorsements',
+            actionText: 'View Request'
+        );
 
         return response()->json([
             'success' => true,

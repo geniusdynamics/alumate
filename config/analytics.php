@@ -238,4 +238,24 @@ return [
         'log_queries' => env('ANALYTICS_LOG_QUERIES', false),
         'log_performance' => env('ANALYTICS_LOG_PERFORMANCE', true),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data Archiving Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for analytics data archiving and retention policies.
+    |
+    */
+    'archiving' => [
+        'enabled' => env('ANALYTICS_ARCHIVING_ENABLED', true),
+        'compression' => env('ANALYTICS_ARCHIVE_COMPRESSION', 'gzip'),
+        'encryption' => env('ANALYTICS_ARCHIVE_ENCRYPTION', false),
+        'storage_disk' => env('ANALYTICS_ARCHIVE_DISK', 'local'),
+        'archive_path' => env('ANALYTICS_ARCHIVE_PATH', 'archives/analytics'),
+        'max_archive_size' => env('ANALYTICS_MAX_ARCHIVE_SIZE', 5 * 1024 * 1024 * 1024), // 5GB
+        'default_retention_days' => env('ANALYTICS_DEFAULT_RETENTION_DAYS', 365),
+        'auto_archive' => env('ANALYTICS_AUTO_ARCHIVE', true),
+        'archive_schedule' => env('ANALYTICS_ARCHIVE_SCHEDULE', 'daily'),
+    ],
 ];

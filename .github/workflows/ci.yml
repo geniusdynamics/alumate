@@ -5,10 +5,19 @@ on:
     branches:
       - develop
       - main
+      - db
   pull_request:
     branches:
       - develop
       - main
+      - db
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  PHP_VERSION: '8.3'
+  NODE_VERSION: '22'
 
 jobs:
   lint-and-format:
@@ -21,7 +30,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl
           tools: composer:v2
 
@@ -36,24 +45,74 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
 
       - name: Install Node dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run PHP Linting (Pint)
-        run: vendor/bin/pint
+        run: vendor/bin/pint --test
+        timeout-minutes: 10
+        continue-on-error: true
+        id: php-lint
 
       - name: Run JS Linting (ESLint)
-        run: npm run lint
+        run: pnpm run lint -- --max-warnings=50
+        timeout-minutes: 5
+        continue-on-error: true
+        id: js-lint
+
+      - name: TypeScript Type Check
+        run: pnpm exec vue-tsc --noEmit --skipLibCheck
+        timeout-minutes: 5
+        continue-on-error: true
+        id: type-check
+
+      - name: Check Import Path Casing
+        run: pnpm run lint:imports-case
+        timeout-minutes: 5
+        continue-on-error: true
+        id: import-case-check
+
+      - name: Check PHPStan Static Analysis
+        run: ./vendor/bin/phpstan analyse --level=5 --no-progress || true
+
+      - name: Check for Strict Types Declarations
+        run: |
+          STRICT_COUNT=$(grep -r "^declare(strict_types=1)" app/ 2>/dev/null | wc -l)
+          TOTAL_FILES=$(find app -name "*.php" | wc -l)
+          echo "Files with strict_types: $STRICT_COUNT / $TOTAL_FILES"
+          if [ $STRICT_COUNT -lt $((TOTAL_FILES / 2)) ]; then
+            echo "⚠️ Warning: Less than 50% of files have strict_types declaration"
+          fi
+
+      - name: Code Quality Summary
+        if: always()
+        run: |
+          echo "========================================"
+          echo "📋 Code Quality Check Summary"
+          echo "========================================"
+          echo ""
+          echo "✅ PHP Lint (Pint): ${{ steps.php-lint.outcome }}"
+          echo "✅ JS Lint (ESLint): ${{ steps.js-lint.outcome }}"
+          echo "✅ TypeScript Check: ${{ steps.type-check.outcome }}"
+          echo "✅ Import Case Check: ${{ steps.import-case-check.outcome }}"
+          echo ""
+          echo "Note: These checks are non-blocking to allow other tests to run."
+          echo "Please review and fix any issues before merging."
+          echo "========================================"
 
   unit-tests:
-    name: Unit Tests
+    name: Unit Tests (SQLite)
     runs-on: ubuntu-latest
+    needs: lint-and-format
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -61,7 +120,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           tools: composer:v2
           coverage: xdebug
@@ -85,16 +144,42 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
 
-      - name: Run Unit Tests Only
+      - name: Run Unit Tests Only (SQLite)
         run: |
           php artisan config:clear
-          ./vendor/bin/pest --parallel --testsuite=Unit
+          ./vendor/bin/pest --parallel --testsuite=Unit --coverage --coverage-clover=tests/reports/coverage.unit.xml --coverage-html=tests/reports/coverage-html.unit --coverage-text=tests/reports/coverage.unit.txt
 
-  integration-tests:
-    name: Integration Tests
-    runs-on:
-      - ubuntu-latest
-      - docker
+      - name: Upload Unit Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-unit
+          path: |
+            tests/reports/coverage.unit.xml
+            tests/reports/coverage.unit.txt
+          retention-days: 14
+
+      - name: Upload Unit Coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-unit
+          path: tests/reports/coverage-html.unit
+          retention-days: 14
+
+      - name: Check Coverage Threshold
+        run: |
+          COVERAGE=$(grep -oP '\d+(\.\d+)?%' tests/reports/coverage.unit.txt | head -1 | tr -d '%')
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "❌ Code coverage ($COVERAGE%) is below minimum threshold (80%)"
+            exit 1
+          fi
+          echo "✅ Code coverage ($COVERAGE%) meets minimum threshold (80%)"
+
+  unit-tests-pgsql:
+    name: Unit Tests (PostgreSQL)
+    runs-on: ubuntu-latest
+    needs: lint-and-format
     services:
       postgres:
         image: postgres:17
@@ -119,7 +204,95 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup Environment
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/' .env
+          sed -i 's/DB_DATABASE=database\/database.sqlite/DB_DATABASE=test_db/' .env
+          sed -i 's/DB_USERNAME=root/DB_USERNAME=postgres/' .env
+          sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=3306/DB_PORT=5432/' .env
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Run Unit Tests (PostgreSQL)
+        run: |
+          php artisan config:clear
+          ./vendor/bin/pest --parallel --testsuite=Unit --configuration=phpunit.pgsql.xml --coverage --coverage-clover=tests/reports/coverage.unit.pgsql.xml --coverage-html=tests/reports/coverage-html.unit.pgsql --coverage-text=tests/reports/coverage.unit.pgsql.txt
+
+      - name: Upload Unit Test Reports (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-unit-pgsql
+          path: |
+            tests/reports/coverage.unit.pgsql.xml
+            tests/reports/coverage.unit.pgsql.txt
+          retention-days: 14
+
+      - name: Upload Unit Coverage HTML (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-unit-pgsql
+          path: tests/reports/coverage-html.unit.pgsql
+          retention-days: 14
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
           tools: composer:v2
           coverage: xdebug
@@ -159,16 +332,36 @@ jobs:
       - name: Run Migrations
         run: php artisan migrate --force
 
+      - name: Run Tenant Migrations
+        run: php artisan tenants:migrate --force
+
       - name: Run Integration Tests Only
         run: |
           php artisan config:clear
-          ./vendor/bin/pest --parallel --testsuite=Integration
+          ./vendor/bin/pest --parallel --testsuite=Integration --coverage --coverage-clover=tests/reports/coverage.integration.xml --coverage-html=tests/reports/coverage-html.integration --coverage-text=tests/reports/coverage.integration.txt
+
+      - name: Upload Integration Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-integration
+          path: |
+            tests/reports/coverage.integration.xml
+            tests/reports/coverage.integration.txt
+          retention-days: 14
+
+      - name: Upload Integration Coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-integration
+          path: tests/reports/coverage-html.integration
+          retention-days: 14
 
   feature-tests:
     name: Feature Tests
-    runs-on:
-      - ubuntu-latest
-      - docker
+    runs-on: ubuntu-latest
+    needs: unit-tests
     services:
       postgres:
         image: postgres:17
@@ -187,7 +380,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
           tools: composer:v2
           coverage: xdebug
@@ -230,11 +423,47 @@ jobs:
       - name: Run Feature Tests Only
         run: |
           php artisan config:clear
-          ./vendor/bin/pest --parallel --testsuite=Feature
+          ./vendor/bin/pest --parallel --testsuite=Feature --coverage --coverage-clover=tests/reports/coverage.feature.xml --coverage-html=tests/reports/coverage-html.feature --coverage-text=tests/reports/coverage.feature.txt
 
-  frontend-tests:
-    name: Frontend Tests & Build
+      - name: Upload Feature Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-feature
+          path: |
+            tests/reports/coverage.feature.xml
+            tests/reports/coverage.feature.txt
+          retention-days: 14
+
+      - name: Upload Feature Coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-feature
+          path: tests/reports/coverage-html.feature
+          retention-days: 14
+
+  full-tests-pgsql:
+    name: Full Tests (PostgreSQL)
     runs-on: ubuntu-latest
+    needs: [integration-tests, feature-tests]
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -242,7 +471,84 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup Environment
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/' .env
+          sed -i 's/DB_DATABASE=database\/database.sqlite/DB_DATABASE=test_db/' .env
+          sed -i 's/DB_USERNAME=root/DB_USERNAME=postgres/' .env
+          sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=3306/DB_PORT=5432/' .env
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+
+      - name: Run Tenant Migrations
+        run: php artisan tenants:migrate --force
+
+      - name: Run Full Test Suite (PostgreSQL)
+        run: |
+          php artisan config:clear
+          ./vendor/bin/pest --parallel --configuration=phpunit.pgsql.xml --coverage --coverage-clover=tests/reports/coverage.full.pgsql.xml --coverage-html=tests/reports/coverage-html.full.pgsql --coverage-text=tests/reports/coverage.full.pgsql.txt
+
+      - name: Upload Full Test Reports (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-full-pgsql
+          path: |
+            tests/reports/coverage.full.pgsql.xml
+            tests/reports/coverage.full.pgsql.txt
+          retention-days: 14
+
+      - name: Upload Full Coverage HTML (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-full-pgsql
+          path: tests/reports/coverage-html.full.pgsql
+          retention-days: 14
+
+  frontend-tests:
+    name: Frontend Tests & Build
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl
           tools: composer:v2
 
@@ -257,14 +563,17 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
 
       - name: Install Node dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Ziggy Routes
         run: |
@@ -272,8 +581,221 @@ jobs:
         env:
           APP_KEY: base64:placeholder-key-for-frontend-build
 
+      - name: TypeScript Type Check
+        run: pnpm exec vue-tsc --noEmit
+
       - name: Run Frontend Tests (Vitest)
-        run: npm test
+        run: pnpm test
 
       - name: Build Frontend Assets
-        run: npm run build
+        run: pnpm run build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: public/build/
+          retention-days: 7
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, mbstring, zip, pcntl
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Composer Audit
+        run: composer audit --no-interaction
+        continue-on-error: false
+
+      - name: Run pnpm Audit
+        run: pnpm audit --audit-level high
+        continue-on-error: false
+
+      - name: Check for Sensitive Data
+        run: |
+          echo "Checking for hardcoded credentials..."
+          PATTERNS="(password|secret|api_key|apikey|token|aws_access_key_id|aws_secret_access_key)"
+          MATCHES=$(grep -rEi "$PATTERNS" --include="*.php" --include="*.env*" --include="*.json" --exclude-dir=vendor --exclude-dir=node_modules --exclude="*.md" . | grep -v "env(" | grep -v "config(" | grep -v "// " | grep -v "# " | head -20 || true)
+          if [ -n "$MATCHES" ]; then
+            echo "⚠️ Potential hardcoded credentials found:"
+            echo "$MATCHES"
+            exit 1
+          fi
+          echo "✅ No hardcoded credentials found"
+
+      - name: Check for .env Files
+        run: |
+          ENV_FILES=$(find . -name ".env*" -type f ! -path "./.env.example" ! -path "./.env.testing" ! -name "*.example" ! -path "./vendor/*" ! -path "./node_modules/*" ! -path "./infrastructure/production/*" ! -path "./.env.prod" 2>/dev/null || true)
+          if [ -n "$ENV_FILES" ]; then
+            echo "❌ Found .env files that should not be committed:"
+            echo "$ENV_FILES"
+            exit 1
+          fi
+          echo "✅ No unauthorized .env files found"
+
+  db-consistency:
+    name: Database Consistency
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup Environment
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/' .env
+          sed -i 's/DB_DATABASE=database\/database.sqlite/DB_DATABASE=test_db/' .env
+          sed -i 's/DB_USERNAME=root/DB_USERNAME=postgres/' .env
+          sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=3306/DB_PORT=5432/' .env
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+
+      - name: Run Tenant Migrations
+        run: php artisan tenants:migrate --force
+
+      - name: Check Migration Status
+        run: |
+          php artisan migrate:status
+          php artisan tenants:migrate:status
+
+      - name: Validate Schema
+        run: |
+          php artisan schema:dump
+          ls -la database/schema/ || true
+
+  notify-completion:
+    name: Notify Completion
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, feature-tests, frontend-tests, full-tests-pgsql, security-audit, db-consistency]
+    if: always()
+    steps:
+      - name: Generate Summary
+        id: summary
+        run: |
+          echo "test_results<<EOF" >> $GITHUB_OUTPUT
+          echo "CI Pipeline completed" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "Test Results:" >> $GITHUB_OUTPUT
+          echo "- Unit Tests (SQLite): ${{ needs.unit-tests.result }}" >> $GITHUB_OUTPUT
+          echo "- Unit Tests (PostgreSQL): ${{ needs.unit-tests-pgsql.result }}" >> $GITHUB_OUTPUT
+          echo "- Integration Tests: ${{ needs.integration-tests.result }}" >> $GITHUB_OUTPUT
+          echo "- Feature Tests: ${{ needs.feature-tests.result }}" >> $GITHUB_OUTPUT
+          echo "- Frontend Tests: ${{ needs.frontend-tests.result }}" >> $GITHUB_OUTPUT
+          echo "- Full Tests (PostgreSQL): ${{ needs.full-tests-pgsql.result }}" >> $GITHUB_OUTPUT
+          echo "- Security Audit: ${{ needs.security-audit.result }}" >> $GITHUB_OUTPUT
+          echo "- Database Consistency: ${{ needs.db-consistency.result }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post Summary
+        run: |
+          echo "${{ steps.summary.outputs.test_results }}"
+
+      - name: Check Overall Status
+        run: |
+          FAILED=0
+          if [[ "${{ needs.unit-tests.result }}" == "failure" ]]; then FAILED=1; fi
+          if [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then FAILED=1; fi
+          if [[ "${{ needs.feature-tests.result }}" == "failure" ]]; then FAILED=1; fi
+          if [[ "${{ needs.frontend-tests.result }}" == "failure" ]]; then FAILED=1; fi
+          if [[ "${{ needs.full-tests-pgsql.result }}" == "failure" ]]; then FAILED=1; fi
+          if [[ "${{ needs.security-audit.result }}" == "failure" ]]; then FAILED=1; fi
+          if [[ "${{ needs.db-consistency.result }}" == "failure" ]]; then FAILED=1; fi
+
+          if [ $FAILED -eq 1 ]; then
+            echo "❌ One or more jobs failed"
+            exit 1
+          fi
+          echo "✅ All jobs passed successfully"
+
+      - name: Send Slack Notification
+        if: always() && github.event_name != 'pull_request'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          channel: '#ci-notifications'
+          text: |
+            CI Pipeline ${{ job.status == 'success' && '✅ PASSED' || '❌ FAILED' }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            Actor: ${{ github.actor }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true

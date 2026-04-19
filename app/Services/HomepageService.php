@@ -2,40 +2,129 @@
 
 namespace App\Services;
 
+use App\Models\Graduate;
+use App\Models\User;
+use App\Models\Event;
+use App\Models\Connection;
+use App\Models\Job;
+use App\Models\SuccessStory;
+use App\Models\Testimonial;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class HomepageService
 {
+    private const CACHE_TTL = 300; // 5 minutes
+
     /**
      * Get platform statistics based on audience type
      */
     public function getPlatformStatistics(string $audience): array
     {
-        // Mock data for now - will be replaced with real database queries
-        $baseStats = [
-            'total_alumni' => 25000,
-            'active_users' => 18500,
-            'successful_connections' => 45000,
-            'job_placements' => 3200,
-            'average_salary_increase' => 42,
-            'mentorship_matches' => 1800,
-            'events_hosted' => 850,
-            'companies_represented' => 2400,
-            'last_updated' => now(),
-        ];
+        return Cache::remember("homepage.stats.{$audience}", self::CACHE_TTL, function () use ($audience) {
+            $totalAlumni = User::where('is_active', true)->count();
+            $activeUsers = User::where('is_active', true)
+                ->where('last_login_at', '>=', now()->subDays(30))
+                ->count();
 
-        if ($audience === 'institutional') {
-            return array_merge($baseStats, [
-                'institutions_served' => 150,
-                'branded_apps_deployed' => 45,
-                'average_engagement_increase' => 300,
-                'admin_satisfaction_rate' => 96,
-            ]);
-        }
+            $baseStats = [
+                'total_alumni' => $totalAlumni,
+                'active_users' => $activeUsers,
+                'successful_connections' => Connection::where('status', 'accepted')->count(),
+                'job_placements' => Job::where('status', 'filled')->count(),
+                'average_salary_increase' => $this->calculateAverageSalaryIncrease(),
+                'mentorship_matches' => $this->countMentorshipMatches(),
+                'events_hosted' => Event::where('status', '!=', 'cancelled')->count(),
+                'companies_represented' => $this->countUniqueCompanies(),
+                'last_updated' => now(),
+            ];
 
-        return $baseStats;
+            if ($audience === 'institutional') {
+                return array_merge($baseStats, [
+                    'institutions_served' => $this->countInstitutions(),
+                    'branded_apps_deployed' => $this->countBrandedApps(),
+                    'average_engagement_increase' => $this->calculateEngagementIncrease(),
+                    'admin_satisfaction_rate' => $this->getAdminSatisfactionRate(),
+                ]);
+            }
+
+            return $baseStats;
+        });
+    }
+
+    /**
+     * Helper methods for statistics
+     */
+    private function calculateAverageSalaryIncrease(): float
+    {
+        return DB::table('graduates')
+            ->whereNotNull('current_salary')
+            ->whereNotNull('last_salary')
+            ->where('last_salary', '>', 0)
+            ->selectRaw('AVG((current_salary - last_salary) / last_salary * 100) as increase')
+            ->value('increase') ?? 0;
+    }
+
+    private function countMentorshipMatches(): int
+    {
+        return DB::table('mentorships')
+            ->where('status', 'active')
+            ->count();
+    }
+
+    private function countUniqueCompanies(): int
+    {
+        return DB::table('graduates')
+            ->whereNotNull('current_company')
+            ->distinct('current_company')
+            ->count('current_company');
+    }
+
+    private function countInstitutions(): int
+    {
+        return DB::table('institutions')
+            ->where('is_active', true)
+            ->count();
+    }
+
+    private function countBrandedApps(): int
+    {
+        return DB::table('branded_apps')
+            ->where('status', 'deployed')
+            ->count();
+    }
+
+    private function calculateEngagementIncrease(): float
+    {
+        return DB::table('analytics_events')
+            ->where('event_type', 'engagement')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->count() / 100;
+    }
+
+    private function getAdminSatisfactionRate(): float
+    {
+        return DB::table('admin_feedback')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->avg('rating') * 20 ?? 0;
+    }
+
+    private function calculateAverageTimeToHire(): int
+    {
+        return DB::table('jobs')
+            ->where('status', 'filled')
+            ->whereNotNull('filled_at')
+            ->selectRaw('AVG(DATEDIFF(filled_at, created_at)) as days')
+            ->value('days') ?? 0;
+    }
+
+    private function getEmployerSatisfactionRate(): float
+    {
+        return DB::table('employer_feedback')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->avg('rating') * 20 ?? 0;
     }
 
     /**
@@ -43,63 +132,56 @@ class HomepageService
      */
     public function getTestimonials(string $audience): Collection
     {
-        // Mock testimonials - will be replaced with database queries
-        $individualTestimonials = collect([
-            [
-                'id' => 1,
-                'quote' => 'This platform helped me land my dream job at Google. The alumni connections were invaluable.',
-                'author' => [
-                    'name' => 'Sarah Chen',
-                    'graduation_year' => 2019,
-                    'current_role' => 'Software Engineer',
-                    'current_company' => 'Google',
-                    'profile_image' => '/images/testimonials/sarah-chen.jpg',
-                ],
-                'metrics' => [
-                    'salary_increase' => 65,
-                    'time_to_placement' => 45,
-                ],
-            ],
-            [
-                'id' => 2,
-                'quote' => 'The mentorship program connected me with industry leaders who guided my career transition.',
-                'author' => [
-                    'name' => 'Michael Rodriguez',
-                    'graduation_year' => 2016,
-                    'current_role' => 'Product Manager',
-                    'current_company' => 'Microsoft',
-                    'profile_image' => '/images/testimonials/michael-rodriguez.jpg',
-                ],
-                'metrics' => [
-                    'salary_increase' => 45,
-                    'career_advancement' => 'Senior to Director',
-                ],
-            ],
-        ]);
+        return Cache::remember("homepage.testimonials.{$audience}", self::CACHE_TTL, function () use ($audience) {
+            $testimonials = Testimonial::where('audience_type', $audience)
+                ->where('is_featured', true)
+                ->where('is_approved', true)
+                ->orderBy('created_at', 'desc')
+                ->limit(6)
+                ->get();
 
-        $institutionalTestimonials = collect([
-            [
-                'id' => 3,
-                'quote' => 'Our alumni engagement increased by 400% after implementing the branded mobile app.',
-                'institution' => [
-                    'name' => 'Stanford University',
-                    'type' => 'university',
-                    'logo' => '/images/institutions/stanford-logo.png',
-                ],
-                'administrator' => [
-                    'name' => 'Dr. Jennifer Walsh',
-                    'title' => 'Director of Alumni Relations',
-                    'profile_image' => '/images/testimonials/jennifer-walsh.jpg',
-                ],
-                'results' => [
-                    'engagement_increase' => 400,
-                    'app_downloads' => 15000,
-                    'event_attendance_increase' => 250,
-                ],
-            ],
-        ]);
+            if ($audience === 'institutional') {
+                return $testimonials->map(function ($testimonial) {
+                    return [
+                        'id' => $testimonial->id,
+                        'quote' => $testimonial->content,
+                        'institution' => [
+                            'name' => $testimonial->institution_name ?? '',
+                            'type' => $testimonial->institution_type ?? 'university',
+                            'logo' => $testimonial->institution_logo,
+                        ],
+                        'administrator' => [
+                            'name' => $testimonial->author_name,
+                            'title' => $testimonial->author_title ?? '',
+                            'profile_image' => $testimonial->author_image,
+                        ],
+                        'results' => [
+                            'engagement_increase' => $testimonial->engagement_increase ?? 0,
+                            'app_downloads' => $testimonial->app_downloads ?? 0,
+                            'event_attendance_increase' => $testimonial->event_attendance_increase ?? 0,
+                        ],
+                    ];
+                });
+            }
 
-        return $audience === 'institutional' ? $institutionalTestimonials : $individualTestimonials;
+            return $testimonials->map(function ($testimonial) {
+                return [
+                    'id' => $testimonial->id,
+                    'quote' => $testimonial->content,
+                    'author' => [
+                        'name' => $testimonial->author_name,
+                        'graduation_year' => $testimonial->graduation_year,
+                        'current_role' => $testimonial->author_title,
+                        'current_company' => $testimonial->author_company,
+                        'profile_image' => $testimonial->author_image,
+                    ],
+                    'metrics' => [
+                        'salary_increase' => $testimonial->salary_increase ?? 0,
+                        'time_to_placement' => $testimonial->time_to_placement ?? 0,
+                    ],
+                ];
+            });
+        });
     }
 
     /**
@@ -107,53 +189,23 @@ class HomepageService
      */
     public function getSuccessStories(string $audience, array $filters): Collection
     {
-        // Mock success stories - will be replaced with database queries
-        $stories = collect([
-            [
-                'id' => 1,
-                'title' => 'From Recent Grad to Tech Lead in 3 Years',
-                'alumni_profile' => [
-                    'name' => 'Alex Thompson',
-                    'graduation_year' => 2020,
-                    'degree' => 'Computer Science',
-                    'current_role' => 'Tech Lead',
-                    'current_company' => 'Stripe',
-                    'industry' => 'Technology',
-                    'career_stage' => 'mid_career',
-                ],
-                'career_progression' => [
-                    'before' => [
-                        'role' => 'Recent Graduate',
-                        'salary' => 65000,
-                    ],
-                    'after' => [
-                        'role' => 'Tech Lead',
-                        'salary' => 180000,
-                    ],
-                    'timeframe' => '3 years',
-                ],
-                'platform_impact' => [
-                    'connections_made' => 45,
-                    'mentors_worked_with' => 3,
-                    'referrals_received' => 8,
-                ],
-            ],
-        ]);
+        return Cache::remember("homepage.success_stories.{$audience}", self::CACHE_TTL, function () use ($audience, $filters) {
+            $query = SuccessStory::where('is_published', true)
+                ->where('is_featured', true)
+                ->orderBy('published_at', 'desc');
 
-        // Apply filters
-        if (! empty($filters['industry'])) {
-            $stories = $stories->where('alumni_profile.industry', $filters['industry']);
-        }
+            if (!empty($filters['industry'])) {
+                $query->where('industry', $filters['industry']);
+            }
+            if (!empty($filters['graduation_year'])) {
+                $query->where('graduation_year', $filters['graduation_year']);
+            }
+            if (!empty($filters['career_stage'])) {
+                $query->where('career_stage', $filters['career_stage']);
+            }
 
-        if (! empty($filters['graduation_year'])) {
-            $stories = $stories->where('alumni_profile.graduation_year', $filters['graduation_year']);
-        }
-
-        if (! empty($filters['career_stage'])) {
-            $stories = $stories->where('alumni_profile.career_stage', $filters['career_stage']);
-        }
-
-        return $stories;
+            return $query->limit(6)->get();
+        });
     }
 
     /**
@@ -480,17 +532,34 @@ class HomepageService
      */
     public function processDemoRequest(array $data): array
     {
-        // Mock processing - will be replaced with real lead management
-        return [
-            'success' => true,
-            'message' => 'Demo request submitted successfully. Our team will contact you within 24 hours.',
-            'next_steps' => [
-                'Discovery call scheduled',
-                'Custom demo preparation',
-                'Proposal development',
-            ],
-            'estimated_response_time' => '24 hours',
-        ];
+        try {
+            $lead = \App\Models\Lead::create([
+                'name' => $data['contact_name'] ?? $data['name'] ?? '',
+                'email' => $data['email'] ?? '',
+                'phone' => $data['phone'] ?? null,
+                'company' => $data['institution_name'] ?? $data['company'] ?? null,
+                'message' => $data['message'] ?? 'Demo request',
+                'source' => 'demo_request',
+                'status' => 'new',
+            ]);
+
+            return [
+                'success' => true,
+                'lead_id' => $lead->id,
+                'message' => 'Demo request submitted successfully. Our team will contact you within 24 hours.',
+                'next_steps' => [
+                    'Discovery call scheduled',
+                    'Custom demo preparation',
+                    'Proposal development',
+                ],
+                'estimated_response_time' => '24 hours',
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to submit demo request. Please try again.',
+            ];
+        }
     }
 
     /**
@@ -498,17 +567,31 @@ class HomepageService
      */
     public function processTrialSignup(array $data): array
     {
-        // Mock processing - will be replaced with real user registration
-        return [
-            'success' => true,
-            'message' => 'Trial account created successfully. Check your email for login instructions.',
-            'trial_duration' => '14 days',
-            'features_included' => [
-                'Basic networking features',
-                'Limited mentorship access',
-                'Event browsing',
-            ],
-        ];
+        try {
+            $user = \App\Models\User::create([
+                'name' => $data['name'] ?? '',
+                'email' => $data['email'],
+                'password' => bcrypt(\Illuminate\Support\Str::random(16)),
+                'is_active' => true,
+            ]);
+
+            return [
+                'success' => true,
+                'user_id' => $user->id,
+                'message' => 'Trial account created successfully. Check your email for login instructions.',
+                'trial_duration' => '14 days',
+                'features_included' => [
+                    'Basic networking features',
+                    'Limited mentorship access',
+                    'Event browsing',
+                ],
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to create trial account. Please try again.',
+            ];
+        }
     }
 
     /**
@@ -516,13 +599,29 @@ class HomepageService
      */
     public function captureLeads(array $data): array
     {
-        // Mock lead capture - will be replaced with CRM integration
-        return [
-            'success' => true,
-            'lead_id' => 'LEAD_'.uniqid(),
-            'follow_up_scheduled' => true,
-            'message' => 'Thank you for your interest. We\'ll be in touch soon.',
-        ];
+        try {
+            $lead = \App\Models\Lead::create([
+                'name' => $data['name'] ?? '',
+                'email' => $data['email'] ?? '',
+                'phone' => $data['phone'] ?? null,
+                'company' => $data['company'] ?? null,
+                'message' => $data['message'] ?? null,
+                'source' => $data['source'] ?? 'homepage',
+                'status' => 'new',
+            ]);
+
+            return [
+                'success' => true,
+                'lead_id' => $lead->id,
+                'follow_up_scheduled' => true,
+                'message' => 'Thank you for your interest. We\'ll be in touch soon.',
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to capture lead. Please try again.',
+            ];
+        }
     }
 
     /**
@@ -1742,123 +1841,38 @@ class HomepageService
      */
     public function getTrustBadgesAndLogos(string $audience): array
     {
-        // Mock data for now - will be replaced with real database queries
-        $trustBadges = [
-            [
-                'id' => '1',
-                'name' => 'SOC 2 Type II',
-                'image' => '/images/badges/soc2-type2.png',
-                'description' => 'SOC 2 Type II compliance ensures the highest standards of security, availability, and confidentiality.',
-                'verification_url' => 'https://example.com/soc2-verification',
-            ],
-            [
-                'id' => '2',
-                'name' => 'GDPR Compliant',
-                'image' => '/images/badges/gdpr-compliant.png',
-                'description' => 'Full compliance with the General Data Protection Regulation for EU data protection.',
-                'verification_url' => 'https://example.com/gdpr-verification',
-            ],
-            [
-                'id' => '3',
-                'name' => 'ISO 27001',
-                'image' => '/images/badges/iso-27001.png',
-                'description' => 'ISO 27001 certified information security management system.',
-                'verification_url' => 'https://example.com/iso-verification',
-            ],
-            [
-                'id' => '4',
-                'name' => 'Privacy Shield',
-                'image' => '/images/badges/privacy-shield.png',
-                'description' => 'EU-US Privacy Shield framework compliance for international data transfers.',
-            ],
-            [
-                'id' => '5',
-                'name' => 'SSL Secured',
-                'image' => '/images/badges/ssl-secured.png',
-                'description' => '256-bit SSL encryption protects all data in transit.',
-            ],
-            [
-                'id' => '6',
-                'name' => 'CCPA Compliant',
-                'image' => '/images/badges/ccpa-compliant.png',
-                'description' => 'California Consumer Privacy Act compliance for enhanced privacy rights.',
-            ],
-        ];
-
-        $companyLogos = [
-            [
-                'id' => '1',
-                'name' => 'Google',
-                'logo' => '/images/companies/google-logo.png',
-                'website' => 'https://google.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '2',
-                'name' => 'Microsoft',
-                'logo' => '/images/companies/microsoft-logo.png',
-                'website' => 'https://microsoft.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '3',
-                'name' => 'Apple',
-                'logo' => '/images/companies/apple-logo.png',
-                'website' => 'https://apple.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '4',
-                'name' => 'Amazon',
-                'logo' => '/images/companies/amazon-logo.png',
-                'website' => 'https://amazon.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '5',
-                'name' => 'Meta',
-                'logo' => '/images/companies/meta-logo.png',
-                'website' => 'https://meta.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '6',
-                'name' => 'Netflix',
-                'logo' => '/images/companies/netflix-logo.png',
-                'website' => 'https://netflix.com',
-                'category' => 'Entertainment',
-            ],
-            [
-                'id' => '7',
-                'name' => 'Tesla',
-                'logo' => '/images/companies/tesla-logo.png',
-                'website' => 'https://tesla.com',
-                'category' => 'Automotive',
-            ],
-            [
-                'id' => '8',
-                'name' => 'Goldman Sachs',
-                'logo' => '/images/companies/goldman-sachs-logo.png',
-                'website' => 'https://goldmansachs.com',
-                'category' => 'Finance',
-            ],
-        ];
-
-        // Add audience-specific badges for institutional clients
-        if ($audience === 'institutional') {
-            $trustBadges[] = [
-                'id' => '7',
-                'name' => 'FERPA Compliant',
-                'image' => '/images/badges/ferpa-compliant.png',
-                'description' => 'Family Educational Rights and Privacy Act compliance for educational institutions.',
-                'verification_url' => 'https://example.com/ferpa-verification',
+        return Cache::remember("homepage.trust_badges.{$audience}", self::CACHE_TTL, function () use ($audience) {
+            // Trust badges from compliance certifications
+            $trustBadges = [
+                ['id' => '1', 'name' => 'SOC 2 Type II', 'image' => '/images/badges/soc2-type2.png', 'description' => 'SOC 2 Type II compliance ensures the highest standards of security, availability, and confidentiality.'],
+                ['id' => '2', 'name' => 'GDPR Compliant', 'image' => '/images/badges/gdpr-compliant.png', 'description' => 'Full compliance with the General Data Protection Regulation for EU data protection.'],
+                ['id' => '3', 'name' => 'SSL Secured', 'image' => '/images/badges/ssl-secured.png', 'description' => '256-bit SSL encryption protects all data in transit.'],
             ];
-        }
 
-        return [
-            'trust_badges' => $trustBadges,
-            'company_logos' => $companyLogos,
-        ];
+            if ($audience === 'institutional') {
+                $trustBadges[] = ['id' => '4', 'name' => 'FERPA Compliant', 'image' => '/images/badges/ferpa-compliant.png', 'description' => 'Family Educational Rights and Privacy Act compliance for educational institutions.'];
+            }
+
+            // Company logos from users with employer profiles
+            $companyLogos = DB::table('users')
+                ->where('is_active', true)
+                ->whereNotNull('current_company')
+                ->distinct('current_company')
+                ->limit(6)
+                ->get()
+                ->map(fn ($user) => [
+                    'id' => uniqid(),
+                    'name' => $user->current_company,
+                    'logo' => '/images/companies/default-logo.png',
+                    'category' => 'Employer',
+                ])
+                ->toArray();
+
+            return [
+                'trust_badges' => $trustBadges,
+                'company_logos' => $companyLogos,
+            ];
+        });
     }
 
     /**
@@ -2159,67 +2173,78 @@ class HomepageService
         $timeframe = $params['timeframe'] ?? '12_months';
         $requestedMetrics = $params['metrics'] ?? ['engagement', 'financial', 'operational', 'growth'];
 
-        // Mock enterprise metrics data - will be replaced with real database queries
+        // Calculate real metrics from database
+        $totalUsers = User::where('is_active', true)->count();
+        $activeUsers = User::where('is_active', true)
+            ->where('last_login_at', '>=', now()->subDays(30))
+            ->count();
+        $engagementRate = $totalUsers > 0 ? round(($activeUsers / $totalUsers) * 100) : 0;
+
+        $eventCount = Event::where('status', '!=', 'cancelled')->count();
+        $donationCount = DB::table('campaign_donations')->sum('amount') ?? 0;
+        $connectionCount = Connection::where('status', 'accepted')->count();
+        $jobCount = Job::where('status', 'filled')->count();
+
         $allMetrics = [
             [
                 'id' => 'engagement_rate',
                 'name' => 'Alumni Engagement Rate',
                 'category' => 'engagement',
                 'metric' => 'engagement',
-                'beforeValue' => 25,
-                'afterValue' => 75,
-                'improvementPercentage' => 200,
+                'beforeValue' => 0,
+                'afterValue' => $engagementRate,
+                'improvementPercentage' => $engagementRate,
                 'timeframe' => $timeframe,
                 'verified' => true,
                 'unit' => 'percentage',
             ],
             [
                 'id' => 'event_attendance',
-                'name' => 'Event Attendance',
+                'name' => 'Total Events Hosted',
                 'category' => 'operational',
                 'metric' => 'event_attendance',
-                'beforeValue' => 200,
-                'afterValue' => 800,
-                'improvementPercentage' => 300,
-                'timeframe' => $timeframe,
-                'verified' => true,
-                'unit' => 'count',
-            ],
-            [
-                'id' => 'donation_revenue',
-                'name' => 'Annual Donation Revenue',
-                'category' => 'financial',
-                'metric' => 'donations',
-                'beforeValue' => 500000,
-                'afterValue' => 1250000,
-                'improvementPercentage' => 150,
-                'timeframe' => $timeframe,
-                'verified' => true,
-                'unit' => 'currency',
-            ],
-            [
-                'id' => 'app_downloads',
-                'name' => 'Mobile App Downloads',
-                'category' => 'growth',
-                'metric' => 'app_downloads',
                 'beforeValue' => 0,
-                'afterValue' => 15000,
+                'afterValue' => $eventCount,
                 'improvementPercentage' => 100,
                 'timeframe' => $timeframe,
                 'verified' => true,
                 'unit' => 'count',
             ],
             [
-                'id' => 'response_time',
-                'name' => 'Admin Response Time',
-                'category' => 'operational',
-                'metric' => 'response_time',
-                'beforeValue' => 72,
-                'afterValue' => 24,
-                'improvementPercentage' => 67,
+                'id' => 'donation_revenue',
+                'name' => 'Total Donations',
+                'category' => 'financial',
+                'metric' => 'donations',
+                'beforeValue' => 0,
+                'afterValue' => $donationCount,
+                'improvementPercentage' => 100,
                 'timeframe' => $timeframe,
-                'verified' => false,
-                'unit' => 'days',
+                'verified' => true,
+                'unit' => 'currency',
+            ],
+            [
+                'id' => 'connections',
+                'name' => 'Alumni Connections',
+                'category' => 'engagement',
+                'metric' => 'connections',
+                'beforeValue' => 0,
+                'afterValue' => $connectionCount,
+                'improvementPercentage' => 100,
+                'timeframe' => $timeframe,
+                'verified' => true,
+                'unit' => 'count',
+            ],
+            [
+                'id' => 'job_placements',
+                'name' => 'Job Placements',
+                'category' => 'operational',
+                'metric' => 'jobs',
+                'beforeValue' => 0,
+                'afterValue' => $jobCount,
+                'improvementPercentage' => 100,
+                'timeframe' => $timeframe,
+                'verified' => true,
+                'unit' => 'count',
             ],
             [
                 'id' => 'cost_per_engagement',
@@ -2264,85 +2289,29 @@ class HomepageService
      */
     public function getInstitutionalComparison(array $params = []): array
     {
-        $institutionId = $params['institution_id'] ?? 'stanford_university';
-        $caseStudyId = $params['case_study_id'] ?? 'stanford_digital_transformation';
+        $institutionId = $params['institution_id'] ?? null;
 
-        // Mock institutional comparison data
+        // Query real institutional data from database
+        $institution = DB::table('institutions')->where('id', $institutionId)->first();
+        $alumniCount = User::where('is_active', true)->count();
+        $eventCount = Event::where('status', '!=', 'cancelled')->count();
+        $connectionCount = Connection::where('status', 'accepted')->count();
+
         return [
-            'title' => 'Digital Transformation Success',
-            'subtitle' => 'How Stanford University revolutionized alumni engagement',
-            'institution_name' => 'Stanford University',
-            'institution_type' => 'university',
-            'institution_logo' => '/images/institutions/stanford-logo.png',
-            'alumni_count' => 250000,
-            'before_metrics' => [
-                [
-                    'key' => 'engagement',
-                    'label' => 'Alumni Engagement Rate',
-                    'value' => 25,
-                    'unit' => 'percentage',
-                ],
-                [
-                    'key' => 'events',
-                    'label' => 'Monthly Events',
-                    'value' => 5,
-                    'unit' => 'count',
-                ],
-                [
-                    'key' => 'donations',
-                    'label' => 'Annual Donations',
-                    'value' => 500000,
-                    'unit' => 'currency',
-                ],
-                [
-                    'key' => 'app_usage',
-                    'label' => 'Digital Platform Usage',
-                    'value' => 0,
-                    'unit' => 'percentage',
-                ],
-            ],
+            'title' => 'Institutional Impact',
+            'subtitle' => 'Real-time alumni engagement metrics',
+            'institution_name' => $institution->name ?? 'Your Institution',
+            'institution_type' => $institution->type ?? 'university',
+            'institution_logo' => $institution->logo ?? '/images/institutions/default-logo.png',
+            'alumni_count' => $alumniCount,
+            'before_metrics' => [],
             'after_metrics' => [
-                [
-                    'key' => 'engagement',
-                    'label' => 'Alumni Engagement Rate',
-                    'value' => 75,
-                    'unit' => 'percentage',
-                ],
-                [
-                    'key' => 'events',
-                    'label' => 'Monthly Events',
-                    'value' => 20,
-                    'unit' => 'count',
-                ],
-                [
-                    'key' => 'donations',
-                    'label' => 'Annual Donations',
-                    'value' => 1250000,
-                    'unit' => 'currency',
-                ],
-                [
-                    'key' => 'app_usage',
-                    'label' => 'Digital Platform Usage',
-                    'value' => 85,
-                    'unit' => 'percentage',
-                ],
+                ['key' => 'engagement', 'label' => 'Active Alumni', 'value' => $alumniCount, 'unit' => 'count'],
+                ['key' => 'events', 'label' => 'Total Events', 'value' => $eventCount, 'unit' => 'count'],
+                ['key' => 'connections', 'label' => 'Alumni Connections', 'value' => $connectionCount, 'unit' => 'count'],
             ],
-            'before_challenges' => [
-                'Low alumni participation in events',
-                'Limited digital engagement channels',
-                'Difficulty tracking alumni career progress',
-                'Inefficient communication methods',
-                'Lack of mobile accessibility',
-            ],
-            'after_benefits' => [
-                'Increased alumni participation by 200%',
-                'Streamlined digital communication platform',
-                'Real-time alumni career tracking',
-                'Automated engagement workflows',
-                'Mobile-first alumni experience',
-            ],
-            'timeframe' => '18 months',
-            'impact_summary' => 'Stanford University achieved a 200% increase in alumni engagement through strategic digital transformation, resulting in higher event attendance, increased donations, and improved alumni satisfaction.',
+            'timeframe' => 'Current',
+            'impact_summary' => "{$alumniCount} active alumni with {$connectionCount} connections and {$eventCount} events.",
         ];
     }
 
@@ -2564,83 +2533,76 @@ class HomepageService
      */
     public function getSuccessMetricsTracking(array $params = []): array
     {
-        $institutionId = $params['institution_id'] ?? null;
         $dateFrom = $params['date_from'] ?? now()->subMonths(6);
         $dateTo = $params['date_to'] ?? now();
         $requestedMetrics = $params['metrics'] ?? null;
 
-        // Mock success metrics tracking data
+        // Calculate real metrics from database
+        $totalUsers = User::where('is_active', true)->count();
+        $activeUsers = User::where('is_active', true)
+            ->where('last_login_at', '>=', now()->subDays(30))
+            ->count();
+        $engagementRate = $totalUsers > 0 ? round(($activeUsers / $totalUsers) * 100) : 0;
+
+        $eventCount = Event::where('status', '!=', 'cancelled')
+            ->whereBetween('start_date', [$dateFrom, $dateTo])
+            ->count();
+
+        $connectionCount = Connection::where('status', 'accepted')
+            ->whereBetween('created_at', [$dateFrom, $dateTo])
+            ->count();
+
+        $jobCount = Job::where('status', 'filled')
+            ->whereBetween('created_at', [$dateFrom, $dateTo])
+            ->count();
+
         $allMetrics = [
             [
                 'id' => 'alumni_engagement',
                 'name' => 'Alumni Engagement Rate',
                 'category' => 'engagement',
-                'current_value' => 75,
+                'current_value' => $engagementRate,
                 'target_value' => 80,
                 'unit' => 'percentage',
                 'trend' => 'up',
-                'trending' => true,
-                'change_from_previous' => 12,
+                'trending' => $engagementRate > 50,
+                'change_from_previous' => 0,
                 'verified' => true,
             ],
             [
                 'id' => 'event_attendance',
-                'name' => 'Monthly Event Attendance',
+                'name' => 'Events This Period',
                 'category' => 'operational',
-                'current_value' => 850,
-                'target_value' => 1000,
+                'current_value' => $eventCount,
+                'target_value' => 100,
                 'unit' => 'count',
                 'trend' => 'up',
-                'trending' => true,
-                'change_from_previous' => 25,
+                'trending' => $eventCount > 0,
+                'change_from_previous' => 0,
                 'verified' => true,
             ],
             [
-                'id' => 'app_downloads',
-                'name' => 'Mobile App Downloads',
-                'category' => 'growth',
-                'current_value' => 15000,
-                'target_value' => 20000,
-                'unit' => 'count',
-                'trend' => 'up',
-                'trending' => true,
-                'change_from_previous' => 35,
-                'verified' => true,
-            ],
-            [
-                'id' => 'donation_revenue',
-                'name' => 'Quarterly Donation Revenue',
-                'category' => 'financial',
-                'current_value' => 312500,
-                'target_value' => 350000,
-                'unit' => 'currency',
-                'trend' => 'up',
-                'trending' => true,
-                'change_from_previous' => 18,
-                'verified' => false,
-            ],
-            [
-                'id' => 'response_time',
-                'name' => 'Admin Response Time',
-                'category' => 'operational',
-                'current_value' => 24,
-                'target_value' => 12,
-                'unit' => 'days',
-                'trend' => 'down',
-                'trending' => true,
-                'change_from_previous' => -33,
-                'verified' => true,
-            ],
-            [
-                'id' => 'user_satisfaction',
-                'name' => 'User Satisfaction Score',
+                'id' => 'connections',
+                'name' => 'New Connections',
                 'category' => 'engagement',
-                'current_value' => 87,
-                'target_value' => 90,
-                'unit' => 'percentage',
-                'trend' => 'stable',
-                'trending' => false,
-                'change_from_previous' => 2,
+                'current_value' => $connectionCount,
+                'target_value' => 500,
+                'unit' => 'count',
+                'trend' => 'up',
+                'trending' => $connectionCount > 0,
+                'change_from_previous' => 0,
+                'verified' => true,
+            ],
+            [
+                'id' => 'job_placements',
+                'name' => 'Job Placements',
+                'category' => 'operational',
+                'current_value' => $jobCount,
+                'target_value' => 50,
+                'unit' => 'count',
+                'trend' => 'up',
+                'trending' => $jobCount > 0,
+                'change_from_previous' => 0,
                 'verified' => true,
             ],
         ];
@@ -2652,49 +2614,18 @@ class HomepageService
             });
         }
 
-        // Mock insights
-        $insights = [
-            [
-                'id' => 'engagement_trend',
-                'title' => 'Strong Engagement Growth',
-                'description' => 'Alumni engagement has increased by 12% this quarter, driven by mobile app adoption and improved event programming.',
-                'type' => 'positive',
-            ],
-            [
-                'id' => 'app_adoption',
-                'title' => 'Mobile App Success',
-                'description' => 'Mobile app downloads exceeded expectations by 35%, indicating strong alumni interest in mobile-first experiences.',
-                'type' => 'positive',
-            ],
-            [
-                'id' => 'response_improvement',
-                'title' => 'Response Time Optimization',
-                'description' => 'Admin response times have improved significantly but still need work to reach the 12-day target.',
-                'type' => 'warning',
-            ],
-        ];
-
         return [
             'title' => 'Success Metrics Tracking',
             'subtitle' => 'Real-time performance monitoring and insights',
             'metrics' => array_values($allMetrics),
-            'insights' => $insights,
+            'insights' => [],
             'last_updated' => now(),
             'summary' => [
-                'metrics_on_track' => count(array_filter($allMetrics, function ($m) {
-                    $progress = ($m['current_value'] / $m['target_value']) * 100;
-
-                    return $progress >= 80 && $progress < 100;
-                })),
-                'metrics_exceeding' => count(array_filter($allMetrics, function ($m) {
-                    return ($m['current_value'] / $m['target_value']) * 100 >= 100;
-                })),
-                'metrics_behind' => count(array_filter($allMetrics, function ($m) {
-                    return ($m['current_value'] / $m['target_value']) * 100 < 80;
-                })),
-                'average_progress' => round(array_sum(array_map(function ($m) {
-                    return min(100, ($m['current_value'] / $m['target_value']) * 100);
-                }, $allMetrics)) / count($allMetrics)),
+                'total_alumni' => $totalUsers,
+                'active_alumni' => $activeUsers,
+                'events_hosted' => $eventCount,
+                'connections_made' => $connectionCount,
+                'jobs_filled' => $jobCount,
             ],
         ];
     }

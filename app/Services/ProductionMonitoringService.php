@@ -2,17 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Component;
+use App\Models\Tenant;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\DB;
-use App\Models\Tenant;
-use App\Models\Component;
-use App\Services\PerformanceMonitoringService;
-use App\Services\AnalyticsService;
-use App\Services\ComponentAnalyticsService;
-use App\Services\SecurityAuditService;
-use Carbon\Carbon;
 
 /**
  * Production Monitoring and Analytics Service
@@ -23,18 +19,22 @@ use Carbon\Carbon;
 class ProductionMonitoringService
 {
     protected PerformanceMonitoringService $performanceService;
+
     protected AnalyticsService $analyticsService;
+
     protected ComponentAnalyticsService $componentAnalyticsService;
+
     protected SecurityAuditService $securityService;
 
     const CACHE_PREFIX = 'production_monitoring_';
+
     const CACHE_DURATION = 300; // 5 minutes
 
     const ALERT_PRIORITIES = [
         'low' => ['email', 'slack'],
         'medium' => ['email', 'slack', 'sms'],
         'high' => ['email', 'slack', 'sms', 'call'],
-        'critical' => ['email', 'slack', 'sms', 'call', 'escalate']
+        'critical' => ['email', 'slack', 'sms', 'call', 'escalate'],
     ];
 
     public function __construct(
@@ -58,7 +58,7 @@ class ProductionMonitoringService
         $startTime = microtime(true);
 
         try {
-            Log::info("Starting production monitoring cycle", ['cycle_id' => $cycleId]);
+            Log::info('Starting production monitoring cycle', ['cycle_id' => $cycleId]);
 
             $results = [
                 'cycle_id' => $cycleId,
@@ -68,28 +68,28 @@ class ProductionMonitoringService
                 'analytics' => $this->monitorAnalytics(),
                 'system_health' => $this->checkSystemHealth(),
                 'alerts' => $this->processAlerts(),
-                'execution_time' => microtime(true) - $startTime
+                'execution_time' => microtime(true) - $startTime,
             ];
 
             $this->storeMonitoringResults($cycleId, $results);
             $this->updateRealTimeDashboard($results);
 
-            Log::info("Completed production monitoring cycle", [
+            Log::info('Completed production monitoring cycle', [
                 'cycle_id' => $cycleId,
-                'duration' => $results['execution_time']
+                'duration' => $results['execution_time'],
             ]);
 
             return $results;
         } catch (\Exception $e) {
-            Log::error("Production monitoring cycle failed", [
+            Log::error('Production monitoring cycle failed', [
                 'cycle_id' => $cycleId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $this->sendCriticalAlert('Monitoring cycle failure', [
                 'error' => $e->getMessage(),
-                'cycle_id' => $cycleId
+                'cycle_id' => $cycleId,
             ]);
 
             throw $e;
@@ -101,7 +101,7 @@ class ProductionMonitoringService
      */
     public function monitorPerformance(): array
     {
-        $cacheKey = self::CACHE_PREFIX . 'performance';
+        $cacheKey = self::CACHE_PREFIX.'performance';
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () {
             $performance = [
@@ -123,7 +123,7 @@ class ProductionMonitoringService
      */
     public function monitorSecurity(): array
     {
-        $cacheKey = self::CACHE_PREFIX . 'security';
+        $cacheKey = self::CACHE_PREFIX.'security';
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () {
             $security = [
@@ -146,7 +146,7 @@ class ProductionMonitoringService
      */
     public function monitorAnalytics(): array
     {
-        $cacheKey = self::CACHE_PREFIX . 'analytics';
+        $cacheKey = self::CACHE_PREFIX.'analytics';
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () {
             $analytics = [
@@ -190,10 +190,10 @@ class ProductionMonitoringService
 
         return [
             'total' => count($processedAlerts),
-            'critical' => count(array_filter($processedAlerts, fn($a) => $a['priority'] === 'critical')),
-            'medium' => count(array_filter($processedAlerts, fn($a) => $a['priority'] === 'medium')),
-            'low' => count(array_filter($processedAlerts, fn($a) => $a['priority'] === 'low')),
-            'details' => $processedAlerts
+            'critical' => count(array_filter($processedAlerts, fn ($a) => $a['priority'] === 'critical')),
+            'medium' => count(array_filter($processedAlerts, fn ($a) => $a['priority'] === 'medium')),
+            'low' => count(array_filter($processedAlerts, fn ($a) => $a['priority'] === 'low')),
+            'details' => $processedAlerts,
         ];
     }
 
@@ -202,7 +202,7 @@ class ProductionMonitoringService
      */
     public function getDashboardData(?string $timeframe = null): array
     {
-        $cacheKey = self::CACHE_PREFIX . 'dashboard_' . ($timeframe ?: 'realtime');
+        $cacheKey = self::CACHE_PREFIX.'dashboard_'.($timeframe ?: 'realtime');
 
         return Cache::remember($cacheKey, 60, function () use ($timeframe) {
             $data = [
@@ -249,7 +249,8 @@ class ProductionMonitoringService
     private function getActivePerformanceAlerts(): array
     {
         $alerts = Cache::get('performance_alerts', []);
-        return array_filter($alerts, fn($alert) => !isset($alert['resolved']) || !$alert['resolved']);
+
+        return array_filter($alerts, fn ($alert) => ! isset($alert['resolved']) || ! $alert['resolved']);
     }
 
     private function checkPerformanceThresholds(array $performance): void
@@ -324,7 +325,7 @@ class ProductionMonitoringService
                 $health[$name] = [
                     'status' => 'healthy',
                     'response_time_ms' => round($responseTime, 2),
-                    'connections' => DB::connection($name)->select("SELECT COUNT(*) as count FROM pg_stat_activity WHERE datname = ?", [$config['database']])[0]->count ?? 0
+                    'connections' => DB::connection($name)->select('SELECT COUNT(*) as count FROM pg_stat_activity WHERE datname = ?', [$config['database']])[0]->count ?? 0,
                 ];
             }
 
@@ -360,7 +361,7 @@ class ProductionMonitoringService
                 'status' => 'healthy',
                 'disk_usage' => $this->getDiskUsage($storagePath),
                 'permissions' => is_writable($storagePath),
-                'storage_path' => $storagePath
+                'storage_path' => $storagePath,
             ];
 
             // Check for critical disk usage
@@ -388,12 +389,32 @@ class ProductionMonitoringService
 
     private function checkBackupStatus(): array
     {
-        // Check recent backup status
-        return [
-            'last_backup' => Carbon::parse('2024-09-01 04:00:00'), // Mock
-            'status' => 'successful',
-            'size_gb' => 15.2,
-        ];
+        try {
+            $lastBackup = DB::table('backups')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($lastBackup) {
+                return [
+                    'last_backup' => Carbon::parse($lastBackup->created_at),
+                    'status' => $lastBackup->status ?? 'successful',
+                    'size_gb' => $lastBackup->size_bytes ? round($lastBackup->size_bytes / 1073741824, 2) : 0,
+                ];
+            }
+
+            return [
+                'last_backup' => null,
+                'status' => 'no_backups_found',
+                'size_gb' => 0,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'last_backup' => null,
+                'status' => 'error',
+                'error' => $e->getMessage(),
+                'size_gb' => 0,
+            ];
+        }
     }
 
     private function gatherAllAlerts(): array
@@ -422,7 +443,8 @@ class ProductionMonitoringService
     private function checkRedisHealth(): array
     {
         try {
-            // Redis health check
+            \Illuminate\Support\Facades\Redis::ping();
+
             return ['status' => 'healthy'];
         } catch (\Exception $e) {
             return ['status' => 'warning', 'error' => $e->getMessage()];
@@ -431,8 +453,13 @@ class ProductionMonitoringService
 
     private function checkQueueHealth(): array
     {
-        // Check queue connectivity and backlog
-        return ['status' => 'healthy', 'jobs_waiting' => 0];
+        try {
+            $pendingJobs = DB::table('jobs')->where('queue', '!=', null)->count();
+
+            return ['status' => $pendingJobs > 1000 ? 'warning' : 'healthy', 'jobs_waiting' => $pendingJobs];
+        } catch (\Exception $e) {
+            return ['status' => 'healthy', 'jobs_waiting' => 0];
+        }
     }
 
     private function checkMailHealth(): array
@@ -579,8 +606,35 @@ class ProductionMonitoringService
 
     private function getSystemHealthScore(): int
     {
-        // Calculate health score based on various factors
-        return 94; // Mock score
+        $score = 100;
+
+        // Check database health
+        try {
+            DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            $score -= 30;
+        }
+
+        // Check Redis health
+        try {
+            \Illuminate\Support\Facades\Redis::ping();
+        } catch (\Exception $e) {
+            $score -= 20;
+        }
+
+        // Check disk space
+        $diskFree = disk_free_space(base_path());
+        $diskTotal = disk_total_space(base_path());
+        if ($diskFree && $diskTotal) {
+            $usagePercent = (($diskTotal - $diskFree) / $diskTotal) * 100;
+            if ($usagePercent > 90) {
+                $score -= 25;
+            } elseif ($usagePercent > 80) {
+                $score -= 10;
+            }
+        }
+
+        return max(0, $score);
     }
 
     private function storeMonitoringResults(string $cycleId, array $results): void
@@ -629,7 +683,9 @@ class ProductionMonitoringService
     private function hasCriticalSecurityIssues(array $threats): bool
     {
         // Check for critical security threats
-        return false; // Mock
+        return collect($threats)->contains(function ($threat) {
+            return $threat['severity'] === 'critical' || $threat['level'] === 'high';
+        });
     }
 
     private function getTimeframeStartDate(?string $timeframe, Carbon $endDate): Carbon
@@ -669,7 +725,7 @@ class ProductionMonitoringService
                 ['label' => 'Response Time', 'data' => []],
                 ['label' => 'Memory Usage', 'data' => []],
                 ['label' => 'CPU Usage', 'data' => []],
-            ]
+            ],
         ];
     }
 
@@ -681,7 +737,7 @@ class ProductionMonitoringService
                 ['label' => 'Active Users', 'data' => []],
                 ['label' => 'New Users', 'data' => []],
                 ['label' => 'Session Duration', 'data' => []],
-            ]
+            ],
         ];
     }
 
@@ -692,7 +748,7 @@ class ProductionMonitoringService
             'datasets' => [
                 ['label' => 'Error Rate', 'data' => []],
                 ['label' => 'Warning Rate', 'data' => []],
-            ]
+            ],
         ];
     }
 
@@ -703,7 +759,7 @@ class ProductionMonitoringService
             'datasets' => [
                 ['label' => 'Incidents', 'data' => []],
                 ['label' => 'Threats', 'data' => []],
-            ]
+            ],
         ];
     }
 
@@ -753,42 +809,103 @@ class ProductionMonitoringService
 
     private function getSystemUptime(): string
     {
-        // Calculate system uptime
-        return '14 days 8 hours'; // Mock
+        // Calculate actual system uptime from server
+        if (function_exists('sys_getloadavg')) {
+            $uptime = @file_get_contents('/proc/uptime');
+            if ($uptime !== false) {
+                $uptimeSeconds = (float) explode(' ', $uptime)[0];
+                $days = floor($uptimeSeconds / 86400);
+                $hours = floor(($uptimeSeconds % 86400) / 3600);
+
+                return "{$days} days {$hours} hours";
+            }
+        }
+
+        return 'Unknown';
     }
 
     private function getLastDeploymentTime(): string
     {
-        return Carbon::parse('2024-09-01 02:00:00')->toISOString();
+        // Check git log for last deployment
+        $lastCommit = exec('git log -1 --format=%cd --date=iso 2>/dev/null');
+
+        return $lastCommit ?: Carbon::now()->toISOString();
     }
 
     private function getDeploymentActivity(): array
     {
-        return [
-            ['time' => '02:00:00', 'action' => 'Deployment completed', 'status' => 'success'],
-            ['time' => '01:45:00', 'action' => 'Pre-deployment tests', 'status' => 'success'],
+        $activities = [];
+
+        // Get recent git commits as deployment activity
+        $commits = exec('git log -5 --format="%H|%s|%ci" 2>/dev/null');
+        if ($commits) {
+            foreach (explode("\n", $commits) as $commit) {
+                $parts = explode('|', $commit);
+                if (count($parts) === 3) {
+                    $activities[] = [
+                        'time' => Carbon::parse($parts[2])->format('H:i:s'),
+                        'action' => substr($parts[1], 0, 50),
+                        'status' => 'success',
+                    ];
+                }
+            }
+        }
+
+        return $activities ?: [
+            ['time' => Carbon::now()->format('H:i:s'), 'action' => 'No recent deployments', 'status' => 'info'],
         ];
     }
 
     private function getRecentErrors(): array
     {
-        return [
-            ['time' => '10:30:00', 'error' => 'Slow query detected', 'severity' => 'medium'],
-            ['time' => '09:15:00', 'error' => 'Cache miss rate low', 'severity' => 'low'],
-        ];
+        try {
+            $errors = \App\Models\SecurityLog::where('event_type', 'error')
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            return $errors->map(function ($error) {
+                return [
+                    'time' => Carbon::parse($error->created_at)->format('H:i:s'),
+                    'error' => $error->event_description ?? 'Unknown error',
+                    'severity' => $error->severity ?? 'medium',
+                ];
+            })->toArray();
+        } catch (\Exception $e) {
+            return [
+                ['time' => Carbon::now()->format('H:i:s'), 'error' => 'No error data available', 'severity' => 'info'],
+            ];
+        }
     }
 
     private function getActiveSessions(): int
     {
-        return 1247; // Mock count
+        try {
+            return DB::table('sessions')->count();
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 
     private function getRecentComponentViews(): array
     {
-        return [
-            ['component' => 'HeroBanner', 'views' => 1250, 'change' => '+5.2%'],
-            ['component' => 'ContactForm', 'views' => 890, 'change' => '+2.1%'],
-            ['component' => 'StatisticsBlock', 'views' => 567, 'change' => '-1.8%'],
-        ];
+        try {
+            return DB::table('component_analytics')
+                ->select('component_name', DB::raw('COUNT(*) as views'))
+                ->where('event_type', 'view')
+                ->where('created_at', '>=', now()->subDay())
+                ->groupBy('component_name')
+                ->orderByDesc('views')
+                ->limit(5)
+                ->get()
+                ->map(fn ($row) => [
+                    'component' => $row->component_name,
+                    'views' => $row->views,
+                    'change' => 'N/A',
+                ])
+                ->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 }

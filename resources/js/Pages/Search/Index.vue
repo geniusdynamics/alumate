@@ -1,8 +1,8 @@
 <template>
     <AppLayout title="Advanced Search">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div class="overflow-hidden bg-white shadow-xl sm:rounded-lg">
                     <!-- Search Type Tabs -->
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex space-x-8 px-6">
@@ -11,10 +11,10 @@
                                 :key="type.value"
                                 @click="switchSearchType(type.value)"
                                 :class="[
-                                    'py-4 px-1 border-b-2 font-medium text-sm',
+                                    'border-b-2 px-1 py-4 text-sm font-medium',
                                     currentSearchType === type.value
                                         ? 'border-indigo-500 text-indigo-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
                                 ]"
                             >
                                 {{ type.label }}
@@ -36,8 +36,8 @@
 
                         <!-- Saved Searches -->
                         <div v-if="savedSearches.length > 0" class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Saved Searches</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <h3 class="mb-4 text-lg font-medium text-gray-900">Saved Searches</h3>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 <SavedSearchCard
                                     v-for="search in savedSearches"
                                     :key="search.id"
@@ -52,25 +52,16 @@
 
                         <!-- Search Results -->
                         <div v-if="searchResults">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-lg font-medium text-gray-900">
-                                    Search Results ({{ searchResults.total }} found)
-                                </h3>
+                            <div class="mb-6 flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Search Results ({{ searchResults.total }} found)</h3>
                                 <div class="flex space-x-4">
-                                    <SortDropdown
-                                        :options="sortOptions"
-                                        :current="currentSort"
-                                        @change="updateSort"
-                                    />
-                                    <ViewToggle
-                                        :current="viewMode"
-                                        @change="viewMode = $event"
-                                    />
+                                    <SortDropdown :options="sortOptions" :current="currentSort" @change="updateSort" />
+                                    <ViewToggle :current="viewMode" @change="viewMode = $event" />
                                 </div>
                             </div>
 
                             <!-- Results Grid/List -->
-                            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 <JobCard
                                     v-if="currentSearchType === 'jobs'"
                                     v-for="job in searchResults.data"
@@ -118,17 +109,19 @@
 
                             <!-- Pagination -->
                             <div v-if="searchResults.last_page > 1" class="mt-8">
-                                <Pagination
-                                    :links="searchResults.links"
-                                    @navigate="navigateToPage"
-                                />
+                                <Pagination :links="searchResults.links" @navigate="navigateToPage" />
                             </div>
                         </div>
 
                         <!-- Empty State -->
-                        <div v-else-if="hasSearched" class="text-center py-12">
+                        <div v-else-if="hasSearched" class="py-12 text-center">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
                             </svg>
                             <h3 class="mt-2 text-sm font-medium text-gray-900">No results found</h3>
                             <p class="mt-1 text-sm text-gray-500">Try adjusting your search criteria.</p>
@@ -136,15 +129,9 @@
 
                         <!-- Recommendations -->
                         <div v-if="recommendations.length > 0" class="mt-12">
-                            <h3 class="text-lg font-medium text-gray-900 mb-6">Recommended for You</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <JobCard
-                                    v-for="job in recommendations"
-                                    :key="job.id"
-                                    :job="job"
-                                    :show-match-score="true"
-                                    :is-recommendation="true"
-                                />
+                            <h3 class="mb-6 text-lg font-medium text-gray-900">Recommended for You</h3>
+                            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                <JobCard v-for="job in recommendations" :key="job.id" :job="job" :show-match-score="true" :is-recommendation="true" />
                             </div>
                         </div>
                     </div>
@@ -164,22 +151,22 @@
 </template>
 
 <script>
-import AppLayout from '@/Layouts/AppLayout.vue'
-import SearchForm from './Components/SearchForm.vue'
-import SavedSearchCard from './Components/SavedSearchCard.vue'
-import JobCard from './Components/JobCard.vue'
-import GraduateCard from './Components/GraduateCard.vue'
-import CourseCard from './Components/CourseCard.vue'
-import JobListItem from './Components/JobListItem.vue'
-import GraduateListItem from './Components/GraduateListItem.vue'
-import CourseListItem from './Components/CourseListItem.vue'
-import SaveSearchModal from './Components/SaveSearchModal.vue'
-import SortDropdown from './Components/SortDropdown.vue'
-import ViewToggle from './Components/ViewToggle.vue'
-import Pagination from '@/Components/Pagination.vue'
+import Pagination from '@/Components/Pagination.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import CourseCard from './Components/CourseCard.vue';
+import CourseListItem from './Components/CourseListItem.vue';
+import GraduateCard from './Components/GraduateCard.vue';
+import GraduateListItem from './Components/GraduateListItem.vue';
+import JobCard from './Components/JobCard.vue';
+import JobListItem from './Components/JobListItem.vue';
+import SavedSearchCard from './Components/SavedSearchCard.vue';
+import SaveSearchModal from './Components/SaveSearchModal.vue';
+import SearchForm from './Components/SearchForm.vue';
+import SortDropdown from './Components/SortDropdown.vue';
+import ViewToggle from './Components/ViewToggle.vue';
 
 export default {
-    components: {
+    Components: {
         AppLayout,
         SearchForm,
         SavedSearchCard,
@@ -217,7 +204,7 @@ export default {
                 { value: 'graduates', label: 'Graduates' },
                 { value: 'courses', label: 'Courses' },
             ],
-        }
+        };
     },
 
     computed: {
@@ -242,39 +229,39 @@ export default {
                     { value: 'duration_months', label: 'Duration' },
                     { value: 'total_graduated', label: 'Graduates' },
                 ],
-            }
-            return options[this.currentSearchType] || []
+            };
+            return options[this.currentSearchType] || [];
         },
     },
 
     mounted() {
-        this.loadRecommendations()
+        this.loadRecommendations();
     },
 
     methods: {
         switchSearchType(type) {
-            this.currentSearchType = type
-            this.searchResults = null
-            this.hasSearched = false
-            this.loadRecommendations()
+            this.currentSearchType = type;
+            this.searchResults = null;
+            this.hasSearched = false;
+            this.loadRecommendations();
         },
 
         async performSearch(criteria) {
-            this.currentSearchCriteria = criteria
-            this.hasSearched = true
+            this.currentSearchCriteria = criteria;
+            this.hasSearched = true;
 
             try {
                 const endpoint = {
                     jobs: '/api/search/jobs',
                     graduates: '/api/search/graduates',
                     courses: '/api/search/courses',
-                }[this.currentSearchType]
+                }[this.currentSearchType];
 
-                const response = await axios.get(endpoint, { params: criteria })
-                this.searchResults = response.data.results
+                const response = await axios.get(endpoint, { params: criteria });
+                this.searchResults = response.data.results;
             } catch (error) {
-                console.error('Search error:', error)
-                this.$toast.error('Search failed. Please try again.')
+                console.error('Search error:', error);
+                this.$toast.error('Search failed. Please try again.');
             }
         },
 
@@ -282,21 +269,21 @@ export default {
             if (this.currentSearchType === 'jobs' && this.$page.props.auth.user?.roles?.includes('graduate')) {
                 try {
                     const response = await axios.get('/api/search/recommendations', {
-                        params: { type: 'jobs', limit: 6 }
-                    })
-                    this.recommendations = response.data.recommendations
+                        params: { type: 'jobs', limit: 6 },
+                    });
+                    this.recommendations = response.data.recommendations;
                 } catch (error) {
-                    console.error('Failed to load recommendations:', error)
+                    console.error('Failed to load recommendations:', error);
                 }
             }
         },
 
         showSaveSearchModal() {
             if (!this.currentSearchCriteria || Object.keys(this.currentSearchCriteria).length === 0) {
-                this.$toast.error('Please perform a search first.')
-                return
+                this.$toast.error('Please perform a search first.');
+                return;
             }
-            this.showSaveModal = true
+            this.showSaveModal = true;
         },
 
         async saveSearch(data) {
@@ -305,87 +292,101 @@ export default {
                     ...data,
                     search_type: this.currentSearchType,
                     search_criteria: this.currentSearchCriteria,
-                })
-                this.$toast.success('Search saved successfully!')
-                this.showSaveModal = false
+                });
+                this.$toast.success('Search saved successfully!');
+                this.showSaveModal = false;
                 // Reload saved searches
-                this.loadSavedSearches()
+                this.loadSavedSearches();
             } catch (error) {
-                console.error('Save search error:', error)
-                this.$toast.error('Failed to save search.')
+                console.error('Save search error:', error);
+                this.$toast.error('Failed to save search.');
             }
         },
 
         async executeSavedSearch(search) {
-            this.currentSearchCriteria = search.search_criteria
-            await this.performSearch(search.search_criteria)
+            this.currentSearchCriteria = search.search_criteria;
+            await this.performSearch(search.search_criteria);
         },
 
         async editSavedSearch(search) {
             // Implementation for editing saved search
-            console.log('Edit search:', search)
+            logger.log('Edit search:', search);
         },
 
         async deleteSavedSearch(search) {
             if (!confirm('Are you sure you want to delete this saved search?')) {
-                return
+                return;
             }
 
             try {
-                await axios.delete(`/api/search/saved/${search.id}`)
-                this.$toast.success('Search deleted successfully!')
-                this.loadSavedSearches()
+                await axios.delete(`/api/search/saved/${search.id}`);
+                this.$toast.success('Search deleted successfully!');
+                this.loadSavedSearches();
             } catch (error) {
-                console.error('Delete search error:', error)
-                this.$toast.error('Failed to delete search.')
+                console.error('Delete search error:', error);
+                this.$toast.error('Failed to delete search.');
             }
         },
 
         async toggleSearchAlert(search) {
             try {
                 await axios.patch(`/api/search/saved/${search.id}`, {
-                    alert_enabled: !search.alert_enabled
-                })
-                this.$toast.success('Alert settings updated!')
-                this.loadSavedSearches()
+                    alert_enabled: !search.alert_enabled,
+                });
+                this.$toast.success('Alert settings updated!');
+                this.loadSavedSearches();
             } catch (error) {
-                console.error('Toggle alert error:', error)
-                this.$toast.error('Failed to update alert settings.')
+                console.error('Toggle alert error:', error);
+                this.$toast.error('Failed to update alert settings.');
             }
         },
 
         updateSort(sort) {
-            this.currentSort = sort
+            this.currentSort = sort;
             if (this.hasSearched) {
                 this.performSearch({
                     ...this.currentSearchCriteria,
                     sort_by: sort.field,
                     sort_order: sort.order,
-                })
+                });
             }
         },
 
         navigateToPage(url) {
             // Extract page number from URL and perform search
-            const urlParams = new URLSearchParams(url.split('?')[1])
-            const page = urlParams.get('page')
-            
+            const urlParams = new URLSearchParams(url.split('?')[1]);
+            const page = urlParams.get('page');
+
             this.performSearch({
                 ...this.currentSearchCriteria,
                 page: page,
-            })
+            });
         },
 
         async loadSavedSearches() {
             try {
                 const response = await axios.get('/api/search/saved', {
-                    params: { type: this.currentSearchType }
-                })
-                this.savedSearches = response.data.saved_searches
+                    params: { type: this.currentSearchType },
+                });
+                this.savedSearches = response.data.saved_searches;
             } catch (error) {
-                console.error('Failed to load saved searches:', error)
+                console.error('Failed to load saved searches:', error);
             }
         },
     },
-}
+};
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

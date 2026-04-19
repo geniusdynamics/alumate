@@ -1,13 +1,16 @@
 <?php
 
+// ABOUTME: Brand guidelines model for managing brand standards and approval workflows
+// ABOUTME: Updated for schema-based multi-tenancy without tenant_id column
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
-use Auth as AuthFacade;
 use Illuminate\Support\Str;
 
 class BrandGuidelines extends Model
@@ -15,7 +18,6 @@ class BrandGuidelines extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'brand_config_id',
         'name',
         'slug',
@@ -87,35 +89,27 @@ class BrandGuidelines extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
+        // Apply tenant context for schema-based multi-tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            $tenantContextService = app(TenantContextService::class);
+            $tenantContextService->applyTenantContext($builder);
         });
 
         // Auto-generate slug if not provided
         static::creating(function ($brandGuidelines) {
             if (empty($brandGuidelines->slug)) {
-                $brandGuidelines->slug = $brandGuidelines->generateUniqueSlug($brandGuidelines->name, $brandGuidelines->tenant_id);
+                $brandGuidelines->slug = $brandGuidelines->generateUniqueSlug($brandGuidelines->name);
             }
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
      */
-    public function scopeForTenant($query, int $tenantId)
+    public function scopeForTenant($query, ?int $tenantId = null)
     {
-        return $query->where('tenant_id', $tenantId);
+        // For schema-based tenancy, this is handled by global scope
+        return $query;
     }
 
     /**
@@ -143,11 +137,12 @@ class BrandGuidelines extends Model
     }
 
     /**
-     * Get the tenant that owns these brand guidelines
+     * Get the current tenant context
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        $tenantContextService = app(TenantContextService::class);
+        return $tenantContextService->getCurrentTenant();
     }
 
     /**
@@ -241,7 +236,7 @@ class BrandGuidelines extends Model
             ? $this->effective_date->isPast() || $this->effective_date->isToday()
             : true;
 
-        return $this->is_active && $isAfterEffectiveDate && (!$this->requires_approval || $this->isApproved());
+        return $this->is_active && $isAfterEffectiveDate && (! $this->requires_approval || $this->isApproved());
     }
 
     /**
@@ -304,9 +299,8 @@ class BrandGuidelines extends Model
     public function createNewVersion(): self
     {
         return static::create([
-            'tenant_id' => $this->tenant_id,
             'brand_config_id' => $this->brand_config_id,
-            'name' => $this->name . ' (Version ' . ($this->version + 1) . ')',
+            'name' => $this->name.' (Version '.($this->version + 1).')',
             'description' => $this->description,
             'usage_rules' => $this->usage_rules,
             'color_guidelines' => $this->color_guidelines,
@@ -332,14 +326,14 @@ class BrandGuidelines extends Model
     /**
      * Generate a unique slug for the brand guidelines
      */
-    protected function generateUniqueSlug(string $name, int $tenantId): string
+    protected function generateUniqueSlug(string $name): string
     {
         $baseSlug = Str::slug($name);
         $slug = $baseSlug;
         $counter = 1;
 
-        while ($this->slugExists($slug, $tenantId)) {
-            $slug = $baseSlug . '-' . $counter;
+        while ($this->slugExists($slug)) {
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -347,11 +341,11 @@ class BrandGuidelines extends Model
     }
 
     /**
-     * Check if a slug exists for the tenant
+     * Check if a slug exists within current tenant context
      */
-    protected function slugExists(string $slug, int $tenantId): bool
+    protected function slugExists(string $slug): bool
     {
-        $query = static::where('tenant_id', $tenantId)->where('slug', $slug);
+        $query = static::where('slug', $slug);
 
         if ($this->exists) {
             $query->where('id', '!=', $this->id);
@@ -381,7 +375,7 @@ class BrandGuidelines extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // tenant_id removed for schema-based tenancy
             'brand_config_id' => 'nullable|exists:brand_configs,id',
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
@@ -417,7 +411,7 @@ class BrandGuidelines extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_guidelines,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_guidelines,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_guidelines,slug';
         }

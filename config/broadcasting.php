@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('BROADCAST_DRIVER', 'null'),
+    'default' => env('BROADCAST_CONNECTION', 'null'),
 
     /*
     |--------------------------------------------------------------------------
@@ -40,7 +40,7 @@ return [
                 'host' => env('PUSHER_HOST') ?: 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusherapp.com',
                 'port' => env('PUSHER_PORT', 443),
                 'scheme' => env('PUSHER_SCHEME', 'https'),
-                'encrypted' => true,
+                'encrypted' => env('PUSHER_SCHEME', 'https') === 'https',
                 'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
             ],
             'client_options' => [
@@ -53,6 +53,14 @@ return [
             'key' => env('ABLY_KEY'),
         ],
 
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'throttle' => [
+                'messages_per_second' => 100, // Limit to 100 messages per second per channel
+                'burst_size' => 200, // Allow bursts up to 200 messages
+            ],
+        ],
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',

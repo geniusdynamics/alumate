@@ -4,10 +4,8 @@ namespace App\Services;
 
 use App\Models\Component;
 use App\Models\ComponentVersion;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class ComponentPerformanceAnalysisService
 {
@@ -150,7 +148,7 @@ class ComponentPerformanceAnalysisService
         }
 
         // Check touch target sizes
-        if (!$this->hasOptimalTouchTargets($config)) {
+        if (! $this->hasOptimalTouchTargets($config)) {
             $metrics['score'] -= 10;
             $metrics['issues'][] = 'Touch targets may be too small for mobile devices';
             $metrics['optimizations'][] = 'Ensure touch targets are at least 44px';
@@ -203,7 +201,7 @@ class ComponentPerformanceAnalysisService
         }
 
         // Check color contrast
-        if (!$this->hasGoodColorContrast($component->config ?? [])) {
+        if (! $this->hasGoodColorContrast($component->config ?? [])) {
             $metrics['score'] -= 10;
             $metrics['issues'][] = 'Color contrast may not meet accessibility standards';
             $metrics['optimizations'][] = 'Ensure color contrast ratio meets WCAG guidelines';
@@ -233,7 +231,7 @@ class ComponentPerformanceAnalysisService
         }
 
         // Check viewport optimization
-        if (!$this->isViewportOptimized($component->config ?? [])) {
+        if (! $this->isViewportOptimized($component->config ?? [])) {
             $metrics['score'] -= 15;
             $metrics['issues'][] = 'Component not optimized for mobile viewport';
             $metrics['optimizations'][] = 'Use relative units (rem, em, %) instead of fixed pixels';
@@ -241,7 +239,7 @@ class ComponentPerformanceAnalysisService
         }
 
         // Check for mobile-friendly interactions
-        if (!$this->hasMobileFriendlyInteractions($component->config ?? [])) {
+        if (! $this->hasMobileFriendlyInteractions($component->config ?? [])) {
             $metrics['score'] -= 10;
             $metrics['issues'][] = 'Interactions not optimized for mobile';
             $metrics['optimizations'][] = 'Implement touch gestures';
@@ -277,7 +275,7 @@ class ComponentPerformanceAnalysisService
         $recommendations = [];
 
         foreach ($metrics as $category => $data) {
-            if (isset($data['optimizations']) && !empty($data['optimizations'])) {
+            if (isset($data['optimizations']) && ! empty($data['optimizations'])) {
                 $recommendations[$category] = [
                     'priority' => $this->calculatePriority($data['score']),
                     'optimizations' => $data['optimizations'],
@@ -345,7 +343,7 @@ class ComponentPerformanceAnalysisService
     public function getPerformanceTrends(Component $component, int $days = 30): array
     {
         $cacheKey = "component_performance_trends_{$component->id}_{$days}";
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($component, $days) {
             $trends = [];
             $startDate = now()->subDays($days);
@@ -354,7 +352,7 @@ class ComponentPerformanceAnalysisService
             for ($i = 0; $i < $days; $i++) {
                 $date = $startDate->copy()->addDays($i);
                 $dayData = $this->getPerformanceDataForDate($component, $date);
-                
+
                 $trends[] = [
                     'date' => $date->toDateString(),
                     'performance_score' => $dayData['performance_score'] ?? 0,
@@ -412,21 +410,22 @@ class ComponentPerformanceAnalysisService
 
     private function hasHeavyMedia(array $config): bool
     {
-        return isset($config['background_media']) || 
-               isset($config['video']) || 
+        return isset($config['background_media']) ||
+               isset($config['video']) ||
                (isset($config['images']) && count($config['images']) > 5);
     }
 
     private function hasExternalDependencies(array $config): bool
     {
         $configString = json_encode($config);
+
         return str_contains($configString, 'http://') || str_contains($configString, 'https://');
     }
 
     private function hasComplexAnimations(array $config): bool
     {
-        return isset($config['animations']) && 
-               (count($config['animations']) > 3 || 
+        return isset($config['animations']) &&
+               (count($config['animations']) > 3 ||
                 isset($config['animations']['complex']) ||
                 isset($config['animations']['duration']) && $config['animations']['duration'] > 1000);
     }
@@ -434,22 +433,22 @@ class ComponentPerformanceAnalysisService
     private function calculateDOMComplexity(array $config): int
     {
         $complexity = 0;
-        
+
         if (isset($config['components'])) {
             $complexity += count($config['components']) * 2;
         }
-        
+
         if (isset($config['fields'])) {
             $complexity += count($config['fields']) * 1.5;
         }
-        
+
         return (int) $complexity;
     }
 
     private function hasLayoutThrashing(array $config): bool
     {
-        return isset($config['animations']) && 
-               (isset($config['animations']['width']) || 
+        return isset($config['animations']) &&
+               (isset($config['animations']['width']) ||
                 isset($config['animations']['height']) ||
                 isset($config['animations']['margin']) ||
                 isset($config['animations']['padding']));
@@ -459,14 +458,14 @@ class ComponentPerformanceAnalysisService
     {
         // Simplified CSS efficiency analysis
         $efficiency = 100;
-        
+
         if (isset($config['styles']) && is_array($config['styles'])) {
             $styleCount = count($config['styles']);
             if ($styleCount > 20) {
                 $efficiency -= 20;
             }
         }
-        
+
         return $efficiency;
     }
 
@@ -477,32 +476,32 @@ class ComponentPerformanceAnalysisService
 
     private function hasOptimalTouchTargets(array $config): bool
     {
-        return isset($config['touch_targets']) && 
+        return isset($config['touch_targets']) &&
                ($config['touch_targets']['min_size'] ?? 0) >= 44;
     }
 
     private function hasScrollPerformanceIssues(array $config): bool
     {
-        return isset($config['scroll_animations']) || 
+        return isset($config['scroll_animations']) ||
                (isset($config['list_items']) && ($config['list_items'] ?? 0) > 100);
     }
 
     private function hasGoodColorContrast(array $config): bool
     {
         // Simplified color contrast check
-        return isset($config['accessibility']['color_contrast']) && 
+        return isset($config['accessibility']['color_contrast']) &&
                $config['accessibility']['color_contrast'] >= 4.5;
     }
 
     private function isViewportOptimized(array $config): bool
     {
-        return isset($config['responsive']) && 
-               !empty($config['responsive']['mobile']);
+        return isset($config['responsive']) &&
+               ! empty($config['responsive']['mobile']);
     }
 
     private function hasMobileFriendlyInteractions(array $config): bool
     {
-        return isset($config['mobile_interactions']) || 
+        return isset($config['mobile_interactions']) ||
                (isset($config['touch_enabled']) && $config['touch_enabled']);
     }
 
@@ -529,12 +528,12 @@ class ComponentPerformanceAnalysisService
     private function findImprovedAreas(array $metrics1, array $metrics2): array
     {
         $improved = [];
-        
+
         foreach ($metrics2 as $category => $data2) {
-            if (isset($metrics1[$category]) && 
-                isset($data2['score']) && 
+            if (isset($metrics1[$category]) &&
+                isset($data2['score']) &&
                 isset($metrics1[$category]['score'])) {
-                
+
                 if ($data2['score'] > $metrics1[$category]['score']) {
                     $improved[] = [
                         'category' => $category,
@@ -543,19 +542,19 @@ class ComponentPerformanceAnalysisService
                 }
             }
         }
-        
+
         return $improved;
     }
 
     private function findDegradedAreas(array $metrics1, array $metrics2): array
     {
         $degraded = [];
-        
+
         foreach ($metrics2 as $category => $data2) {
-            if (isset($metrics1[$category]) && 
-                isset($data2['score']) && 
+            if (isset($metrics1[$category]) &&
+                isset($data2['score']) &&
                 isset($metrics1[$category]['score'])) {
-                
+
                 if ($data2['score'] < $metrics1[$category]['score']) {
                     $degraded[] = [
                         'category' => $category,
@@ -564,7 +563,7 @@ class ComponentPerformanceAnalysisService
                 }
             }
         }
-        
+
         return $degraded;
     }
 }

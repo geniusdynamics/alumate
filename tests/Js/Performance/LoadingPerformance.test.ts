@@ -267,9 +267,6 @@ describe('Lazy Loading Performance', () => {
     // Test lazy loading behavior
     const { useLazyImage } = await import('@/composables/useLazyLoading')
     
-    const { useLazyImage } = await import('@/composables/useLazyLoading')
-    const { imageRef, isLoaded, currentSrc } = useLazyImage('test-image.jpg')
-    
     // Create a dummy component that uses useLazyImage.
     const TestComponent = defineComponent({
       setup() {

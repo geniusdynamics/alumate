@@ -1,5 +1,8 @@
 <?php
 
+// ABOUTME: Component service for managing components with schema-based tenant context
+// ABOUTME: Updated to work with schema-based tenancy instead of tenant_id columns
+
 namespace App\Services;
 
 use App\Models\Component;
@@ -13,17 +16,21 @@ use Illuminate\Validation\ValidationException;
 
 class ComponentService
 {
+    protected TenantContextService $tenantContext;
+
+    public function __construct(TenantContextService $tenantContext)
+    {
+        $this->tenantContext = $tenantContext;
+    }
+
     /**
      * Create a new component with validation and tenant scoping
      */
-    public function create(array $data, int $tenantId): Component
+    public function create(array $data): Component
     {
-        // Add tenant ID to data
-        $data['tenant_id'] = $tenantId;
-
         // Generate slug if not provided
         if (empty($data['slug'])) {
-            $data['slug'] = $this->generateUniqueSlug($data['name'], $tenantId);
+            $data['slug'] = $this->generateUniqueSlug($data['name']);
         }
 
         // Validate the data
@@ -39,8 +46,7 @@ class ComponentService
 
             // Apply default theme if no theme specified
             if (empty($data['theme_id'])) {
-                $defaultTheme = ComponentTheme::where('tenant_id', $data['tenant_id'])
-                    ->where('is_default', true)
+                $defaultTheme = ComponentTheme::where('is_default', true)
                     ->first();
 
                 if ($defaultTheme) {
@@ -58,14 +64,9 @@ class ComponentService
      */
     public function update(Component $component, array $data): Component
     {
-        // Ensure tenant scoping
-        if (isset($data['tenant_id']) && $data['tenant_id'] !== $component->tenant_id) {
-            throw new \InvalidArgumentException('Cannot change component tenant');
-        }
-
         // Generate new slug if name changed
         if (isset($data['name']) && $data['name'] !== $component->name && empty($data['slug'])) {
-            $data['slug'] = $this->generateUniqueSlug($data['name'], $component->tenant_id, $component->id);
+            $data['slug'] = $this->generateUniqueSlug($data['name'], $component->id);
         }
 
         // Validate the data
@@ -117,7 +118,7 @@ class ComponentService
         }
 
         if (! isset($modifications['slug'])) {
-            $data['slug'] = $this->generateUniqueSlug($data['name'], $component->tenant_id);
+            $data['slug'] = $this->generateUniqueSlug($data['name']);
         }
 
         // Set as inactive by default for duplicates
@@ -125,7 +126,7 @@ class ComponentService
             $data['is_active'] = false;
         }
 
-        return $this->create($data, $component->tenant_id);
+        return $this->create($data);
     }
 
     /**
@@ -139,8 +140,7 @@ class ComponentService
         }
 
         // Check if version already exists
-        $existingVersion = Component::where('tenant_id', $component->tenant_id)
-            ->where('name', $component->name)
+        $existingVersion = Component::where('name', $component->name)
             ->where('version', $newVersion)
             ->first();
 
@@ -180,14 +180,9 @@ class ComponentService
     /**
      * Search and filter components with advanced options
      */
-    public function search(array $filters = [], ?int $tenantId = null, int $perPage = 15): LengthAwarePaginator
+    public function search(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = Component::query();
-
-        // Apply tenant scoping
-        if ($tenantId) {
-            $query->forTenant($tenantId);
-        }
 
         // Search by name or description
         if (! empty($filters['search'])) {
@@ -277,13 +272,9 @@ class ComponentService
     /**
      * Get components by category with optional filtering
      */
-    public function getByCategory(string $category, ?int $tenantId = null, array $filters = []): Collection
+    public function getByCategory(string $category, array $filters = []): Collection
     {
         $query = Component::byCategory($category);
-
-        if ($tenantId) {
-            $query->forTenant($tenantId);
-        }
 
         // Apply additional filters
         if (! empty($filters['is_active'])) {
@@ -303,6 +294,19 @@ class ComponentService
     protected function validateComponentData(array $data, ?int $ignoreId = null): void
     {
         $rules = $ignoreId ? Component::getUniqueValidationRules($ignoreId) : Component::getValidationRules();
+
+        // For updates, make tenant_id, category and type optional if not provided
+        if ($ignoreId) {
+            if (!isset($data['tenant_id'])) {
+                $rules['tenant_id'] = 'sometimes|exists:tenants,id';
+            }
+            if (!isset($data['category'])) {
+                $rules['category'] = 'sometimes';
+            }
+            if (!isset($data['type'])) {
+                $rules['type'] = 'sometimes';
+            }
+        }
 
         $validator = Validator::make($data, $rules);
 
@@ -367,8 +371,23 @@ class ComponentService
                 'format_numbers' => 'boolean',
             ],
             'ctas' => [
+                'type' => 'sometimes|string',
+                'buttonConfig' => 'sometimes|array',
+                'buttonConfig.text' => 'nullable|string|max:100',
+                'buttonConfig.url' => 'nullable|string|max:255',
+                'buttonConfig.style' => 'sometimes|string|in:primary,secondary,outline,text',
+                'buttonConfig.size' => 'sometimes|string|in:small,medium,large,xl,lg,md,sm',
+                'bannerConfig' => 'sometimes|array',
+                'bannerConfig.title' => 'nullable|string|max:255',
+                'bannerConfig.subtitle' => 'nullable|string|max:500',
+                'bannerConfig.layout' => 'sometimes|string|in:center-aligned,left-aligned,right-aligned,full-width',
+                'bannerConfig.height' => 'sometimes|string|in:small,medium,large,full',
+                'inlineLinkConfig' => 'sometimes|array',
+                'inlineLinkConfig.text' => 'nullable|string|max:100',
+                'inlineLinkConfig.url' => 'nullable|string|max:255',
+                'inlineLinkConfig.style' => 'sometimes|string|in:arrow,button,text',
                 'style' => 'string|in:primary,secondary,outline,text',
-                'size' => 'string|in:small,medium,large',
+                'size' => 'string|in:small,medium,large,xl,lg,md,sm',
                 'track_conversions' => 'boolean',
                 'utm_parameters' => 'array',
             ],
@@ -385,13 +404,13 @@ class ComponentService
     /**
      * Generate a unique slug for the component
      */
-    protected function generateUniqueSlug(string $name, int $tenantId, ?int $ignoreId = null): string
+    protected function generateUniqueSlug(string $name, ?int $ignoreId = null): string
     {
         $baseSlug = Str::slug($name);
         $slug = $baseSlug;
         $counter = 1;
 
-        while ($this->slugExists($slug, $tenantId, $ignoreId)) {
+        while ($this->slugExists($slug, $ignoreId)) {
             $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
@@ -400,11 +419,11 @@ class ComponentService
     }
 
     /**
-     * Check if a slug exists for the tenant
+     * Check if a slug exists
      */
-    protected function slugExists(string $slug, int $tenantId, ?int $ignoreId = null): bool
+    protected function slugExists(string $slug, ?int $ignoreId = null): bool
     {
-        $query = Component::where('tenant_id', $tenantId)->where('slug', $slug);
+        $query = Component::where('slug', $slug);
 
         if ($ignoreId) {
             $query->where('id', '!=', $ignoreId);
@@ -826,22 +845,20 @@ class ComponentService
     /**
      * Get component statistics for analytics
      */
-    public function getComponentStats(int $tenantId): array
+    public function getComponentStats(): array
     {
         $stats = [
-            'total_components' => Component::forTenant($tenantId)->count(),
-            'active_components' => Component::forTenant($tenantId)->active()->count(),
+            'total_components' => Component::count(),
+            'active_components' => Component::active()->count(),
             'components_by_category' => [],
-            'recent_components' => Component::forTenant($tenantId)
-                ->orderBy('created_at', 'desc')
+            'recent_components' => Component::orderBy('created_at', 'desc')
                 ->limit(5)
                 ->get(['id', 'name', 'category', 'created_at']),
         ];
 
         // Get counts by category
         foreach (Component::CATEGORIES as $category) {
-            $stats['components_by_category'][$category] = Component::forTenant($tenantId)
-                ->byCategory($category)
+            $stats['components_by_category'][$category] = Component::byCategory($category)
                 ->count();
         }
 

@@ -4,14 +4,17 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 
 class RateLimitValidation implements ValidationRule
 {
     private string $key;
+
     private int $maxAttempts;
+
     private int $decayMinutes;
+
     private string $identifier;
 
     public function __construct(
@@ -32,19 +35,21 @@ class RateLimitValidation implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $rateLimitKey = $this->getRateLimitKey();
-        
+
         // Check if rate limit is exceeded
         if (RateLimiter::tooManyAttempts($rateLimitKey, $this->maxAttempts)) {
             $availableIn = RateLimiter::availableIn($rateLimitKey);
             $minutes = ceil($availableIn / 60);
-            
+
             $fail("Too many attempts. Please try again in {$minutes} minute(s).");
+
             return;
         }
 
         // Check for suspicious rapid submissions
         if ($this->isSuspiciousActivity()) {
             $fail('Suspicious activity detected. Please wait before submitting again.');
+
             return;
         }
 
@@ -67,10 +72,10 @@ class RateLimitValidation implements ValidationRule
     private function getDefaultIdentifier(): string
     {
         if (auth()->check()) {
-            return 'user:' . auth()->id();
+            return 'user:'.auth()->id();
         }
-        
-        return 'ip:' . request()->ip();
+
+        return 'ip:'.request()->ip();
     }
 
     /**
@@ -80,15 +85,15 @@ class RateLimitValidation implements ValidationRule
     {
         $submissionKey = "submissions:{$this->identifier}";
         $submissions = Cache::get($submissionKey, []);
-        
+
         $now = time();
-        
+
         // Remove old submissions (older than 1 hour)
-        $submissions = array_filter($submissions, fn($time) => $now - $time < 3600);
-        
+        $submissions = array_filter($submissions, fn ($time) => $now - $time < 3600);
+
         // Check for rapid submissions (more than 3 in 5 minutes)
-        $recentSubmissions = array_filter($submissions, fn($time) => $now - $time < 300);
-        
+        $recentSubmissions = array_filter($submissions, fn ($time) => $now - $time < 300);
+
         if (count($recentSubmissions) >= 3) {
             return true;
         }
@@ -111,14 +116,14 @@ class RateLimitValidation implements ValidationRule
     {
         $submissionKey = "submissions:{$this->identifier}";
         $submissions = Cache::get($submissionKey, []);
-        
+
         $submissions[] = time();
-        
+
         // Keep only last 10 submissions
         if (count($submissions) > 10) {
             $submissions = array_slice($submissions, -10);
         }
-        
+
         Cache::put($submissionKey, $submissions, 3600); // Store for 1 hour
     }
 

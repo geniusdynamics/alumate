@@ -3,13 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Models\Template;
-use App\Models\LandingPage;
 use App\Services\TemplatePerformanceOptimizer;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 /**
  * Cache Warm Command for Template Performance Optimization
@@ -107,7 +106,7 @@ class CacheWarmCommand extends Command
                 'timestamp' => Carbon::now()->toISOString(),
             ];
 
-            $this->error('❌ Cache warming failed: ' . $e->getMessage());
+            $this->error('❌ Cache warming failed: '.$e->getMessage());
             Log::error('Template cache warming command failed', [
                 'command' => $this->signature,
                 'error' => $e->getMessage(),
@@ -137,7 +136,7 @@ class CacheWarmCommand extends Command
                 $this->showTemplateInfo($template);
             }
 
-            if (!$this->option('dry-run')) {
+            if (! $this->option('dry-run')) {
                 $this->warmTemplate($template, $tenantId);
             }
 
@@ -150,6 +149,7 @@ class CacheWarmCommand extends Command
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $this->error("❌ Template with ID {$templateId} not found");
+
             return Command::FAILURE;
         }
     }
@@ -167,11 +167,12 @@ class CacheWarmCommand extends Command
         $this->newLine();
 
         try {
-            if ($this->option('purge-first') && !$this->option('dry-run')) {
+            if ($this->option('purge-first') && ! $this->option('dry-run')) {
                 $this->purgeTemplateCache();
             }
 
             $templates = $this->getTemplatesByCategory($category, $limit);
+
             return $this->warmTemplateCollection($templates, "category {$category}");
 
         } catch (\Exception $e) {
@@ -180,6 +181,7 @@ class CacheWarmCommand extends Command
                 'category' => $category,
                 'error' => $e->getMessage(),
             ];
+
             return Command::FAILURE;
         }
     }
@@ -197,11 +199,12 @@ class CacheWarmCommand extends Command
         $this->newLine();
 
         try {
-            if ($this->option('purge-first') && !$this->option('dry-run')) {
+            if ($this->option('purge-first') && ! $this->option('dry-run')) {
                 $this->purgeTemplateCache();
             }
 
             $templates = $this->getTemplatesByAudience($audience, $limit);
+
             return $this->warmTemplateCollection($templates, "audience {$audience}");
 
         } catch (\Exception $e) {
@@ -210,6 +213,7 @@ class CacheWarmCommand extends Command
                 'audience' => $audience,
                 'error' => $e->getMessage(),
             ];
+
             return Command::FAILURE;
         }
     }
@@ -227,11 +231,12 @@ class CacheWarmCommand extends Command
         $this->newLine();
 
         try {
-            if ($this->option('purge-first') && !$this->option('dry-run')) {
+            if ($this->option('purge-first') && ! $this->option('dry-run')) {
                 $this->purgeTemplateCache();
             }
 
             $templates = $this->getTemplatesByTenant($tenantId, $limit);
+
             return $this->warmTemplateCollection($templates, "tenant {$tenantId}");
 
         } catch (\Exception $e) {
@@ -240,6 +245,7 @@ class CacheWarmCommand extends Command
                 'tenant_id' => $tenantId,
                 'error' => $e->getMessage(),
             ];
+
             return Command::FAILURE;
         }
     }
@@ -251,16 +257,17 @@ class CacheWarmCommand extends Command
     {
         $limit = (int) $this->option('limit');
 
-        $this->info("🔄 Warming cache for popular templates across all tenants");
+        $this->info('🔄 Warming cache for popular templates across all tenants');
         $this->info("📊 Processing limit: {$limit} templates");
         $this->newLine();
 
         try {
-            if ($this->option('purge-first') && !$this->option('dry-run')) {
+            if ($this->option('purge-first') && ! $this->option('dry-run')) {
                 $this->purgeTemplateCache();
             }
 
             $templates = $this->getPopularTemplates($limit);
+
             return $this->warmTemplateCollection($templates, 'popular templates');
 
         } catch (\Exception $e) {
@@ -268,6 +275,7 @@ class CacheWarmCommand extends Command
                 'stage' => 'popular_warming',
                 'error' => $e->getMessage(),
             ];
+
             return Command::FAILURE;
         }
     }
@@ -282,6 +290,7 @@ class CacheWarmCommand extends Command
 
         if ($total === 0) {
             $this->warn("⚠️  No templates found for {$context}");
+
             return Command::SUCCESS;
         }
 
@@ -302,7 +311,7 @@ class CacheWarmCommand extends Command
                 $this->warmTemplate($template, $template->tenant_id);
                 $this->stats['warmed_templates']++;
 
-                if (!$this->option('dry-run')) {
+                if (! $this->option('dry-run')) {
                     $this->stats['cache_keys_created'] += 3; // Render, metadata, optimization caches
                 }
 
@@ -343,7 +352,7 @@ class CacheWarmCommand extends Command
      */
     private function warmTemplate(Template $template, int $tenantId): void
     {
-        if (!$this->option('dry-run')) {
+        if (! $this->option('dry-run')) {
             // Use the TemplatePerformanceOptimizer service
             $result = $this->templateOptimizer->optimizeTemplateRendering($template, [], $tenantId);
 
@@ -432,7 +441,7 @@ class CacheWarmCommand extends Command
         $this->line(" 🏷️  Category: {$template->category}");
         $this->line(" 👥 Audience: {$template->audience_type}");
         $this->line(" 📊 Usage Count: {$template->usage_count}");
-        $this->line(" ⏰ Last Used: " . ($template->last_used_at ? $template->last_used_at->diffForHumans() : 'Never'));
+        $this->line(' ⏰ Last Used: '.($template->last_used_at ? $template->last_used_at->diffForHumans() : 'Never'));
         $this->line(" 🏢 Tenant ID: {$template->tenant_id}");
         $this->newLine();
     }
@@ -461,7 +470,7 @@ class CacheWarmCommand extends Command
         $this->table($headers, $rows);
 
         // Show performance improvement estimates
-        if (!empty($this->stats['performance_improved'])) {
+        if (! empty($this->stats['performance_improved'])) {
             $this->newLine();
             $this->info('🚀 Estimated Performance Improvements:');
 
@@ -471,7 +480,7 @@ class CacheWarmCommand extends Command
 
             $this->line(" ⚡ Average cache hit rate improvement: <info>{$avgSavings}</info>");
             $this->line(" ⏱️  Estimated total render time saved: <info>{$totalRenderTime}ms</info>");
-            $this->line(" 🎯 Templates with improved performance: <info>" . count($this->stats['performance_improved']) . "</info>");
+            $this->line(' 🎯 Templates with improved performance: <info>'.count($this->stats['performance_improved']).'</info>');
         }
 
         // Show execution time
@@ -482,7 +491,7 @@ class CacheWarmCommand extends Command
         }
 
         // Show errors if any
-        if (!empty($this->stats['errors'])) {
+        if (! empty($this->stats['errors'])) {
             $this->newLine();
             $this->warn('⚠️  Some templates failed to warm:');
             foreach (array_slice($this->stats['errors'], 0, 5) as $error) {
@@ -559,10 +568,10 @@ class CacheWarmCommand extends Command
         // Schedule daily cache warming at 3 AM in production
         if (app()->environment('production')) {
             $schedule->command('cache:warm --limit=100 --progress')
-                    ->dailyAt('03:00')
-                    ->runInBackground()
-                    ->name('template-cache-warming')
-                    ->description('Warm popular template caches daily');
+                ->dailyAt('03:00')
+                ->runInBackground()
+                ->name('template-cache-warming')
+                ->description('Warm popular template caches daily');
         }
     }
 }

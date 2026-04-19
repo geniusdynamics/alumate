@@ -62,8 +62,8 @@ class JobController extends Controller
             'pending_jobs' => Job::where('employer_id', $employer->id)->where('status', 'pending_approval')->count(),
             'expired_jobs' => Job::where('employer_id', $employer->id)->where('status', 'expired')->count(),
             'filled_jobs' => Job::where('employer_id', $employer->id)->where('status', 'filled')->count(),
-            'total_applications' => $employer->jobs()->withSum('applications', 'id')->get()->sum('applications_sum_id') ?? 0,
-            'avg_applications_per_job' => $employer->jobs()->withAvg('applications', 'id')->get()->avg('applications_avg_id') ?? 0,
+            'total_applications' => $employer->jobs()->withCount('applications')->get()->sum('applications_count') ?? 0,
+            'avg_applications_per_job' => round($employer->jobs()->withCount('applications')->get()->avg('applications_count') ?? 0, 1),
             'jobs_expiring_soon' => Job::where('employer_id', $employer->id)
                 ->where('status', 'active')
                 ->whereNotNull('application_deadline')

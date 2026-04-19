@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Forms;
 
-use App\Rules\PhoneNumber;
 use App\Rules\InstitutionalDomain;
+use App\Rules\PhoneNumber;
 
 class DynamicFormRequest extends BaseFormRequest
 {
@@ -14,16 +14,16 @@ class DynamicFormRequest extends BaseFormRequest
     {
         $formConfig = $this->input('_form_config', []);
         $rules = $this->getSpamProtectionRules();
-        
+
         if (isset($formConfig['fields']) && is_array($formConfig['fields'])) {
             foreach ($formConfig['fields'] as $field) {
                 $fieldRules = $this->buildFieldRules($field);
-                if (!empty($fieldRules)) {
+                if (! empty($fieldRules)) {
                     $rules[$field['name']] = $fieldRules;
                 }
             }
         }
-        
+
         return $rules;
     }
 
@@ -33,99 +33,99 @@ class DynamicFormRequest extends BaseFormRequest
     private function buildFieldRules(array $field): array
     {
         $rules = [];
-        
+
         // Required validation
         if ($field['required'] ?? false) {
             $rules[] = 'required';
         } else {
             $rules[] = 'nullable';
         }
-        
+
         // Type-specific validation
         switch ($field['type']) {
             case 'text':
             case 'textarea':
                 $rules[] = 'string';
                 if (isset($field['min_length'])) {
-                    $rules[] = 'min:' . $field['min_length'];
+                    $rules[] = 'min:'.$field['min_length'];
                 }
                 if (isset($field['max_length'])) {
-                    $rules[] = 'max:' . $field['max_length'];
+                    $rules[] = 'max:'.$field['max_length'];
                 } else {
                     $rules[] = $field['type'] === 'textarea' ? 'max:5000' : 'max:255';
                 }
-                
+
                 // Add pattern validation if specified
                 if (isset($field['pattern'])) {
-                    $rules[] = 'regex:' . $field['pattern'];
+                    $rules[] = 'regex:'.$field['pattern'];
                 }
                 break;
-                
+
             case 'email':
                 $rules[] = 'email:rfc,dns';
                 $rules[] = 'max:255';
-                
+
                 // Check if institutional domain is required
                 if ($field['institutional_only'] ?? false) {
-                    $rules[] = new InstitutionalDomain();
+                    $rules[] = new InstitutionalDomain;
                 }
                 break;
-                
+
             case 'phone':
-                $rules[] = new PhoneNumber();
+                $rules[] = new PhoneNumber;
                 break;
-                
+
             case 'url':
                 $rules[] = 'url';
                 $rules[] = 'max:2048';
                 break;
-                
+
             case 'number':
                 $rules[] = 'numeric';
                 if (isset($field['min'])) {
-                    $rules[] = 'min:' . $field['min'];
+                    $rules[] = 'min:'.$field['min'];
                 }
                 if (isset($field['max'])) {
-                    $rules[] = 'max:' . $field['max'];
+                    $rules[] = 'max:'.$field['max'];
                 }
                 break;
-                
+
             case 'integer':
                 $rules[] = 'integer';
                 if (isset($field['min'])) {
-                    $rules[] = 'min:' . $field['min'];
+                    $rules[] = 'min:'.$field['min'];
                 }
                 if (isset($field['max'])) {
-                    $rules[] = 'max:' . $field['max'];
+                    $rules[] = 'max:'.$field['max'];
                 }
                 break;
-                
+
             case 'date':
                 $rules[] = 'date';
                 if (isset($field['after'])) {
-                    $rules[] = 'after:' . $field['after'];
+                    $rules[] = 'after:'.$field['after'];
                 }
                 if (isset($field['before'])) {
-                    $rules[] = 'before:' . $field['before'];
+                    $rules[] = 'before:'.$field['before'];
                 }
                 break;
-                
+
             case 'datetime':
                 $rules[] = 'date_format:Y-m-d H:i:s';
                 break;
-                
+
             case 'time':
                 $rules[] = 'date_format:H:i';
                 break;
-                
+
             case 'select':
             case 'radio':
                 if (isset($field['options']) && is_array($field['options'])) {
                     $validOptions = array_column($field['options'], 'value');
-                    $rules[] = 'in:' . implode(',', $validOptions);
+                    $rules[] = 'in:'.implode(',', $validOptions);
                 }
                 break;
-                
+
             case 'checkbox':
                 if ($field['single'] ?? false) {
                     $rules[] = 'boolean';
@@ -135,56 +135,56 @@ class DynamicFormRequest extends BaseFormRequest
                 } else {
                     $rules[] = 'array';
                     if (isset($field['min_selections'])) {
-                        $rules[] = 'min:' . $field['min_selections'];
+                        $rules[] = 'min:'.$field['min_selections'];
                     }
                     if (isset($field['max_selections'])) {
-                        $rules[] = 'max:' . $field['max_selections'];
+                        $rules[] = 'max:'.$field['max_selections'];
                     }
-                    
+
                     // Validate individual checkbox values
                     if (isset($field['options']) && is_array($field['options'])) {
                         $validOptions = array_column($field['options'], 'value');
-                        $rules[$field['name'] . '.*'] = 'in:' . implode(',', $validOptions);
+                        $rules[$field['name'].'.*'] = 'in:'.implode(',', $validOptions);
                     }
                 }
                 break;
-                
+
             case 'file':
                 $rules[] = 'file';
                 if (isset($field['max_size'])) {
-                    $rules[] = 'max:' . $field['max_size']; // in KB
+                    $rules[] = 'max:'.$field['max_size']; // in KB
                 }
                 if (isset($field['mime_types'])) {
-                    $rules[] = 'mimes:' . implode(',', $field['mime_types']);
+                    $rules[] = 'mimes:'.implode(',', $field['mime_types']);
                 }
                 break;
-                
+
             case 'image':
                 $rules[] = 'image';
                 if (isset($field['max_size'])) {
-                    $rules[] = 'max:' . $field['max_size']; // in KB
+                    $rules[] = 'max:'.$field['max_size']; // in KB
                 }
                 if (isset($field['dimensions'])) {
                     $dimensionRules = [];
                     if (isset($field['dimensions']['min_width'])) {
-                        $dimensionRules[] = 'min_width=' . $field['dimensions']['min_width'];
+                        $dimensionRules[] = 'min_width='.$field['dimensions']['min_width'];
                     }
                     if (isset($field['dimensions']['max_width'])) {
-                        $dimensionRules[] = 'max_width=' . $field['dimensions']['max_width'];
+                        $dimensionRules[] = 'max_width='.$field['dimensions']['max_width'];
                     }
                     if (isset($field['dimensions']['min_height'])) {
-                        $dimensionRules[] = 'min_height=' . $field['dimensions']['min_height'];
+                        $dimensionRules[] = 'min_height='.$field['dimensions']['min_height'];
                     }
                     if (isset($field['dimensions']['max_height'])) {
-                        $dimensionRules[] = 'max_height=' . $field['dimensions']['max_height'];
+                        $dimensionRules[] = 'max_height='.$field['dimensions']['max_height'];
                     }
-                    if (!empty($dimensionRules)) {
-                        $rules[] = 'dimensions:' . implode(',', $dimensionRules);
+                    if (! empty($dimensionRules)) {
+                        $rules[] = 'dimensions:'.implode(',', $dimensionRules);
                     }
                 }
                 break;
         }
-        
+
         // Custom validation rules from field configuration
         if (isset($field['validation']) && is_array($field['validation'])) {
             foreach ($field['validation'] as $validationRule) {
@@ -193,7 +193,7 @@ class DynamicFormRequest extends BaseFormRequest
                 }
             }
         }
-        
+
         return array_filter($rules);
     }
 
@@ -203,63 +203,65 @@ class DynamicFormRequest extends BaseFormRequest
     private function buildCustomRule(array $ruleConfig): string
     {
         $rule = $ruleConfig['rule'];
-        
+
         switch ($rule) {
             case 'min_length':
-                return 'min:' . ($ruleConfig['value'] ?? 1);
-                
+                return 'min:'.($ruleConfig['value'] ?? 1);
+
             case 'max_length':
-                return 'max:' . ($ruleConfig['value'] ?? 255);
-                
+                return 'max:'.($ruleConfig['value'] ?? 255);
+
             case 'pattern':
-                return 'regex:' . ($ruleConfig['value'] ?? '/.*/');
-                
+                return 'regex:'.($ruleConfig['value'] ?? '/.*/');
+
             case 'unique':
                 $table = $ruleConfig['table'] ?? 'users';
                 $column = $ruleConfig['column'] ?? 'email';
+
                 return "unique:{$table},{$column}";
-                
+
             case 'exists':
                 $table = $ruleConfig['table'] ?? 'users';
                 $column = $ruleConfig['column'] ?? 'id';
+
                 return "exists:{$table},{$column}";
-                
+
             case 'confirmed':
                 return 'confirmed';
-                
+
             case 'same':
-                return 'same:' . ($ruleConfig['field'] ?? 'password');
-                
+                return 'same:'.($ruleConfig['field'] ?? 'password');
+
             case 'different':
-                return 'different:' . ($ruleConfig['field'] ?? 'email');
-                
+                return 'different:'.($ruleConfig['field'] ?? 'email');
+
             case 'alpha':
                 return 'alpha';
-                
+
             case 'alpha_num':
                 return 'alpha_num';
-                
+
             case 'alpha_dash':
                 return 'alpha_dash';
-                
+
             case 'json':
                 return 'json';
-                
+
             case 'ip':
                 return 'ip';
-                
+
             case 'ipv4':
                 return 'ipv4';
-                
+
             case 'ipv6':
                 return 'ipv6';
-                
+
             case 'mac_address':
                 return 'mac_address';
-                
+
             case 'uuid':
                 return 'uuid';
-                
+
             default:
                 return $rule;
         }
@@ -272,12 +274,12 @@ class DynamicFormRequest extends BaseFormRequest
     {
         $messages = parent::messages();
         $formConfig = $this->input('_form_config', []);
-        
+
         if (isset($formConfig['fields']) && is_array($formConfig['fields'])) {
             foreach ($formConfig['fields'] as $field) {
                 $fieldName = $field['name'];
                 $fieldLabel = $field['label'] ?? $fieldName;
-                
+
                 // Add custom messages for this field
                 if (isset($field['validation']) && is_array($field['validation'])) {
                     foreach ($field['validation'] as $validationRule) {
@@ -287,7 +289,7 @@ class DynamicFormRequest extends BaseFormRequest
                         }
                     }
                 }
-                
+
                 // Add default messages with field label
                 $messages["{$fieldName}.required"] = "The {$fieldLabel} field is required.";
                 $messages["{$fieldName}.email"] = "The {$fieldLabel} must be a valid email address.";
@@ -295,7 +297,7 @@ class DynamicFormRequest extends BaseFormRequest
                 $messages["{$fieldName}.max"] = "The {$fieldLabel} may not be greater than :max characters.";
             }
         }
-        
+
         return $messages;
     }
 
@@ -306,7 +308,7 @@ class DynamicFormRequest extends BaseFormRequest
     {
         $attributes = parent::attributes();
         $formConfig = $this->input('_form_config', []);
-        
+
         if (isset($formConfig['fields']) && is_array($formConfig['fields'])) {
             foreach ($formConfig['fields'] as $field) {
                 $fieldName = $field['name'];
@@ -314,7 +316,7 @@ class DynamicFormRequest extends BaseFormRequest
                 $attributes[$fieldName] = strtolower($fieldLabel);
             }
         }
-        
+
         return $attributes;
     }
 
@@ -336,17 +338,19 @@ class DynamicFormRequest extends BaseFormRequest
     private function validateFormConfiguration($validator): void
     {
         $formConfig = $this->input('_form_config', []);
-        
+
         if (empty($formConfig)) {
             $validator->errors()->add('_form_config', 'Form configuration is required.');
+
             return;
         }
-        
-        if (!isset($formConfig['fields']) || !is_array($formConfig['fields'])) {
+
+        if (! isset($formConfig['fields']) || ! is_array($formConfig['fields'])) {
             $validator->errors()->add('_form_config', 'Form must have valid field configuration.');
+
             return;
         }
-        
+
         if (count($formConfig['fields']) === 0) {
             $validator->errors()->add('_form_config', 'Form must have at least one field.');
         }
@@ -358,22 +362,22 @@ class DynamicFormRequest extends BaseFormRequest
     private function validateConditionalFields($validator): void
     {
         $formConfig = $this->input('_form_config', []);
-        
-        if (!isset($formConfig['fields'])) {
+
+        if (! isset($formConfig['fields'])) {
             return;
         }
-        
+
         foreach ($formConfig['fields'] as $field) {
             if (isset($field['conditional']) && $field['conditional']) {
                 $condition = $field['condition'] ?? [];
                 $conditionField = $condition['field'] ?? null;
                 $conditionValue = $condition['value'] ?? null;
                 $conditionOperator = $condition['operator'] ?? 'equals';
-                
+
                 if ($conditionField && $conditionValue !== null) {
                     $actualValue = $this->input($conditionField);
                     $conditionMet = $this->evaluateCondition($actualValue, $conditionValue, $conditionOperator);
-                    
+
                     // If condition is met, validate the conditional field
                     if ($conditionMet && ($field['required'] ?? false)) {
                         $fieldValue = $this->input($field['name']);
@@ -400,7 +404,7 @@ class DynamicFormRequest extends BaseFormRequest
             case 'contains':
                 return is_string($actualValue) && str_contains($actualValue, $expectedValue);
             case 'not_contains':
-                return is_string($actualValue) && !str_contains($actualValue, $expectedValue);
+                return is_string($actualValue) && ! str_contains($actualValue, $expectedValue);
             case 'greater_than':
                 return is_numeric($actualValue) && $actualValue > $expectedValue;
             case 'less_than':
@@ -408,7 +412,7 @@ class DynamicFormRequest extends BaseFormRequest
             case 'in':
                 return is_array($expectedValue) && in_array($actualValue, $expectedValue);
             case 'not_in':
-                return is_array($expectedValue) && !in_array($actualValue, $expectedValue);
+                return is_array($expectedValue) && ! in_array($actualValue, $expectedValue);
             default:
                 return false;
         }
@@ -420,17 +424,17 @@ class DynamicFormRequest extends BaseFormRequest
     private function validateFieldDependencies($validator): void
     {
         $formConfig = $this->input('_form_config', []);
-        
-        if (!isset($formConfig['fields'])) {
+
+        if (! isset($formConfig['fields'])) {
             return;
         }
-        
+
         foreach ($formConfig['fields'] as $field) {
             if (isset($field['dependencies']) && is_array($field['dependencies'])) {
                 foreach ($field['dependencies'] as $dependency) {
                     $dependentField = $dependency['field'] ?? null;
                     $dependentValue = $dependency['value'] ?? null;
-                    
+
                     if ($dependentField && $dependentValue !== null) {
                         $actualValue = $this->input($dependentField);
                         if ($actualValue !== $dependentValue) {
@@ -450,7 +454,7 @@ class DynamicFormRequest extends BaseFormRequest
     protected function prepareForValidation(): void
     {
         parent::prepareForValidation();
-        
+
         // Process form configuration if it's a JSON string
         $formConfig = $this->input('_form_config');
         if (is_string($formConfig)) {

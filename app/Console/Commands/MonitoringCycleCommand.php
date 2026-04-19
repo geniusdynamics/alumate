@@ -73,13 +73,14 @@ class MonitoringCycleCommand extends Command
             $this->error("Monitoring cycle failed: {$e->getMessage()}");
             Log::error('Monitoring cycle command failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return Command::FAILURE;
         }
 
         $this->info('Monitoring cycle completed successfully!');
+
         return Command::SUCCESS;
     }
 
@@ -118,7 +119,7 @@ class MonitoringCycleCommand extends Command
             $this->info("\nSystem Health:");
             foreach ($health as $service => $status) {
                 $statusIcon = ($status['status'] ?? 'unknown') === 'healthy' ? '✅' : '❌';
-                $this->line("  {$statusIcon} {$service}: " . ($status['status'] ?? 'unknown'));
+                $this->line("  {$statusIcon} {$service}: ".($status['status'] ?? 'unknown'));
             }
         }
     }
@@ -130,6 +131,7 @@ class MonitoringCycleCommand extends Command
     {
         if ($dryRun) {
             $this->warn('Skipping alert processing in dry-run mode');
+
             return;
         }
 

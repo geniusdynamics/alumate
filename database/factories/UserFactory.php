@@ -64,6 +64,8 @@ class UserFactory extends Factory
             'two_factor_enabled' => false,
             'timezone' => fake()->randomElement(['UTC', 'America/New_York', 'Europe/London', 'Asia/Tokyo']),
             'language' => fake()->randomElement(['en', 'es', 'fr', 'de']),
+            'graduation_year' => fake()->numberBetween(2015, 2030),
+            'degree' => fake()->randomElement(['Bachelor', 'Master', 'PhD', 'Associate', 'Certificate', null]),
         ];
     }
 

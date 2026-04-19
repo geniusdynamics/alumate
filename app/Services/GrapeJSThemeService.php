@@ -14,40 +14,40 @@ class GrapeJSThemeService
     public function convertToGrapeJSStyleManager(ComponentTheme $theme): array
     {
         $config = $theme->getMergedConfig();
-        
+
         return [
             'sectors' => [
                 [
                     'name' => 'Colors',
                     'open' => true,
                     'buildProps' => ['color', 'background-color', 'border-color'],
-                    'properties' => $this->buildColorProperties($config['colors'] ?? [])
+                    'properties' => $this->buildColorProperties($config['colors'] ?? []),
                 ],
                 [
                     'name' => 'Typography',
                     'open' => false,
                     'buildProps' => ['font-family', 'font-size', 'font-weight', 'line-height', 'text-align'],
-                    'properties' => $this->buildTypographyProperties($config['typography'] ?? [])
+                    'properties' => $this->buildTypographyProperties($config['typography'] ?? []),
                 ],
                 [
                     'name' => 'Spacing',
                     'open' => false,
                     'buildProps' => ['margin', 'padding'],
-                    'properties' => $this->buildSpacingProperties($config['spacing'] ?? [])
+                    'properties' => $this->buildSpacingProperties($config['spacing'] ?? []),
                 ],
                 [
                     'name' => 'Layout',
                     'open' => false,
                     'buildProps' => ['display', 'position', 'width', 'height'],
-                    'properties' => $this->buildLayoutProperties($config)
+                    'properties' => $this->buildLayoutProperties($config),
                 ],
                 [
                     'name' => 'Borders & Effects',
                     'open' => false,
                     'buildProps' => ['border', 'border-radius', 'box-shadow'],
-                    'properties' => $this->buildBorderProperties($config['borders'] ?? [], $config['shadows'] ?? [])
-                ]
-            ]
+                    'properties' => $this->buildBorderProperties($config['borders'] ?? [], $config['shadows'] ?? []),
+                ],
+            ],
         ];
     }
 
@@ -57,7 +57,7 @@ class GrapeJSThemeService
     private function buildColorProperties(array $colors): array
     {
         $properties = [];
-        
+
         foreach ($colors as $name => $value) {
             $properties[] = [
                 'name' => ucfirst(str_replace('_', ' ', $name)),
@@ -68,9 +68,9 @@ class GrapeJSThemeService
                     [
                         'id' => "theme-{$name}",
                         'label' => ucfirst($name),
-                        'value' => $value
-                    ]
-                ]
+                        'value' => $value,
+                    ],
+                ],
             ];
         }
 
@@ -95,21 +95,21 @@ class GrapeJSThemeService
                     ['value' => 'Arial, sans-serif', 'name' => 'Arial'],
                     ['value' => 'Georgia, serif', 'name' => 'Georgia'],
                     ['value' => 'Times New Roman, serif', 'name' => 'Times New Roman'],
-                    ['value' => 'Helvetica, sans-serif', 'name' => 'Helvetica']
-                ]
+                    ['value' => 'Helvetica, sans-serif', 'name' => 'Helvetica'],
+                ],
             ];
         }
 
         if (isset($typography['font_sizes'])) {
             foreach ($typography['font_sizes'] as $size => $value) {
                 $properties[] = [
-                    'name' => ucfirst($size) . ' Font Size',
+                    'name' => ucfirst($size).' Font Size',
                     'property' => 'font-size',
                     'type' => 'slider',
                     'default' => $value,
                     'min' => 8,
                     'max' => 72,
-                    'unit' => 'px'
+                    'unit' => 'px',
                 ];
             }
         }
@@ -122,7 +122,7 @@ class GrapeJSThemeService
                 'default' => $typography['line_height'],
                 'min' => 1,
                 'max' => 3,
-                'step' => 0.1
+                'step' => 0.1,
             ];
         }
 
@@ -135,10 +135,10 @@ class GrapeJSThemeService
     private function buildSpacingProperties(array $spacing): array
     {
         $properties = [];
-        
+
         foreach ($spacing as $name => $value) {
             $properties[] = [
-                'name' => ucfirst(str_replace('_', ' ', $name)) . ' Spacing',
+                'name' => ucfirst(str_replace('_', ' ', $name)).' Spacing',
                 'property' => $name === 'section_padding' ? 'padding' : 'margin',
                 'type' => 'composite',
                 'default' => $value,
@@ -146,8 +146,8 @@ class GrapeJSThemeService
                     ['name' => 'Top', 'property' => 'margin-top', 'type' => 'integer', 'units' => ['px', 'rem', 'em']],
                     ['name' => 'Right', 'property' => 'margin-right', 'type' => 'integer', 'units' => ['px', 'rem', 'em']],
                     ['name' => 'Bottom', 'property' => 'margin-bottom', 'type' => 'integer', 'units' => ['px', 'rem', 'em']],
-                    ['name' => 'Left', 'property' => 'margin-left', 'type' => 'integer', 'units' => ['px', 'rem', 'em']]
-                ]
+                    ['name' => 'Left', 'property' => 'margin-left', 'type' => 'integer', 'units' => ['px', 'rem', 'em']],
+                ],
             ];
         }
 
@@ -170,8 +170,8 @@ class GrapeJSThemeService
                     ['value' => 'inline-block', 'name' => 'Inline Block'],
                     ['value' => 'flex', 'name' => 'Flex'],
                     ['value' => 'grid', 'name' => 'Grid'],
-                    ['value' => 'none', 'name' => 'None']
-                ]
+                    ['value' => 'none', 'name' => 'None'],
+                ],
             ],
             [
                 'name' => 'Position',
@@ -183,9 +183,9 @@ class GrapeJSThemeService
                     ['value' => 'relative', 'name' => 'Relative'],
                     ['value' => 'absolute', 'name' => 'Absolute'],
                     ['value' => 'fixed', 'name' => 'Fixed'],
-                    ['value' => 'sticky', 'name' => 'Sticky']
-                ]
-            ]
+                    ['value' => 'sticky', 'name' => 'Sticky'],
+                ],
+            ],
         ];
     }
 
@@ -204,7 +204,7 @@ class GrapeJSThemeService
                 'default' => $borders['radius'],
                 'min' => 0,
                 'max' => 50,
-                'unit' => 'px'
+                'unit' => 'px',
             ];
         }
 
@@ -216,7 +216,7 @@ class GrapeJSThemeService
                 'default' => $borders['width'],
                 'min' => 0,
                 'max' => 10,
-                'unit' => 'px'
+                'unit' => 'px',
             ];
         }
 
@@ -290,7 +290,7 @@ class GrapeJSThemeService
             'typography' => [],
             'spacing' => [],
             'borders' => [],
-            'animations' => []
+            'animations' => [],
         ];
 
         foreach ($styles as $property => $value) {
@@ -379,7 +379,7 @@ class GrapeJSThemeService
             'tailwindMappings' => $this->generateTailwindMappings($theme),
             'css' => $theme->compileToCss(),
             'accessibility' => $theme->checkAccessibility(),
-            'preview' => $theme->generatePreviewHtml()
+            'preview' => $theme->generatePreviewHtml(),
         ];
     }
 
@@ -389,13 +389,13 @@ class GrapeJSThemeService
     public function importFromGrapeJS(array $grapeJSConfig, string $tenantId): ComponentTheme
     {
         $config = $this->convertFromGrapeJSStyles($grapeJSConfig['styles'] ?? []);
-        
+
         return ComponentTheme::create([
             'tenant_id' => $tenantId,
             'name' => $grapeJSConfig['name'] ?? 'Imported Theme',
             'slug' => str($grapeJSConfig['name'] ?? 'imported-theme')->slug(),
             'config' => $config,
-            'is_default' => false
+            'is_default' => false,
         ]);
     }
 
@@ -407,7 +407,7 @@ class GrapeJSThemeService
         return Cache::remember(
             "grapejs_theme_{$theme->id}",
             now()->addHours(24),
-            fn() => $this->exportForGrapeJS($theme)
+            fn () => $this->exportForGrapeJS($theme)
         );
     }
 
@@ -426,7 +426,7 @@ class GrapeJSThemeService
     {
         return ComponentTheme::forTenant($tenantId)
             ->get()
-            ->map(fn($theme) => $this->getCachedThemeData($theme));
+            ->map(fn ($theme) => $this->getCachedThemeData($theme));
     }
 
     /**
@@ -440,19 +440,19 @@ class GrapeJSThemeService
         // Check required color properties
         $requiredColors = ['primary', 'background', 'text'];
         foreach ($requiredColors as $color) {
-            if (!isset($config['colors'][$color])) {
+            if (! isset($config['colors'][$color])) {
                 $issues[] = "Missing required color: {$color}";
             }
         }
 
         // Check typography requirements
-        if (!isset($config['typography']['font_family'])) {
-            $issues[] = "Missing font family configuration";
+        if (! isset($config['typography']['font_family'])) {
+            $issues[] = 'Missing font family configuration';
         }
 
         // Check spacing requirements
-        if (!isset($config['spacing']['base'])) {
-            $issues[] = "Missing base spacing configuration";
+        if (! isset($config['spacing']['base'])) {
+            $issues[] = 'Missing base spacing configuration';
         }
 
         // Check accessibility

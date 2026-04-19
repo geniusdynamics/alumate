@@ -15,13 +15,13 @@ class UpdateComponentRequest extends FormRequest
     public function authorize(): bool
     {
         // Check if user is authenticated
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return false;
         }
 
         // Check if component exists and belongs to user's tenant
         $component = $this->route('component');
-        if (!$component instanceof Component) {
+        if (! $component instanceof Component) {
             return false;
         }
 
@@ -42,14 +42,14 @@ class UpdateComponentRequest extends FormRequest
                 'sometimes',
                 'string',
                 'max:255',
-                'unique:components,name,' . $componentId . ',id,tenant_id,' . Auth::user()->tenant_id
+                'unique:components,name,'.$componentId.',id,tenant_id,'.Auth::user()->tenant_id,
             ],
             'slug' => [
                 'sometimes',
                 'string',
                 'max:255',
                 'regex:/^[a-z0-9-]+$/',
-                'unique:components,slug,' . $componentId . ',id,tenant_id,' . Auth::user()->tenant_id
+                'unique:components,slug,'.$componentId.',id,tenant_id,'.Auth::user()->tenant_id,
             ],
             'category' => ['sometimes', Rule::in(['hero', 'forms', 'testimonials', 'statistics', 'ctas', 'media'])],
             'type' => 'sometimes|string|max:100',
@@ -58,7 +58,7 @@ class UpdateComponentRequest extends FormRequest
             'metadata' => 'nullable|array',
             'version' => 'sometimes|string|max:20',
             'is_active' => 'sometimes|boolean',
-            
+
             // Category-specific validation rules (only when category is being updated)
             'config.headline' => 'required_with:category|string|max:255',
             'config.subheading' => 'nullable|string|max:500',
@@ -66,7 +66,7 @@ class UpdateComponentRequest extends FormRequest
             'config.cta_url' => 'required_with:category|string|url|max:255',
             'config.background_type' => 'required_with:category|in:image,video,gradient',
             'config.show_statistics' => 'boolean',
-            
+
             'config.fields' => 'required_with:category|array',
             'config.fields.*.type' => 'required|in:text,email,phone,select,checkbox,textarea',
             'config.fields.*.label' => 'required|string|max:255',
@@ -74,26 +74,26 @@ class UpdateComponentRequest extends FormRequest
             'config.submit_text' => 'string|max:50',
             'config.success_message' => 'string|max:500',
             'config.crm_integration' => 'boolean',
-            
+
             'config.testimonials' => 'required_with:category|array',
             'config.testimonials.*.quote' => 'required|string|max:500',
             'config.testimonials.*.author' => 'required|string|max:100',
             'config.testimonials.*.title' => 'nullable|string|max:100',
             'config.testimonials.*.company' => 'nullable|string|max:100',
             'config.testimonials.*.photo' => 'nullable|string|url',
-            
+
             'config.metrics' => 'required_with:category|array',
             'config.metrics.*.label' => 'required|string|max:100',
             'config.metrics.*.value' => 'required|numeric',
             'config.metrics.*.suffix' => 'nullable|string|max:10',
             'config.animation_type' => 'in:counter,progress,chart',
             'config.trigger_on_scroll' => 'boolean',
-            
+
             'config.buttons' => 'required_with:category|array',
             'config.buttons.*.text' => 'required|string|max:50',
             'config.buttons.*.url' => 'required|string|url|max:255',
             'config.buttons.*.style' => 'in:primary,secondary,outline,text',
-            
+
             'config.sources' => 'required_with:category|array',
             'config.sources.*.url' => 'required|string|url',
             'config.sources.*.type' => 'in:image,video',
@@ -147,12 +147,12 @@ class UpdateComponentRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Generate slug if name is being updated but slug is not
-        if ($this->has('name') && !$this->has('slug')) {
+        if ($this->has('name') && ! $this->has('slug')) {
             $this->merge(['slug' => str($this->name)->slug()]);
         }
 
         // Ensure config structure exists if config is being updated
-        if ($this->has('config') && !is_array($this->config)) {
+        if ($this->has('config') && ! is_array($this->config)) {
             $this->merge(['config' => []]);
         }
     }
@@ -177,26 +177,26 @@ class UpdateComponentRequest extends FormRequest
      */
     private function validateAccessibility(): void
     {
-        if (!$this->has('config')) {
+        if (! $this->has('config')) {
             return;
         }
 
         $config = $this->config;
 
         // Check for required accessibility attributes
-        if (!isset($config['accessibility'])) {
+        if (! isset($config['accessibility'])) {
             $config['accessibility'] = [];
         }
 
         $accessibility = $config['accessibility'];
 
         // Ensure semantic HTML usage
-        if (!isset($accessibility['semanticTag'])) {
+        if (! isset($accessibility['semanticTag'])) {
             $accessibility['semanticTag'] = 'div';
         }
 
         // Ensure keyboard navigation support
-        if (!isset($accessibility['keyboardNavigation'])) {
+        if (! isset($accessibility['keyboardNavigation'])) {
             $accessibility['keyboardNavigation'] = ['focusable' => false];
         }
 
@@ -209,18 +209,18 @@ class UpdateComponentRequest extends FormRequest
      */
     private function validateMobileResponsiveness(): void
     {
-        if (!$this->has('config')) {
+        if (! $this->has('config')) {
             return;
         }
 
         $config = $this->config;
 
         // Check for responsive configuration
-        if (!isset($config['responsive'])) {
+        if (! isset($config['responsive'])) {
             $config['responsive'] = [
                 'desktop' => [],
                 'tablet' => [],
-                'mobile' => []
+                'mobile' => [],
             ];
         }
 
@@ -228,7 +228,7 @@ class UpdateComponentRequest extends FormRequest
 
         // Ensure all breakpoints have configuration
         foreach (['desktop', 'tablet', 'mobile'] as $breakpoint) {
-            if (!isset($responsive[$breakpoint])) {
+            if (! isset($responsive[$breakpoint])) {
                 $responsive[$breakpoint] = [];
             }
         }
@@ -242,14 +242,14 @@ class UpdateComponentRequest extends FormRequest
      */
     private function validateVersionUpdate(): void
     {
-        if (!$this->has('version')) {
+        if (! $this->has('version')) {
             return;
         }
 
         $version = $this->version;
 
         // Validate version format (semantic versioning)
-        if (!preg_match('/^\d+\.\d+\.\d+$/', $version)) {
+        if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
             $this->validator->errors()->add(
                 'version',
                 'Version must follow semantic versioning format (e.g., 1.0.0).'

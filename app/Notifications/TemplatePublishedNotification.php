@@ -13,7 +13,9 @@ class TemplatePublishedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $template;
+
     protected $user;
+
     protected $additionalData;
 
     public function __construct($template, $user = null, $additionalData = [])
@@ -72,10 +74,10 @@ class TemplatePublishedNotification extends Notification implements ShouldQueue
             ->subject("Your Template '{$this->template->name}' Has Been Published!")
             ->greeting("Hi {$notifiable->name}!")
             ->line("Great news! Your template '{$this->template->name}' has been published successfully.")
-            ->line("**Template Details:**")
-            ->line("- Category: " . ucfirst($this->template->category))
-            ->line("- Audience: " . ucfirst($this->template->audience_type))
-            ->line("- Campaign Type: " . ucfirst(str_replace('_', ' ', $this->template->campaign_type)))
+            ->line('**Template Details:**')
+            ->line('- Category: '.ucfirst($this->template->category))
+            ->line('- Audience: '.ucfirst($this->template->audience_type))
+            ->line('- Campaign Type: '.ucfirst(str_replace('_', ' ', $this->template->campaign_type)))
             ->action('View Template', url("/templates/{$this->template->id}"))
             ->line('Your template is now live and ready to use!')
             ->line('Thank you for contributing to our template library!');

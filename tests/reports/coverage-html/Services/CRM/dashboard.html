@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /workspace/app/Services/CRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../index.html">/workspace/app</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Services</a></li>
+         <li class="breadcrumb-item"><a href="index.html">CRM</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="FrappeCrmClient.php.html#7">App\Services\CRM\FrappeCrmClient</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#7">App\Services\CRM\HubSpotClient</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#7">App\Services\CRM\SalesforceClient</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#7">App\Services\CRM\TwentyCrmClient</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#7">App\Services\CRM\ZohoCrmClient</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="TwentyCrmClient.php.html#7">App\Services\CRM\TwentyCrmClient</a></td><td class="text-right">0.0%</td><td class="text-right">54</td><td class="text-right">2970</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#7">App\Services\CRM\FrappeCrmClient</a></td><td class="text-right">0.0%</td><td class="text-right">38</td><td class="text-right">1482</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#7">App\Services\CRM\ZohoCrmClient</a></td><td class="text-right">0.0%</td><td class="text-right">30</td><td class="text-right">930</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#7">App\Services\CRM\SalesforceClient</a></td><td class="text-right">0.0%</td><td class="text-right">26</td><td class="text-right">702</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#7">App\Services\CRM\HubSpotClient</a></td><td class="text-right">0.0%</td><td class="text-right">19</td><td class="text-right">380</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="FrappeCrmClient.php.html#13"><abbr title="App\Services\CRM\FrappeCrmClient::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#19"><abbr title="App\Services\CRM\FrappeCrmClient::testConnection">testConnection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#40"><abbr title="App\Services\CRM\FrappeCrmClient::createLead">createLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#57"><abbr title="App\Services\CRM\FrappeCrmClient::updateLead">updateLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#74"><abbr title="App\Services\CRM\FrappeCrmClient::getLead">getLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#85"><abbr title="App\Services\CRM\FrappeCrmClient::deleteLead">deleteLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#92"><abbr title="App\Services\CRM\FrappeCrmClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#113"><abbr title="App\Services\CRM\FrappeCrmClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#133"><abbr title="App\Services\CRM\FrappeCrmClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#167"><abbr title="App\Services\CRM\FrappeCrmClient::mapToFrappeFields">mapToFrappeFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#206"><abbr title="App\Services\CRM\FrappeCrmClient::convertToCustomer">convertToCustomer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#236"><abbr title="App\Services\CRM\FrappeCrmClient::createOpportunity">createOpportunity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#264"><abbr title="App\Services\CRM\FrappeCrmClient::addNote">addNote</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#290"><abbr title="App\Services\CRM\FrappeCrmClient::getLeadActivities">getLeadActivities</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#310"><abbr title="App\Services\CRM\FrappeCrmClient::createQuotation">createQuotation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#13"><abbr title="App\Services\CRM\HubSpotClient::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#18"><abbr title="App\Services\CRM\HubSpotClient::testConnection">testConnection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#31"><abbr title="App\Services\CRM\HubSpotClient::createLead">createLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#50"><abbr title="App\Services\CRM\HubSpotClient::updateLead">updateLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#69"><abbr title="App\Services\CRM\HubSpotClient::getLead">getLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#80"><abbr title="App\Services\CRM\HubSpotClient::deleteLead">deleteLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#87"><abbr title="App\Services\CRM\HubSpotClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#112"><abbr title="App\Services\CRM\HubSpotClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#130"><abbr title="App\Services\CRM\HubSpotClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#152"><abbr title="App\Services\CRM\HubSpotClient::mapToHubSpotFields">mapToHubSpotFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#15"><abbr title="App\Services\CRM\SalesforceClient::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#21"><abbr title="App\Services\CRM\SalesforceClient::testConnection">testConnection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#42"><abbr title="App\Services\CRM\SalesforceClient::createLead">createLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#61"><abbr title="App\Services\CRM\SalesforceClient::updateLead">updateLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#80"><abbr title="App\Services\CRM\SalesforceClient::getLead">getLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#93"><abbr title="App\Services\CRM\SalesforceClient::deleteLead">deleteLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#102"><abbr title="App\Services\CRM\SalesforceClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#123"><abbr title="App\Services\CRM\SalesforceClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#143"><abbr title="App\Services\CRM\SalesforceClient::authenticate">authenticate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#164"><abbr title="App\Services\CRM\SalesforceClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#192"><abbr title="App\Services\CRM\SalesforceClient::mapToSalesforceFields">mapToSalesforceFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#13"><abbr title="App\Services\CRM\TwentyCrmClient::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#19"><abbr title="App\Services\CRM\TwentyCrmClient::testConnection">testConnection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#55"><abbr title="App\Services\CRM\TwentyCrmClient::createLead">createLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#97"><abbr title="App\Services\CRM\TwentyCrmClient::updateLead">updateLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#138"><abbr title="App\Services\CRM\TwentyCrmClient::getLead">getLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#176"><abbr title="App\Services\CRM\TwentyCrmClient::deleteLead">deleteLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#194"><abbr title="App\Services\CRM\TwentyCrmClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#244"><abbr title="App\Services\CRM\TwentyCrmClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#281"><abbr title="App\Services\CRM\TwentyCrmClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#311"><abbr title="App\Services\CRM\TwentyCrmClient::mapToTwentyFields">mapToTwentyFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#346"><abbr title="App\Services\CRM\TwentyCrmClient::mapFieldName">mapFieldName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#363"><abbr title="App\Services\CRM\TwentyCrmClient::createCompany">createCompany</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#419"><abbr title="App\Services\CRM\TwentyCrmClient::createOpportunity">createOpportunity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#477"><abbr title="App\Services\CRM\TwentyCrmClient::addNote">addNote</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#521"><abbr title="App\Services\CRM\TwentyCrmClient::getPersonActivities">getPersonActivities</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#566"><abbr title="App\Services\CRM\TwentyCrmClient::getPersonOpportunities">getPersonOpportunities</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#15"><abbr title="App\Services\CRM\ZohoCrmClient::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#21"><abbr title="App\Services\CRM\ZohoCrmClient::testConnection">testConnection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#42"><abbr title="App\Services\CRM\ZohoCrmClient::createLead">createLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#67"><abbr title="App\Services\CRM\ZohoCrmClient::updateLead">updateLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#90"><abbr title="App\Services\CRM\ZohoCrmClient::getLead">getLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#103"><abbr title="App\Services\CRM\ZohoCrmClient::deleteLead">deleteLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#112"><abbr title="App\Services\CRM\ZohoCrmClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#136"><abbr title="App\Services\CRM\ZohoCrmClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#156"><abbr title="App\Services\CRM\ZohoCrmClient::authenticate">authenticate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#170"><abbr title="App\Services\CRM\ZohoCrmClient::refreshAccessToken">refreshAccessToken</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#187"><abbr title="App\Services\CRM\ZohoCrmClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#215"><abbr title="App\Services\CRM\ZohoCrmClient::mapToZohoFields">mapToZohoFields</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="FrappeCrmClient.php.html#133"><abbr title="App\Services\CRM\FrappeCrmClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#311"><abbr title="App\Services\CRM\TwentyCrmClient::mapToTwentyFields">mapToTwentyFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#167"><abbr title="App\Services\CRM\FrappeCrmClient::mapToFrappeFields">mapToFrappeFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#164"><abbr title="App\Services\CRM\SalesforceClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#363"><abbr title="App\Services\CRM\TwentyCrmClient::createCompany">createCompany</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#419"><abbr title="App\Services\CRM\TwentyCrmClient::createOpportunity">createOpportunity</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#187"><abbr title="App\Services\CRM\ZohoCrmClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#19"><abbr title="App\Services\CRM\TwentyCrmClient::testConnection">testConnection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#194"><abbr title="App\Services\CRM\TwentyCrmClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#281"><abbr title="App\Services\CRM\TwentyCrmClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#19"><abbr title="App\Services\CRM\FrappeCrmClient::testConnection">testConnection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#92"><abbr title="App\Services\CRM\FrappeCrmClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#130"><abbr title="App\Services\CRM\HubSpotClient::makeRequest">makeRequest</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#21"><abbr title="App\Services\CRM\SalesforceClient::testConnection">testConnection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#123"><abbr title="App\Services\CRM\SalesforceClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#143"><abbr title="App\Services\CRM\SalesforceClient::authenticate">authenticate</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#55"><abbr title="App\Services\CRM\TwentyCrmClient::createLead">createLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#97"><abbr title="App\Services\CRM\TwentyCrmClient::updateLead">updateLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#138"><abbr title="App\Services\CRM\TwentyCrmClient::getLead">getLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#244"><abbr title="App\Services\CRM\TwentyCrmClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#477"><abbr title="App\Services\CRM\TwentyCrmClient::addNote">addNote</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#521"><abbr title="App\Services\CRM\TwentyCrmClient::getPersonActivities">getPersonActivities</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#566"><abbr title="App\Services\CRM\TwentyCrmClient::getPersonOpportunities">getPersonOpportunities</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#21"><abbr title="App\Services\CRM\ZohoCrmClient::testConnection">testConnection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#42"><abbr title="App\Services\CRM\ZohoCrmClient::createLead">createLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#90"><abbr title="App\Services\CRM\ZohoCrmClient::getLead">getLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#112"><abbr title="App\Services\CRM\ZohoCrmClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#156"><abbr title="App\Services\CRM\ZohoCrmClient::authenticate">authenticate</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#40"><abbr title="App\Services\CRM\FrappeCrmClient::createLead">createLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#57"><abbr title="App\Services\CRM\FrappeCrmClient::updateLead">updateLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#74"><abbr title="App\Services\CRM\FrappeCrmClient::getLead">getLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#113"><abbr title="App\Services\CRM\FrappeCrmClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#206"><abbr title="App\Services\CRM\FrappeCrmClient::convertToCustomer">convertToCustomer</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#236"><abbr title="App\Services\CRM\FrappeCrmClient::createOpportunity">createOpportunity</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#264"><abbr title="App\Services\CRM\FrappeCrmClient::addNote">addNote</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#290"><abbr title="App\Services\CRM\FrappeCrmClient::getLeadActivities">getLeadActivities</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FrappeCrmClient.php.html#310"><abbr title="App\Services\CRM\FrappeCrmClient::createQuotation">createQuotation</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#18"><abbr title="App\Services\CRM\HubSpotClient::testConnection">testConnection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#31"><abbr title="App\Services\CRM\HubSpotClient::createLead">createLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#50"><abbr title="App\Services\CRM\HubSpotClient::updateLead">updateLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#69"><abbr title="App\Services\CRM\HubSpotClient::getLead">getLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#87"><abbr title="App\Services\CRM\HubSpotClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#112"><abbr title="App\Services\CRM\HubSpotClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HubSpotClient.php.html#152"><abbr title="App\Services\CRM\HubSpotClient::mapToHubSpotFields">mapToHubSpotFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#42"><abbr title="App\Services\CRM\SalesforceClient::createLead">createLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#61"><abbr title="App\Services\CRM\SalesforceClient::updateLead">updateLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#80"><abbr title="App\Services\CRM\SalesforceClient::getLead">getLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#102"><abbr title="App\Services\CRM\SalesforceClient::searchLeads">searchLeads</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalesforceClient.php.html#192"><abbr title="App\Services\CRM\SalesforceClient::mapToSalesforceFields">mapToSalesforceFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="TwentyCrmClient.php.html#176"><abbr title="App\Services\CRM\TwentyCrmClient::deleteLead">deleteLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#67"><abbr title="App\Services\CRM\ZohoCrmClient::updateLead">updateLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#136"><abbr title="App\Services\CRM\ZohoCrmClient::getAvailableFields">getAvailableFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#170"><abbr title="App\Services\CRM\ZohoCrmClient::refreshAccessToken">refreshAccessToken</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ZohoCrmClient.php.html#215"><abbr title="App\Services\CRM\ZohoCrmClient::mapToZohoFields">mapToZohoFields</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.5.6-dev</a> and <a href="https://phpunit.de/">PHPUnit 12.5.8</a> at Thu Apr 2 17:21:57 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,38,"FrappeCrmClient.php.html#7","App\\Services\\CRM\\FrappeCrmClient","1482"],[0,19,"HubSpotClient.php.html#7","App\\Services\\CRM\\HubSpotClient","380"],[0,26,"SalesforceClient.php.html#7","App\\Services\\CRM\\SalesforceClient","702"],[0,54,"TwentyCrmClient.php.html#7","App\\Services\\CRM\\TwentyCrmClient","2970"],[0,30,"ZohoCrmClient.php.html#7","App\\Services\\CRM\\ZohoCrmClient","930"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"FrappeCrmClient.php.html#13","App\\Services\\CRM\\FrappeCrmClient::__construct","2"],[0,3,"FrappeCrmClient.php.html#19","App\\Services\\CRM\\FrappeCrmClient::testConnection","12"],[0,2,"FrappeCrmClient.php.html#40","App\\Services\\CRM\\FrappeCrmClient::createLead","6"],[0,2,"FrappeCrmClient.php.html#57","App\\Services\\CRM\\FrappeCrmClient::updateLead","6"],[0,2,"FrappeCrmClient.php.html#74","App\\Services\\CRM\\FrappeCrmClient::getLead","6"],[0,1,"FrappeCrmClient.php.html#85","App\\Services\\CRM\\FrappeCrmClient::deleteLead","2"],[0,3,"FrappeCrmClient.php.html#92","App\\Services\\CRM\\FrappeCrmClient::searchLeads","12"],[0,2,"FrappeCrmClient.php.html#113","App\\Services\\CRM\\FrappeCrmClient::getAvailableFields","6"],[0,7,"FrappeCrmClient.php.html#133","App\\Services\\CRM\\FrappeCrmClient::makeRequest","56"],[0,5,"FrappeCrmClient.php.html#167","App\\Services\\CRM\\FrappeCrmClient::mapToFrappeFields","30"],[0,2,"FrappeCrmClient.php.html#206","App\\Services\\CRM\\FrappeCrmClient::convertToCustomer","6"],[0,2,"FrappeCrmClient.php.html#236","App\\Services\\CRM\\FrappeCrmClient::createOpportunity","6"],[0,2,"FrappeCrmClient.php.html#264","App\\Services\\CRM\\FrappeCrmClient::addNote","6"],[0,2,"FrappeCrmClient.php.html#290","App\\Services\\CRM\\FrappeCrmClient::getLeadActivities","6"],[0,2,"FrappeCrmClient.php.html#310","App\\Services\\CRM\\FrappeCrmClient::createQuotation","6"],[0,1,"HubSpotClient.php.html#13","App\\Services\\CRM\\HubSpotClient::__construct","2"],[0,2,"HubSpotClient.php.html#18","App\\Services\\CRM\\HubSpotClient::testConnection","6"],[0,2,"HubSpotClient.php.html#31","App\\Services\\CRM\\HubSpotClient::createLead","6"],[0,2,"HubSpotClient.php.html#50","App\\Services\\CRM\\HubSpotClient::updateLead","6"],[0,2,"HubSpotClient.php.html#69","App\\Services\\CRM\\HubSpotClient::getLead","6"],[0,1,"HubSpotClient.php.html#80","App\\Services\\CRM\\HubSpotClient::deleteLead","2"],[0,2,"HubSpotClient.php.html#87","App\\Services\\CRM\\HubSpotClient::searchLeads","6"],[0,2,"HubSpotClient.php.html#112","App\\Services\\CRM\\HubSpotClient::getAvailableFields","6"],[0,3,"HubSpotClient.php.html#130","App\\Services\\CRM\\HubSpotClient::makeRequest","12"],[0,2,"HubSpotClient.php.html#152","App\\Services\\CRM\\HubSpotClient::mapToHubSpotFields","6"],[0,1,"SalesforceClient.php.html#15","App\\Services\\CRM\\SalesforceClient::__construct","2"],[0,3,"SalesforceClient.php.html#21","App\\Services\\CRM\\SalesforceClient::testConnection","12"],[0,2,"SalesforceClient.php.html#42","App\\Services\\CRM\\SalesforceClient::createLead","6"],[0,2,"SalesforceClient.php.html#61","App\\Services\\CRM\\SalesforceClient::updateLead","6"],[0,2,"SalesforceClient.php.html#80","App\\Services\\CRM\\SalesforceClient::getLead","6"],[0,1,"SalesforceClient.php.html#93","App\\Services\\CRM\\SalesforceClient::deleteLead","2"],[0,2,"SalesforceClient.php.html#102","App\\Services\\CRM\\SalesforceClient::searchLeads","6"],[0,3,"SalesforceClient.php.html#123","App\\Services\\CRM\\SalesforceClient::getAvailableFields","12"],[0,3,"SalesforceClient.php.html#143","App\\Services\\CRM\\SalesforceClient::authenticate","12"],[0,5,"SalesforceClient.php.html#164","App\\Services\\CRM\\SalesforceClient::makeRequest","30"],[0,2,"SalesforceClient.php.html#192","App\\Services\\CRM\\SalesforceClient::mapToSalesforceFields","6"],[0,1,"TwentyCrmClient.php.html#13","App\\Services\\CRM\\TwentyCrmClient::__construct","2"],[0,4,"TwentyCrmClient.php.html#19","App\\Services\\CRM\\TwentyCrmClient::testConnection","20"],[0,3,"TwentyCrmClient.php.html#55","App\\Services\\CRM\\TwentyCrmClient::createLead","12"],[0,3,"TwentyCrmClient.php.html#97","App\\Services\\CRM\\TwentyCrmClient::updateLead","12"],[0,3,"TwentyCrmClient.php.html#138","App\\Services\\CRM\\TwentyCrmClient::getLead","12"],[0,2,"TwentyCrmClient.php.html#176","App\\Services\\CRM\\TwentyCrmClient::deleteLead","6"],[0,4,"TwentyCrmClient.php.html#194","App\\Services\\CRM\\TwentyCrmClient::searchLeads","20"],[0,3,"TwentyCrmClient.php.html#244","App\\Services\\CRM\\TwentyCrmClient::getAvailableFields","12"],[0,4,"TwentyCrmClient.php.html#281","App\\Services\\CRM\\TwentyCrmClient::makeRequest","20"],[0,7,"TwentyCrmClient.php.html#311","App\\Services\\CRM\\TwentyCrmClient::mapToTwentyFields","56"],[0,1,"TwentyCrmClient.php.html#346","App\\Services\\CRM\\TwentyCrmClient::mapFieldName","2"],[0,5,"TwentyCrmClient.php.html#363","App\\Services\\CRM\\TwentyCrmClient::createCompany","30"],[0,5,"TwentyCrmClient.php.html#419","App\\Services\\CRM\\TwentyCrmClient::createOpportunity","30"],[0,3,"TwentyCrmClient.php.html#477","App\\Services\\CRM\\TwentyCrmClient::addNote","12"],[0,3,"TwentyCrmClient.php.html#521","App\\Services\\CRM\\TwentyCrmClient::getPersonActivities","12"],[0,3,"TwentyCrmClient.php.html#566","App\\Services\\CRM\\TwentyCrmClient::getPersonOpportunities","12"],[0,1,"ZohoCrmClient.php.html#15","App\\Services\\CRM\\ZohoCrmClient::__construct","2"],[0,3,"ZohoCrmClient.php.html#21","App\\Services\\CRM\\ZohoCrmClient::testConnection","12"],[0,3,"ZohoCrmClient.php.html#42","App\\Services\\CRM\\ZohoCrmClient::createLead","12"],[0,2,"ZohoCrmClient.php.html#67","App\\Services\\CRM\\ZohoCrmClient::updateLead","6"],[0,3,"ZohoCrmClient.php.html#90","App\\Services\\CRM\\ZohoCrmClient::getLead","12"],[0,1,"ZohoCrmClient.php.html#103","App\\Services\\CRM\\ZohoCrmClient::deleteLead","2"],[0,3,"ZohoCrmClient.php.html#112","App\\Services\\CRM\\ZohoCrmClient::searchLeads","12"],[0,2,"ZohoCrmClient.php.html#136","App\\Services\\CRM\\ZohoCrmClient::getAvailableFields","6"],[0,3,"ZohoCrmClient.php.html#156","App\\Services\\CRM\\ZohoCrmClient::authenticate","12"],[0,2,"ZohoCrmClient.php.html#170","App\\Services\\CRM\\ZohoCrmClient::refreshAccessToken","6"],[0,5,"ZohoCrmClient.php.html#187","App\\Services\\CRM\\ZohoCrmClient::makeRequest","30"],[0,2,"ZohoCrmClient.php.html#215","App\\Services\\CRM\\ZohoCrmClient::mapToZohoFields","6"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [5,0,0,0,0,0,0,0,0,0,0,0])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [64,0,0,0,0,0,0,0,0,0,0,0])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

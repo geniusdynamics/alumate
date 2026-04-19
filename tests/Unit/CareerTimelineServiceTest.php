@@ -391,7 +391,7 @@ class CareerTimelineServiceTest extends TestCase
             ->first();
 
         $this->assertNotNull($milestone);
-        $this->assertStringContains('New Company', $milestone->title);
+        $this->assertStringContainsString('New Company', $milestone->title);
     }
 
     public function test_promotion_detection()
@@ -424,6 +424,6 @@ class CareerTimelineServiceTest extends TestCase
             ->first();
 
         $this->assertNotNull($milestone);
-        $this->assertStringContains('Senior Engineer', $milestone->title);
+        $this->assertStringContainsString('Senior Engineer', $milestone->title);
     }
 }

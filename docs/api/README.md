@@ -5,9 +5,9 @@
 The Alumni Platform API is a comprehensive REST API that provides programmatic access to all platform features including alumni networking, career services, events, fundraising, mentoring, and administrative functions.
 
 ### Current Version: v1.0.0
-**Laravel Framework:** 12.26.4
-**PHP Version:** 8.3.23
-**Database:** PostgreSQL
+**Laravel Framework:** 12.26.4  
+**PHP Version:** 8.3.23  
+**Database:** PostgreSQL 17+
 
 ## Key Features
 
@@ -23,7 +23,7 @@ The Alumni Platform API is a comprehensive REST API that provides programmatic a
 ### Backend
 - **Framework**: Laravel 12.26.4
 - **Language**: PHP 8.3.23
-- **Database**: PostgreSQL 13+
+- **Database**: PostgreSQL 17+
 - **Cache/Queue**: Redis (optional)
 - **API**: REST with Bearer Token Authentication
 
@@ -72,11 +72,11 @@ X-Tenant-Domain: your-tenant-domain.com
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST   | `/auth/login` | User login |
-| POST   | `/auth/register` | User registration |
-| POST   | `/auth/refresh` | Refresh access token |
-| POST   | `/auth/logout` | User logout |
-| GET    | `/auth/user` | Get authenticated user details |
+| POST | `/auth/login` | User login |
+| POST | `/auth/register` | User registration |
+| POST | `/auth/refresh` | Refresh access token |
+| POST | `/auth/logout` | User logout |
+| GET | `/auth/user` | Get authenticated user details |
 
 ## Rate Limiting
 
@@ -149,16 +149,16 @@ All responses are returned in JSON format:
 
 | Code | Status | Description |
 |------|--------|-------------|
-| 200  | OK | Request successful |
-| 201  | Created | Resource created successfully |
-| 204  | No Content | Request successful, no content returned |
-| 400  | Bad Request | Invalid request parameters |
-| 401  | Unauthorized | Authentication required |
-| 403  | Forbidden | Access denied |
-| 404  | Not Found | Resource not found |
-| 422  | Unprocessable Entity | Validation failed |
-| 429  | Too Many Requests | Rate limit exceeded |
-| 500  | Internal Server Error | Server error |
+| 200 | OK | Request successful |
+| 201 | Created | Resource created successfully |
+| 204 | No Content | Request successful, no content returned |
+| 400 | Bad Request | Invalid request parameters |
+| 401 | Unauthorized | Authentication required |
+| 403 | Forbidden | Access denied |
+| 404 | Not Found | Resource not found |
+| 422 | Unprocessable Entity | Validation failed |
+| 429 | Too Many Requests | Rate limit exceeded |
+| 500 | Internal Server Error | Server error |
 
 ### Common Error Codes
 
@@ -240,6 +240,10 @@ Request access to a sandbox environment for development and testing.
 
 ### Developer Resources
 - [API Reference](./reference/) - Complete API endpoint documentation
+- [Authentication Guide](./getting-started/authentication.md) - Authentication setup
+- [Getting Started](./getting-started/first-call.md) - Make your first API call
+- [Analytics Endpoints](./analytics-endpoints.md) - Analytics API documentation
+- [Error Codes](./error-codes.md) - Complete error code reference
 - [Integration Guides](../development/integration-guides/) - Step-by-step integration tutorials
 - [Code Examples](./examples/) - Sample code for common use cases
 - [Troubleshooting](../development/troubleshooting/) - Common issues and solutions
@@ -257,5 +261,7 @@ Request access to a sandbox environment for development and testing.
 2. [Set Up Authentication](./getting-started/authentication.md)
 3. [Make Your First API Call](./getting-started/first-call.md)
 4. [Explore Available Endpoints](./reference/endpoints.md)
+5. [Analytics Endpoints Documentation](./analytics-endpoints.md)
+6. [Error Code Reference](./error-codes.md)
 
 For the latest updates, check our [API Changelog](./changelog.md).

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /workspace/app/Services/Homepage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../index.html">/workspace/app</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Services</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Homepage</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertingService.php.html#15">App\Services\Homepage\AlertingService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#9">App\Services\Homepage\DeploymentService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#15">App\Services\Homepage\HomepageABTestingService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#16">App\Services\Homepage\HomepageAnalyticsService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#15">App\Services\Homepage\HomepageContentService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageOrchestrationService.php.html#17">App\Services\Homepage\HomepageOrchestrationService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#15">App\Services\Homepage\HomepageSEOService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#19">App\Services\Homepage\HomepageStatisticsService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#18">App\Services\Homepage\HomepageTestimonialService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#10">App\Services\Homepage\MonitoringService</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="MonitoringService.php.html#10">App\Services\Homepage\MonitoringService</a></td><td class="text-right">0.0%</td><td class="text-right">63</td><td class="text-right">4032</td></tr>
+       <tr><td><a href="AlertingService.php.html#15">App\Services\Homepage\AlertingService</a></td><td class="text-right">0.0%</td><td class="text-right">56</td><td class="text-right">3192</td></tr>
+       <tr><td><a href="DeploymentService.php.html#9">App\Services\Homepage\DeploymentService</a></td><td class="text-right">0.0%</td><td class="text-right">33</td><td class="text-right">1122</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#15">App\Services\Homepage\HomepageContentService</a></td><td class="text-right">0.0%</td><td class="text-right">16</td><td class="text-right">272</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#19">App\Services\Homepage\HomepageStatisticsService</a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#15">App\Services\Homepage\HomepageABTestingService</a></td><td class="text-right">0.0%</td><td class="text-right">11</td><td class="text-right">132</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#18">App\Services\Homepage\HomepageTestimonialService</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#16">App\Services\Homepage\HomepageAnalyticsService</a></td><td class="text-right">0.0%</td><td class="text-right">8</td><td class="text-right">72</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#15">App\Services\Homepage\HomepageSEOService</a></td><td class="text-right">0.0%</td><td class="text-right">8</td><td class="text-right">72</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertingService.php.html#19"><abbr title="App\Services\Homepage\AlertingService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#27"><abbr title="App\Services\Homepage\AlertingService::sendAlert">sendAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#51"><abbr title="App\Services\Homepage\AlertingService::sendUptimeAlert">sendUptimeAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#75"><abbr title="App\Services\Homepage\AlertingService::sendPerformanceAlert">sendPerformanceAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#99"><abbr title="App\Services\Homepage\AlertingService::sendErrorAlert">sendErrorAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#122"><abbr title="App\Services\Homepage\AlertingService::sendConversionAlert">sendConversionAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#146"><abbr title="App\Services\Homepage\AlertingService::sendSecurityAlert">sendSecurityAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#167"><abbr title="App\Services\Homepage\AlertingService::isAlertRateLimited">isAlertRateLimited</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#192"><abbr title="App\Services\Homepage\AlertingService::updateAlertRateLimit">updateAlertRateLimit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#201"><abbr title="App\Services\Homepage\AlertingService::getAlertCacheKey">getAlertCacheKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#215"><abbr title="App\Services\Homepage\AlertingService::logAlert">logAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#223"><abbr title="App\Services\Homepage\AlertingService::sendToSlack">sendToSlack</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#245"><abbr title="App\Services\Homepage\AlertingService::sendToEmail">sendToEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#266"><abbr title="App\Services\Homepage\AlertingService::sendToPagerDuty">sendToPagerDuty</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#301"><abbr title="App\Services\Homepage\AlertingService::sendToSentry">sendToSentry</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#334"><abbr title="App\Services\Homepage\AlertingService::sendToDataDog">sendToDataDog</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#366"><abbr title="App\Services\Homepage\AlertingService::formatSlackMessage">formatSlackMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#413"><abbr title="App\Services\Homepage\AlertingService::mapSeverityToSentryLevel">mapSeverityToSentryLevel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#427"><abbr title="App\Services\Homepage\AlertingService::mapSeverityToDataDogAlertType">mapSeverityToDataDogAlertType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertingService.php.html#440"><abbr title="App\Services\Homepage\AlertingService::testAlert">testAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#14"><abbr title="App\Services\Homepage\DeploymentService::logDeploymentStart">logDeploymentStart</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#43"><abbr title="App\Services\Homepage\DeploymentService::updateDeploymentStatus">updateDeploymentStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#96"><abbr title="App\Services\Homepage\DeploymentService::runHomepageMigrations">runHomepageMigrations</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#164"><abbr title="App\Services\Homepage\DeploymentService::verifyDeployment">verifyDeployment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#202"><abbr title="App\Services\Homepage\DeploymentService::getHomepageMigrations">getHomepageMigrations</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#222"><abbr title="App\Services\Homepage\DeploymentService::verifyDatabase">verifyDatabase</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#243"><abbr title="App\Services\Homepage\DeploymentService::verifyAssets">verifyAssets</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#280"><abbr title="App\Services\Homepage\DeploymentService::verifyRoutes">verifyRoutes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DeploymentService.php.html#315"><abbr title="App\Services\Homepage\DeploymentService::verifyPerformance">verifyPerformance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#22"><abbr title="App\Services\Homepage\HomepageABTestingService::getABTestVariants">getABTestVariants</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#55"><abbr title="App\Services\Homepage\HomepageABTestingService::assignUserToVariant">assignUserToVariant</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#92"><abbr title="App\Services\Homepage\HomepageABTestingService::trackConversion">trackConversion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#106"><abbr title="App\Services\Homepage\HomepageABTestingService::getTestResults">getTestResults</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#21"><abbr title="App\Services\Homepage\HomepageAnalyticsService::trackPageView">trackPageView</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#54"><abbr title="App\Services\Homepage\HomepageAnalyticsService::trackClickEvent">trackClickEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#78"><abbr title="App\Services\Homepage\HomepageAnalyticsService::getPageViewStats">getPageViewStats</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#98"><abbr title="App\Services\Homepage\HomepageAnalyticsService::getClickStats">getClickStats</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#22"><abbr title="App\Services\Homepage\HomepageContentService::getContentBlocks">getContentBlocks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#45"><abbr title="App\Services\Homepage\HomepageContentService::getNavigationItems">getNavigationItems</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#66"><abbr title="App\Services\Homepage\HomepageContentService::getFooterLinks">getFooterLinks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#97"><abbr title="App\Services\Homepage\HomepageContentService::getFeaturedContent">getFeaturedContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#119"><abbr title="App\Services\Homepage\HomepageContentService::getBaseContentBlocks">getBaseContentBlocks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#133"><abbr title="App\Services\Homepage\HomepageContentService::getInstitutionalBlocks">getInstitutionalBlocks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#144"><abbr title="App\Services\Homepage\HomepageContentService::getEmployerBlocks">getEmployerBlocks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#155"><abbr title="App\Services\Homepage\HomepageContentService::applyABVariant">applyABVariant</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageOrchestrationService.php.html#19"><abbr title="App\Services\Homepage\HomepageOrchestrationService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageOrchestrationService.php.html#31"><abbr title="App\Services\Homepage\HomepageOrchestrationService::getHomepageData">getHomepageData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageOrchestrationService.php.html#58"><abbr title="App\Services\Homepage\HomepageOrchestrationService::getHomepageDataLite">getHomepageDataLite</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#22"><abbr title="App\Services\Homepage\HomepageSEOService::getSEOMetadata">getSEOMetadata</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#63"><abbr title="App\Services\Homepage\HomepageSEOService::getSocialSharingTags">getSocialSharingTags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#91"><abbr title="App\Services\Homepage\HomepageSEOService::getGeneralStructuredData">getGeneralStructuredData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#111"><abbr title="App\Services\Homepage\HomepageSEOService::getInstitutionalStructuredData">getInstitutionalStructuredData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#136"><abbr title="App\Services\Homepage\HomepageSEOService::getEmployerStructuredData">getEmployerStructuredData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#26"><abbr title="App\Services\Homepage\HomepageStatisticsService::getPlatformStatistics">getPlatformStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#44"><abbr title="App\Services\Homepage\HomepageStatisticsService::calculateBaseStats">calculateBaseStats</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#64"><abbr title="App\Services\Homepage\HomepageStatisticsService::getInstitutionalMetrics">getInstitutionalMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#79"><abbr title="App\Services\Homepage\HomepageStatisticsService::getEmployerMetrics">getEmployerMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#94"><abbr title="App\Services\Homepage\HomepageStatisticsService::calculateAverageSalaryIncrease">calculateAverageSalaryIncrease</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#100"><abbr title="App\Services\Homepage\HomepageStatisticsService::countMentorshipMatches">countMentorshipMatches</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#106"><abbr title="App\Services\Homepage\HomepageStatisticsService::countUniqueCompanies">countUniqueCompanies</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#112"><abbr title="App\Services\Homepage\HomepageStatisticsService::countInstitutions">countInstitutions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#118"><abbr title="App\Services\Homepage\HomepageStatisticsService::countBrandedApps">countBrandedApps</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#124"><abbr title="App\Services\Homepage\HomepageStatisticsService::calculateEngagementIncrease">calculateEngagementIncrease</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#130"><abbr title="App\Services\Homepage\HomepageStatisticsService::getAdminSatisfactionRate">getAdminSatisfactionRate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#136"><abbr title="App\Services\Homepage\HomepageStatisticsService::calculateAverageTimeToHire">calculateAverageTimeToHire</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#142"><abbr title="App\Services\Homepage\HomepageStatisticsService::getEmployerSatisfactionRate">getEmployerSatisfactionRate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#25"><abbr title="App\Services\Homepage\HomepageTestimonialService::getTestimonials">getTestimonials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#39"><abbr title="App\Services\Homepage\HomepageTestimonialService::getIndividualTestimonials">getIndividualTestimonials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#76"><abbr title="App\Services\Homepage\HomepageTestimonialService::getInstitutionalTestimonials">getInstitutionalTestimonials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#117"><abbr title="App\Services\Homepage\HomepageTestimonialService::getSuccessStories">getSuccessStories</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#131"><abbr title="App\Services\Homepage\HomepageTestimonialService::getCuratedIndividualTestimonials">getCuratedIndividualTestimonials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#170"><abbr title="App\Services\Homepage\HomepageTestimonialService::getCuratedInstitutionalTestimonials">getCuratedInstitutionalTestimonials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#16"><abbr title="App\Services\Homepage\MonitoringService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#25"><abbr title="App\Services\Homepage\MonitoringService::recordPerformanceMetric">recordPerformanceMetric</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#67"><abbr title="App\Services\Homepage\MonitoringService::recordError">recordError</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#103"><abbr title="App\Services\Homepage\MonitoringService::checkUptime">checkUptime</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#165"><abbr title="App\Services\Homepage\MonitoringService::getConversionMetrics">getConversionMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#238"><abbr title="App\Services\Homepage\MonitoringService::getDashboardData">getDashboardData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#253"><abbr title="App\Services\Homepage\MonitoringService::checkPerformanceAlerts">checkPerformanceAlerts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#277"><abbr title="App\Services\Homepage\MonitoringService::checkErrorAlerts">checkErrorAlerts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#302"><abbr title="App\Services\Homepage\MonitoringService::sendToErrorTrackingService">sendToErrorTrackingService</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#321"><abbr title="App\Services\Homepage\MonitoringService::monitorConversionMetrics">monitorConversionMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#373"><abbr title="App\Services\Homepage\MonitoringService::monitorSecurityThreats">monitorSecurityThreats</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#408"><abbr title="App\Services\Homepage\MonitoringService::detectSuspiciousIPs">detectSuspiciousIPs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#440"><abbr title="App\Services\Homepage\MonitoringService::detectRateLimitViolations">detectRateLimitViolations</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#450"><abbr title="App\Services\Homepage\MonitoringService::detectMaliciousRequests">detectMaliciousRequests</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#494"><abbr title="App\Services\Homepage\MonitoringService::getRecentErrors">getRecentErrors</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#525"><abbr title="App\Services\Homepage\MonitoringService::getPerformanceSummary">getPerformanceSummary</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#551"><abbr title="App\Services\Homepage\MonitoringService::getActiveAlerts">getActiveAlerts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#561"><abbr title="App\Services\Homepage\MonitoringService::getSystemHealth">getSystemHealth</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#579"><abbr title="App\Services\Homepage\MonitoringService::checkDatabaseHealth">checkDatabaseHealth</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#601"><abbr title="App\Services\Homepage\MonitoringService::checkCacheHealth">checkCacheHealth</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#624"><abbr title="App\Services\Homepage\MonitoringService::checkStorageHealth">checkStorageHealth</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#647"><abbr title="App\Services\Homepage\MonitoringService::getMemoryUsage">getMemoryUsage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitoringService.php.html#659"><abbr title="App\Services\Homepage\MonitoringService::getDiskUsage">getDiskUsage</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertingService.php.html#366"><abbr title="App\Services\Homepage\AlertingService::formatSlackMessage">formatSlackMessage</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">14</td><td class="text-right">210</td></tr>
+       <tr><td><a href="DeploymentService.php.html#43"><abbr title="App\Services\Homepage\DeploymentService::updateDeploymentStatus">updateDeploymentStatus</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">8</td><td class="text-right">72</td></tr>
+       <tr><td><a href="MonitoringService.php.html#321"><abbr title="App\Services\Homepage\MonitoringService::monitorConversionMetrics">monitorConversionMetrics</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="AlertingService.php.html#413"><abbr title="App\Services\Homepage\AlertingService::mapSeverityToSentryLevel">mapSeverityToSentryLevel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="DeploymentService.php.html#280"><abbr title="App\Services\Homepage\DeploymentService::verifyRoutes">verifyRoutes</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#55"><abbr title="App\Services\Homepage\HomepageABTestingService::assignUserToVariant">assignUserToVariant</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="AlertingService.php.html#427"><abbr title="App\Services\Homepage\AlertingService::mapSeverityToDataDogAlertType">mapSeverityToDataDogAlertType</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MonitoringService.php.html#103"><abbr title="App\Services\Homepage\MonitoringService::checkUptime">checkUptime</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MonitoringService.php.html#373"><abbr title="App\Services\Homepage\MonitoringService::monitorSecurityThreats">monitorSecurityThreats</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MonitoringService.php.html#494"><abbr title="App\Services\Homepage\MonitoringService::getRecentErrors">getRecentErrors</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="AlertingService.php.html#266"><abbr title="App\Services\Homepage\AlertingService::sendToPagerDuty">sendToPagerDuty</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="AlertingService.php.html#301"><abbr title="App\Services\Homepage\AlertingService::sendToSentry">sendToSentry</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="DeploymentService.php.html#96"><abbr title="App\Services\Homepage\DeploymentService::runHomepageMigrations">runHomepageMigrations</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="DeploymentService.php.html#243"><abbr title="App\Services\Homepage\DeploymentService::verifyAssets">verifyAssets</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#22"><abbr title="App\Services\Homepage\HomepageContentService::getContentBlocks">getContentBlocks</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#97"><abbr title="App\Services\Homepage\HomepageContentService::getFeaturedContent">getFeaturedContent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="MonitoringService.php.html#253"><abbr title="App\Services\Homepage\MonitoringService::checkPerformanceAlerts">checkPerformanceAlerts</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="MonitoringService.php.html#450"><abbr title="App\Services\Homepage\MonitoringService::detectMaliciousRequests">detectMaliciousRequests</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="AlertingService.php.html#223"><abbr title="App\Services\Homepage\AlertingService::sendToSlack">sendToSlack</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AlertingService.php.html#245"><abbr title="App\Services\Homepage\AlertingService::sendToEmail">sendToEmail</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AlertingService.php.html#334"><abbr title="App\Services\Homepage\AlertingService::sendToDataDog">sendToDataDog</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="DeploymentService.php.html#164"><abbr title="App\Services\Homepage\DeploymentService::verifyDeployment">verifyDeployment</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="DeploymentService.php.html#315"><abbr title="App\Services\Homepage\DeploymentService::verifyPerformance">verifyPerformance</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#21"><abbr title="App\Services\Homepage\HomepageAnalyticsService::trackPageView">trackPageView</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="HomepageContentService.php.html#45"><abbr title="App\Services\Homepage\HomepageContentService::getNavigationItems">getNavigationItems</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#22"><abbr title="App\Services\Homepage\HomepageSEOService::getSEOMetadata">getSEOMetadata</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="HomepageStatisticsService.php.html#26"><abbr title="App\Services\Homepage\HomepageStatisticsService::getPlatformStatistics">getPlatformStatistics</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="MonitoringService.php.html#25"><abbr title="App\Services\Homepage\MonitoringService::recordPerformanceMetric">recordPerformanceMetric</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="MonitoringService.php.html#165"><abbr title="App\Services\Homepage\MonitoringService::getConversionMetrics">getConversionMetrics</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="MonitoringService.php.html#277"><abbr title="App\Services\Homepage\MonitoringService::checkErrorAlerts">checkErrorAlerts</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="MonitoringService.php.html#601"><abbr title="App\Services\Homepage\MonitoringService::checkCacheHealth">checkCacheHealth</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="MonitoringService.php.html#624"><abbr title="App\Services\Homepage\MonitoringService::checkStorageHealth">checkStorageHealth</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AlertingService.php.html#27"><abbr title="App\Services\Homepage\AlertingService::sendAlert">sendAlert</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="AlertingService.php.html#167"><abbr title="App\Services\Homepage\AlertingService::isAlertRateLimited">isAlertRateLimited</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DeploymentService.php.html#202"><abbr title="App\Services\Homepage\DeploymentService::getHomepageMigrations">getHomepageMigrations</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DeploymentService.php.html#222"><abbr title="App\Services\Homepage\DeploymentService::verifyDatabase">verifyDatabase</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#92"><abbr title="App\Services\Homepage\HomepageABTestingService::trackConversion">trackConversion</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageABTestingService.php.html#106"><abbr title="App\Services\Homepage\HomepageABTestingService::getTestResults">getTestResults</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#54"><abbr title="App\Services\Homepage\HomepageAnalyticsService::trackClickEvent">trackClickEvent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageAnalyticsService.php.html#98"><abbr title="App\Services\Homepage\HomepageAnalyticsService::getClickStats">getClickStats</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageSEOService.php.html#63"><abbr title="App\Services\Homepage\HomepageSEOService::getSocialSharingTags">getSocialSharingTags</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#25"><abbr title="App\Services\Homepage\HomepageTestimonialService::getTestimonials">getTestimonials</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#39"><abbr title="App\Services\Homepage\HomepageTestimonialService::getIndividualTestimonials">getIndividualTestimonials</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="HomepageTestimonialService.php.html#76"><abbr title="App\Services\Homepage\HomepageTestimonialService::getInstitutionalTestimonials">getInstitutionalTestimonials</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MonitoringService.php.html#67"><abbr title="App\Services\Homepage\MonitoringService::recordError">recordError</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MonitoringService.php.html#302"><abbr title="App\Services\Homepage\MonitoringService::sendToErrorTrackingService">sendToErrorTrackingService</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MonitoringService.php.html#408"><abbr title="App\Services\Homepage\MonitoringService::detectSuspiciousIPs">detectSuspiciousIPs</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MonitoringService.php.html#525"><abbr title="App\Services\Homepage\MonitoringService::getPerformanceSummary">getPerformanceSummary</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MonitoringService.php.html#561"><abbr title="App\Services\Homepage\MonitoringService::getSystemHealth">getSystemHealth</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MonitoringService.php.html#579"><abbr title="App\Services\Homepage\MonitoringService::checkDatabaseHealth">checkDatabaseHealth</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.5.6-dev</a> and <a href="https://phpunit.de/">PHPUnit 12.5.8</a> at Thu Apr 2 17:21:57 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,56,"AlertingService.php.html#15","App\\Services\\Homepage\\AlertingService","3192"],[0,33,"DeploymentService.php.html#9","App\\Services\\Homepage\\DeploymentService","1122"],[0,11,"HomepageABTestingService.php.html#15","App\\Services\\Homepage\\HomepageABTestingService","132"],[0,8,"HomepageAnalyticsService.php.html#16","App\\Services\\Homepage\\HomepageAnalyticsService","72"],[0,16,"HomepageContentService.php.html#15","App\\Services\\Homepage\\HomepageContentService","272"],[0,3,"HomepageOrchestrationService.php.html#17","App\\Services\\Homepage\\HomepageOrchestrationService","12"],[0,8,"HomepageSEOService.php.html#15","App\\Services\\Homepage\\HomepageSEOService","72"],[0,15,"HomepageStatisticsService.php.html#19","App\\Services\\Homepage\\HomepageStatisticsService","240"],[0,9,"HomepageTestimonialService.php.html#18","App\\Services\\Homepage\\HomepageTestimonialService","90"],[0,63,"MonitoringService.php.html#10","App\\Services\\Homepage\\MonitoringService","4032"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"AlertingService.php.html#19","App\\Services\\Homepage\\AlertingService::__construct","2"],[0,2,"AlertingService.php.html#27","App\\Services\\Homepage\\AlertingService::sendAlert","6"],[0,1,"AlertingService.php.html#51","App\\Services\\Homepage\\AlertingService::sendUptimeAlert","2"],[0,1,"AlertingService.php.html#75","App\\Services\\Homepage\\AlertingService::sendPerformanceAlert","2"],[0,1,"AlertingService.php.html#99","App\\Services\\Homepage\\AlertingService::sendErrorAlert","2"],[0,1,"AlertingService.php.html#122","App\\Services\\Homepage\\AlertingService::sendConversionAlert","2"],[0,1,"AlertingService.php.html#146","App\\Services\\Homepage\\AlertingService::sendSecurityAlert","2"],[0,2,"AlertingService.php.html#167","App\\Services\\Homepage\\AlertingService::isAlertRateLimited","6"],[0,1,"AlertingService.php.html#192","App\\Services\\Homepage\\AlertingService::updateAlertRateLimit","2"],[0,1,"AlertingService.php.html#201","App\\Services\\Homepage\\AlertingService::getAlertCacheKey","2"],[0,1,"AlertingService.php.html#215","App\\Services\\Homepage\\AlertingService::logAlert","2"],[0,3,"AlertingService.php.html#223","App\\Services\\Homepage\\AlertingService::sendToSlack","12"],[0,3,"AlertingService.php.html#245","App\\Services\\Homepage\\AlertingService::sendToEmail","12"],[0,4,"AlertingService.php.html#266","App\\Services\\Homepage\\AlertingService::sendToPagerDuty","20"],[0,4,"AlertingService.php.html#301","App\\Services\\Homepage\\AlertingService::sendToSentry","20"],[0,3,"AlertingService.php.html#334","App\\Services\\Homepage\\AlertingService::sendToDataDog","12"],[0,14,"AlertingService.php.html#366","App\\Services\\Homepage\\AlertingService::formatSlackMessage","210"],[0,6,"AlertingService.php.html#413","App\\Services\\Homepage\\AlertingService::mapSeverityToSentryLevel","42"],[0,5,"AlertingService.php.html#427","App\\Services\\Homepage\\AlertingService::mapSeverityToDataDogAlertType","30"],[0,1,"AlertingService.php.html#440","App\\Services\\Homepage\\AlertingService::testAlert","2"],[0,1,"DeploymentService.php.html#14","App\\Services\\Homepage\\DeploymentService::logDeploymentStart","2"],[0,8,"DeploymentService.php.html#43","App\\Services\\Homepage\\DeploymentService::updateDeploymentStatus","72"],[0,4,"DeploymentService.php.html#96","App\\Services\\Homepage\\DeploymentService::runHomepageMigrations","20"],[0,3,"DeploymentService.php.html#164","App\\Services\\Homepage\\DeploymentService::verifyDeployment","12"],[0,2,"DeploymentService.php.html#202","App\\Services\\Homepage\\DeploymentService::getHomepageMigrations","6"],[0,2,"DeploymentService.php.html#222","App\\Services\\Homepage\\DeploymentService::verifyDatabase","6"],[0,4,"DeploymentService.php.html#243","App\\Services\\Homepage\\DeploymentService::verifyAssets","20"],[0,6,"DeploymentService.php.html#280","App\\Services\\Homepage\\DeploymentService::verifyRoutes","42"],[0,3,"DeploymentService.php.html#315","App\\Services\\Homepage\\DeploymentService::verifyPerformance","12"],[0,1,"HomepageABTestingService.php.html#22","App\\Services\\Homepage\\HomepageABTestingService::getABTestVariants","2"],[0,6,"HomepageABTestingService.php.html#55","App\\Services\\Homepage\\HomepageABTestingService::assignUserToVariant","42"],[0,2,"HomepageABTestingService.php.html#92","App\\Services\\Homepage\\HomepageABTestingService::trackConversion","6"],[0,2,"HomepageABTestingService.php.html#106","App\\Services\\Homepage\\HomepageABTestingService::getTestResults","6"],[0,3,"HomepageAnalyticsService.php.html#21","App\\Services\\Homepage\\HomepageAnalyticsService::trackPageView","12"],[0,2,"HomepageAnalyticsService.php.html#54","App\\Services\\Homepage\\HomepageAnalyticsService::trackClickEvent","6"],[0,1,"HomepageAnalyticsService.php.html#78","App\\Services\\Homepage\\HomepageAnalyticsService::getPageViewStats","2"],[0,2,"HomepageAnalyticsService.php.html#98","App\\Services\\Homepage\\HomepageAnalyticsService::getClickStats","6"],[0,4,"HomepageContentService.php.html#22","App\\Services\\Homepage\\HomepageContentService::getContentBlocks","20"],[0,3,"HomepageContentService.php.html#45","App\\Services\\Homepage\\HomepageContentService::getNavigationItems","12"],[0,1,"HomepageContentService.php.html#66","App\\Services\\Homepage\\HomepageContentService::getFooterLinks","2"],[0,4,"HomepageContentService.php.html#97","App\\Services\\Homepage\\HomepageContentService::getFeaturedContent","20"],[0,1,"HomepageContentService.php.html#119","App\\Services\\Homepage\\HomepageContentService::getBaseContentBlocks","2"],[0,1,"HomepageContentService.php.html#133","App\\Services\\Homepage\\HomepageContentService::getInstitutionalBlocks","2"],[0,1,"HomepageContentService.php.html#144","App\\Services\\Homepage\\HomepageContentService::getEmployerBlocks","2"],[0,1,"HomepageContentService.php.html#155","App\\Services\\Homepage\\HomepageContentService::applyABVariant","2"],[0,1,"HomepageOrchestrationService.php.html#19","App\\Services\\Homepage\\HomepageOrchestrationService::__construct","2"],[0,1,"HomepageOrchestrationService.php.html#31","App\\Services\\Homepage\\HomepageOrchestrationService::getHomepageData","2"],[0,1,"HomepageOrchestrationService.php.html#58","App\\Services\\Homepage\\HomepageOrchestrationService::getHomepageDataLite","2"],[0,3,"HomepageSEOService.php.html#22","App\\Services\\Homepage\\HomepageSEOService::getSEOMetadata","12"],[0,2,"HomepageSEOService.php.html#63","App\\Services\\Homepage\\HomepageSEOService::getSocialSharingTags","6"],[0,1,"HomepageSEOService.php.html#91","App\\Services\\Homepage\\HomepageSEOService::getGeneralStructuredData","2"],[0,1,"HomepageSEOService.php.html#111","App\\Services\\Homepage\\HomepageSEOService::getInstitutionalStructuredData","2"],[0,1,"HomepageSEOService.php.html#136","App\\Services\\Homepage\\HomepageSEOService::getEmployerStructuredData","2"],[0,3,"HomepageStatisticsService.php.html#26","App\\Services\\Homepage\\HomepageStatisticsService::getPlatformStatistics","12"],[0,1,"HomepageStatisticsService.php.html#44","App\\Services\\Homepage\\HomepageStatisticsService::calculateBaseStats","2"],[0,1,"HomepageStatisticsService.php.html#64","App\\Services\\Homepage\\HomepageStatisticsService::getInstitutionalMetrics","2"],[0,1,"HomepageStatisticsService.php.html#79","App\\Services\\Homepage\\HomepageStatisticsService::getEmployerMetrics","2"],[0,1,"HomepageStatisticsService.php.html#94","App\\Services\\Homepage\\HomepageStatisticsService::calculateAverageSalaryIncrease","2"],[0,1,"HomepageStatisticsService.php.html#100","App\\Services\\Homepage\\HomepageStatisticsService::countMentorshipMatches","2"],[0,1,"HomepageStatisticsService.php.html#106","App\\Services\\Homepage\\HomepageStatisticsService::countUniqueCompanies","2"],[0,1,"HomepageStatisticsService.php.html#112","App\\Services\\Homepage\\HomepageStatisticsService::countInstitutions","2"],[0,1,"HomepageStatisticsService.php.html#118","App\\Services\\Homepage\\HomepageStatisticsService::countBrandedApps","2"],[0,1,"HomepageStatisticsService.php.html#124","App\\Services\\Homepage\\HomepageStatisticsService::calculateEngagementIncrease","2"],[0,1,"HomepageStatisticsService.php.html#130","App\\Services\\Homepage\\HomepageStatisticsService::getAdminSatisfactionRate","2"],[0,1,"HomepageStatisticsService.php.html#136","App\\Services\\Homepage\\HomepageStatisticsService::calculateAverageTimeToHire","2"],[0,1,"HomepageStatisticsService.php.html#142","App\\Services\\Homepage\\HomepageStatisticsService::getEmployerSatisfactionRate","2"],[0,2,"HomepageTestimonialService.php.html#25","App\\Services\\Homepage\\HomepageTestimonialService::getTestimonials","6"],[0,2,"HomepageTestimonialService.php.html#39","App\\Services\\Homepage\\HomepageTestimonialService::getIndividualTestimonials","6"],[0,2,"HomepageTestimonialService.php.html#76","App\\Services\\Homepage\\HomepageTestimonialService::getInstitutionalTestimonials","6"],[0,1,"HomepageTestimonialService.php.html#117","App\\Services\\Homepage\\HomepageTestimonialService::getSuccessStories","2"],[0,1,"HomepageTestimonialService.php.html#131","App\\Services\\Homepage\\HomepageTestimonialService::getCuratedIndividualTestimonials","2"],[0,1,"HomepageTestimonialService.php.html#170","App\\Services\\Homepage\\HomepageTestimonialService::getCuratedInstitutionalTestimonials","2"],[0,1,"MonitoringService.php.html#16","App\\Services\\Homepage\\MonitoringService::__construct","2"],[0,3,"MonitoringService.php.html#25","App\\Services\\Homepage\\MonitoringService::recordPerformanceMetric","12"],[0,2,"MonitoringService.php.html#67","App\\Services\\Homepage\\MonitoringService::recordError","6"],[0,5,"MonitoringService.php.html#103","App\\Services\\Homepage\\MonitoringService::checkUptime","30"],[0,3,"MonitoringService.php.html#165","App\\Services\\Homepage\\MonitoringService::getConversionMetrics","12"],[0,1,"MonitoringService.php.html#238","App\\Services\\Homepage\\MonitoringService::getDashboardData","2"],[0,4,"MonitoringService.php.html#253","App\\Services\\Homepage\\MonitoringService::checkPerformanceAlerts","20"],[0,3,"MonitoringService.php.html#277","App\\Services\\Homepage\\MonitoringService::checkErrorAlerts","12"],[0,2,"MonitoringService.php.html#302","App\\Services\\Homepage\\MonitoringService::sendToErrorTrackingService","6"],[0,7,"MonitoringService.php.html#321","App\\Services\\Homepage\\MonitoringService::monitorConversionMetrics","56"],[0,5,"MonitoringService.php.html#373","App\\Services\\Homepage\\MonitoringService::monitorSecurityThreats","30"],[0,2,"MonitoringService.php.html#408","App\\Services\\Homepage\\MonitoringService::detectSuspiciousIPs","6"],[0,1,"MonitoringService.php.html#440","App\\Services\\Homepage\\MonitoringService::detectRateLimitViolations","2"],[0,4,"MonitoringService.php.html#450","App\\Services\\Homepage\\MonitoringService::detectMaliciousRequests","20"],[0,5,"MonitoringService.php.html#494","App\\Services\\Homepage\\MonitoringService::getRecentErrors","30"],[0,2,"MonitoringService.php.html#525","App\\Services\\Homepage\\MonitoringService::getPerformanceSummary","6"],[0,1,"MonitoringService.php.html#551","App\\Services\\Homepage\\MonitoringService::getActiveAlerts","2"],[0,2,"MonitoringService.php.html#561","App\\Services\\Homepage\\MonitoringService::getSystemHealth","6"],[0,2,"MonitoringService.php.html#579","App\\Services\\Homepage\\MonitoringService::checkDatabaseHealth","6"],[0,3,"MonitoringService.php.html#601","App\\Services\\Homepage\\MonitoringService::checkCacheHealth","12"],[0,3,"MonitoringService.php.html#624","App\\Services\\Homepage\\MonitoringService::checkStorageHealth","12"],[0,1,"MonitoringService.php.html#647","App\\Services\\Homepage\\MonitoringService::getMemoryUsage","2"],[0,1,"MonitoringService.php.html#659","App\\Services\\Homepage\\MonitoringService::getDiskUsage","2"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [10,0,0,0,0,0,0,0,0,0,0,0])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [95,0,0,0,0,0,0,0,0,0,0,0])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

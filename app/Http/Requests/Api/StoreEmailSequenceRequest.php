@@ -4,7 +4,6 @@ namespace App\Http\Requests\Api;
 
 use App\Models\EmailSequence;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 /**
  * Validation rules for creating email sequences
@@ -13,8 +12,6 @@ class StoreEmailSequenceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -38,7 +35,7 @@ class StoreEmailSequenceRequest extends FormRequest
         $rules['trigger_conditions'] = 'nullable|array';
 
         // Add custom validation for trigger conditions
-        if ($this->has('trigger_conditions') && !empty($this->trigger_conditions)) {
+        if ($this->has('trigger_conditions') && ! empty($this->trigger_conditions)) {
             $rules['trigger_conditions.*.event'] = 'required|string|max:255';
             $rules['trigger_conditions.*.conditions'] = 'nullable|array';
         }
@@ -88,8 +85,6 @@ class StoreEmailSequenceRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
@@ -99,11 +94,11 @@ class StoreEmailSequenceRequest extends FormRequest
         }
 
         // Set default values
-        if (!$this->has('is_active')) {
+        if (! $this->has('is_active')) {
             $this->merge(['is_active' => true]);
         }
 
-        if (!$this->has('trigger_conditions')) {
+        if (! $this->has('trigger_conditions')) {
             $this->merge(['trigger_conditions' => []]);
         }
     }
@@ -111,14 +106,13 @@ class StoreEmailSequenceRequest extends FormRequest
     /**
      * Configure the validator instance.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate trigger conditions structure
-            if ($this->has('trigger_conditions') && !empty($this->trigger_conditions)) {
+            if ($this->has('trigger_conditions') && ! empty($this->trigger_conditions)) {
                 $this->validateTriggerConditions($validator);
             }
 
@@ -132,7 +126,8 @@ class StoreEmailSequenceRequest extends FormRequest
     /**
      * Validate trigger conditions structure.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
+     *
      * @throws \Exception
      */
     private function validateTriggerConditions($validator): void
@@ -140,18 +135,19 @@ class StoreEmailSequenceRequest extends FormRequest
         $triggerConditions = $this->trigger_conditions;
 
         foreach ($triggerConditions as $index => $condition) {
-            if (!isset($condition['event'])) {
+            if (! isset($condition['event'])) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     'Trigger condition must have an event.'
                 );
+
                 continue;
             }
 
             // Validate event type based on trigger_type
             $validEvents = $this->getValidEventsForTriggerType($this->trigger_type ?? 'manual');
 
-            if (!in_array($condition['event'], $validEvents)) {
+            if (! in_array($condition['event'], $validEvents)) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     "Event '{$condition['event']}' is not valid for trigger type '{$this->trigger_type}'."
@@ -163,7 +159,7 @@ class StoreEmailSequenceRequest extends FormRequest
     /**
      * Validate audience type compatibility with trigger type.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateAudienceTriggerCompatibility($validator): void
     {
@@ -178,7 +174,7 @@ class StoreEmailSequenceRequest extends FormRequest
         ];
 
         if (isset($compatibilityRules[$audienceType]) &&
-            !in_array($triggerType, $compatibilityRules[$audienceType])) {
+            ! in_array($triggerType, $compatibilityRules[$audienceType])) {
             $validator->errors()->add(
                 'trigger_type',
                 "Trigger type '{$triggerType}' is not compatible with audience type '{$audienceType}'."
@@ -188,9 +184,6 @@ class StoreEmailSequenceRequest extends FormRequest
 
     /**
      * Get valid events for a given trigger type.
-     *
-     * @param string $triggerType
-     * @return array
      */
     private function getValidEventsForTriggerType(string $triggerType): array
     {

@@ -253,7 +253,7 @@ class TemplateVariant extends Model
     {
         $controlVariant = $this->template->variants()->control()->first();
 
-        if (!$controlVariant) {
+        if (! $controlVariant) {
             return [];
         }
 

@@ -13,7 +13,6 @@ use App\Http\Resources\SequenceEmailResource;
 use App\Http\Resources\SequenceEnrollmentResource;
 use App\Models\EmailSequence;
 use App\Models\SequenceEmail;
-use App\Models\SequenceEnrollment;
 use App\Services\EmailSequenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,9 +32,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Get all email sequences for the authenticated user's tenant
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -56,8 +52,8 @@ class EmailSequenceController extends Controller
         }
 
         if ($request->has('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%')
+                ->orWhere('description', 'like', '%'.$request->search.'%');
         }
 
         $sequences = $query->latest()->paginate(15);
@@ -74,9 +70,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Create a new email sequence
-     *
-     * @param StoreEmailSequenceRequest $request
-     * @return JsonResponse
      */
     public function store(StoreEmailSequenceRequest $request): JsonResponse
     {
@@ -97,9 +90,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Get a specific email sequence
-     *
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function show(EmailSequence $sequence): JsonResponse
     {
@@ -113,10 +103,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Update an email sequence
-     *
-     * @param UpdateEmailSequenceRequest $request
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function update(UpdateEmailSequenceRequest $request, EmailSequence $sequence): JsonResponse
     {
@@ -139,9 +125,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Delete an email sequence
-     *
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function destroy(EmailSequence $sequence): JsonResponse
     {
@@ -163,9 +146,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Get emails for a specific sequence
-     *
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function getEmails(EmailSequence $sequence): JsonResponse
     {
@@ -184,10 +164,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Add an email to a sequence
-     *
-     * @param StoreSequenceEmailRequest $request
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function addEmail(StoreSequenceEmailRequest $request, EmailSequence $sequence): JsonResponse
     {
@@ -210,11 +186,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Update a sequence email
-     *
-     * @param UpdateSequenceEmailRequest $request
-     * @param EmailSequence $sequence
-     * @param SequenceEmail $email
-     * @return JsonResponse
      */
     public function updateEmail(UpdateSequenceEmailRequest $request, EmailSequence $sequence, SequenceEmail $email): JsonResponse
     {
@@ -244,10 +215,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Remove an email from a sequence
-     *
-     * @param EmailSequence $sequence
-     * @param SequenceEmail $email
-     * @return JsonResponse
      */
     public function removeEmail(EmailSequence $sequence, SequenceEmail $email): JsonResponse
     {
@@ -276,9 +243,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Get enrollments for a specific sequence
-     *
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function getEnrollments(EmailSequence $sequence): JsonResponse
     {
@@ -303,10 +267,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Enroll users in a sequence
-     *
-     * @param EnrollUsersRequest $request
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function enroll(EnrollUsersRequest $request, EmailSequence $sequence): JsonResponse
     {
@@ -330,10 +290,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Unenroll a user from a sequence
-     *
-     * @param EmailSequence $sequence
-     * @param int $userId
-     * @return JsonResponse
      */
     public function unenroll(EmailSequence $sequence, int $userId): JsonResponse
     {
@@ -355,10 +311,6 @@ class EmailSequenceController extends Controller
 
     /**
      * Duplicate an email sequence
-     *
-     * @param EmailSequence $sequence
-     * @param Request $request
-     * @return JsonResponse
      */
     public function duplicate(EmailSequence $sequence, Request $request): JsonResponse
     {
@@ -385,16 +337,13 @@ class EmailSequenceController extends Controller
 
     /**
      * Toggle sequence active status
-     *
-     * @param EmailSequence $sequence
-     * @return JsonResponse
      */
     public function toggleActive(EmailSequence $sequence): JsonResponse
     {
         Gate::authorize('update', $sequence);
 
         try {
-            $sequence->update(['is_active' => !$sequence->is_active]);
+            $sequence->update(['is_active' => ! $sequence->is_active]);
 
             return response()->json([
                 'message' => 'Sequence status updated successfully',

@@ -10,15 +10,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class SendSequenceEmailJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $maxExceptions = 1;
+
     public int $backoff = 60; // 1 minute delay between retries
 
     public function __construct(
@@ -37,6 +39,7 @@ class SendSequenceEmailJob implements ShouldQueue
                 'sequence_id' => $this->sequence->id,
                 'recipient_id' => $this->recipient->id,
             ]);
+
             return;
         }
 
@@ -87,7 +90,7 @@ class SendSequenceEmailJob implements ShouldQueue
                     'error' => $result['error'] ?? 'Unknown error',
                 ]);
 
-                $this->fail('Email send failed: ' . ($result['error'] ?? 'Unknown error'));
+                $this->fail('Email send failed: '.($result['error'] ?? 'Unknown error'));
             }
         } catch (\Exception $e) {
             Log::error('Sequence email send job failed', [

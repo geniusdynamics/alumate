@@ -13,21 +13,16 @@ class TemplateSecurityException extends Exception
 
     /**
      * Create a new exception instance
-     *
-     * @param string $message
-     * @param array $securityIssues
-     * @param int $code
-     * @param \Throwable|null $previous
      */
     public function __construct(
-        string $message = "Template contains security issues",
+        string $message = 'Template contains security issues',
         array $securityIssues = [],
         int $code = 0,
         ?\Throwable $previous = null
     ) {
         $this->securityIssues = $securityIssues;
 
-        if (!empty($securityIssues)) {
+        if (! empty($securityIssues)) {
             $issues = implode(', ', $securityIssues);
             $message .= ": {$issues}";
         }
@@ -37,8 +32,6 @@ class TemplateSecurityException extends Exception
 
     /**
      * Get security issues
-     *
-     * @return array
      */
     public function getSecurityIssues(): array
     {
@@ -50,7 +43,7 @@ class TemplateSecurityException extends Exception
      */
     public function report(): void
     {
-        \Illuminate\Support\Facades\Log::warning('Template security validation failed: ' . $this->getMessage(), [
+        \Illuminate\Support\Facades\Log::warning('Template security validation failed: '.$this->getMessage(), [
             'exception' => get_class($this),
             'security_issues' => $this->securityIssues,
             'file' => $this->getFile(),
@@ -61,7 +54,7 @@ class TemplateSecurityException extends Exception
     /**
      * Render the exception for API responses
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function render($request)

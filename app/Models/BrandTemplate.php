@@ -182,21 +182,21 @@ class BrandTemplate extends Model
      */
     private function generatePreviewHtml(array $data): string
     {
-        $html = '<!DOCTYPE html><html><head><title>' . htmlspecialchars($data['name'] ?? '') . '</title></head><body>';
+        $html = '<!DOCTYPE html><html><head><title>'.htmlspecialchars($data['name'] ?? '').'</title></head><body>';
 
         // Header with logo
         if (isset($data['assets']['logo_url'])) {
-            $html .= '<header><img src="' . htmlspecialchars($data['assets']['logo_url']) . '" alt="Logo" style="max-width: 200px;"></header>';
+            $html .= '<header><img src="'.htmlspecialchars($data['assets']['logo_url']).'" alt="Logo" style="max-width: 200px;"></header>';
         }
 
         // Sample content
         $html .= '<div class="brand-preview">';
-        $html .= '<h1 style="color: ' . htmlspecialchars($data['colors']['primary'] ?? '#000') . ';">Brand Template Preview</h1>';
-        $html .= '<p style="color: ' . htmlspecialchars($data['typography']['text_color'] ?? '#333') . ';">This is a preview of your brand template styling.</p>';
+        $html .= '<h1 style="color: '.htmlspecialchars($data['colors']['primary'] ?? '#000').';">Brand Template Preview</h1>';
+        $html .= '<p style="color: '.htmlspecialchars($data['typography']['text_color'] ?? '#333').';">This is a preview of your brand template styling.</p>';
 
         // CTA Button
         if (isset($data['colors']['secondary'])) {
-            $html .= '<button style="background-color: ' . htmlspecialchars($data['colors']['secondary']) . '; color: white; padding: 10px 20px; border: none; border-radius: 4px;">Call to Action</button>';
+            $html .= '<button style="background-color: '.htmlspecialchars($data['colors']['secondary']).'; color: white; padding: 10px 20px; border: none; border-radius: 4px;">Call to Action</button>';
         }
 
         $html .= '</div></body></html>';
@@ -213,16 +213,16 @@ class BrandTemplate extends Model
 
         // Font family
         if (isset($data['typography']['font_family'])) {
-            $css .= "body { font-family: " . htmlspecialchars($data['typography']['font_family']) . "; }\n";
+            $css .= 'body { font-family: '.htmlspecialchars($data['typography']['font_family'])."; }\n";
         }
 
         // Primary color
         if (isset($data['colors']['primary'])) {
-            $css .= ".brand-preview h1 { color: " . htmlspecialchars($data['colors']['primary']) . "; }\n";
+            $css .= '.brand-preview h1 { color: '.htmlspecialchars($data['colors']['primary'])."; }\n";
         }
 
         // Custom CSS if provided
-        if (!empty($this->preview_css)) {
+        if (! empty($this->preview_css)) {
             $css .= $this->preview_css;
         } elseif (isset($data['assets']['custom_css'])) {
             $css .= $data['assets']['custom_css'];
@@ -241,7 +241,7 @@ class BrandTemplate extends Model
         $counter = 1;
 
         while ($this->slugExists($slug, $tenantId)) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -277,9 +277,9 @@ class BrandTemplate extends Model
     {
         $brandElements = $this->brand_elements ?? [];
 
-        return !empty($this->name) &&
-               !empty($brandElements['colors'] ?? []) &&
-               !empty($brandElements['typography'] ?? []);
+        return ! empty($this->name) &&
+               ! empty($brandElements['colors'] ?? []) &&
+               ! empty($brandElements['typography'] ?? []);
     }
 
     /**
@@ -326,7 +326,7 @@ class BrandTemplate extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_templates,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_templates,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_templates,slug';
         }

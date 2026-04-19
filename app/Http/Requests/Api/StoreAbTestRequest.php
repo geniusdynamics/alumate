@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -14,7 +16,7 @@ class StoreAbTestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Add authorization logic as needed
+        return true; // Authorization handled in controller
     }
 
     /**
@@ -23,18 +25,13 @@ class StoreAbTestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'template_id' => 'required|exists:templates,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'variants' => 'required|array|min:2|max:10',
-            'variants.*.id' => 'required|string|max:50',
-            'variants.*.name' => 'required|string|max:255',
-            'variants.*.config' => 'nullable|array',
-            'goal_metric' => 'nullable|string|in:conversion_rate,click_rate,time_on_page',
-            'confidence_threshold' => 'nullable|numeric|min:0|max:1',
-            'sample_size_per_variant' => 'nullable|integer|min:100|max:10000',
-            'traffic_distribution' => 'nullable|array',
-            'traffic_distribution.*' => 'numeric|min:0|max:100'
+            'variants' => 'required|array|min:2',
+            'variants.*.name' => 'required|string|max:100',
+            'variants.*.weight' => 'required|numeric|min:0|max:100',
+            'goal_event' => 'required|string|max:255',
+            'audience_criteria' => 'nullable|array',
         ];
     }
 
@@ -44,32 +41,12 @@ class StoreAbTestRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'template_id.required' => 'Template ID is required',
-            'template_id.exists' => 'Selected template does not exist',
             'name.required' => 'A/B test name is required',
             'variants.required' => 'At least 2 variants are required',
             'variants.min' => 'At least 2 variants are required',
-            'variants.max' => 'Maximum 10 variants allowed',
-            'goal_metric.in' => 'Invalid goal metric selected'
+            'variants.*.name.required' => 'Variant name is required',
+            'variants.*.weight.required' => 'Variant weight is required',
+            'goal_event.required' => 'Goal event is required',
         ];
-    }
-
-    /**
-     * Prepare the data for validation.
-     */
-    protected function prepareForValidation(): void
-    {
-        // Set default values
-        if (!$this->has('goal_metric')) {
-            $this->merge(['goal_metric' => 'conversion_rate']);
-        }
-
-        if (!$this->has('confidence_threshold')) {
-            $this->merge(['confidence_threshold' => 0.95]);
-        }
-
-        if (!$this->has('sample_size_per_variant')) {
-            $this->merge(['sample_size_per_variant' => 1000]);
-        }
     }
 }

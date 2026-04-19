@@ -158,10 +158,10 @@ class BrandConfig extends Model
      */
     public function isComplete(): bool
     {
-        return !empty($this->name) &&
-               !empty($this->primary_color) &&
-               !empty($this->secondary_color) &&
-               !empty($this->logo_url);
+        return ! empty($this->name) &&
+               ! empty($this->primary_color) &&
+               ! empty($this->secondary_color) &&
+               ! empty($this->logo_url);
     }
 
     /**

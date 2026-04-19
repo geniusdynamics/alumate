@@ -13,8 +13,6 @@ class StoreSequenceEmailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -39,7 +37,7 @@ class StoreSequenceEmailRequest extends FormRequest
             'integer',
             'min:0',
             Rule::unique('sequence_emails', 'send_order')
-                ->where('sequence_id', $this->route('sequence')->id)
+                ->where('sequence_id', $this->route('sequence')->id),
         ];
 
         // Add validation for template existence and tenant ownership
@@ -47,7 +45,7 @@ class StoreSequenceEmailRequest extends FormRequest
             'required',
             'exists:templates,id',
             Rule::exists('templates', 'id')
-                ->where('tenant_id', tenant()->id)
+                ->where('tenant_id', tenant()->id),
         ];
 
         return $rules;
@@ -93,22 +91,20 @@ class StoreSequenceEmailRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
         // Set default values
-        if (!$this->has('delay_hours')) {
+        if (! $this->has('delay_hours')) {
             $this->merge(['delay_hours' => 0]);
         }
 
-        if (!$this->has('trigger_conditions')) {
+        if (! $this->has('trigger_conditions')) {
             $this->merge(['trigger_conditions' => []]);
         }
 
         // Auto-generate send_order if not provided
-        if (!$this->has('send_order')) {
+        if (! $this->has('send_order')) {
             $sequence = $this->route('sequence');
             $maxOrder = $sequence->sequenceEmails()->max('send_order') ?? -1;
             $this->merge(['send_order' => $maxOrder + 1]);
@@ -118,8 +114,7 @@ class StoreSequenceEmailRequest extends FormRequest
     /**
      * Configure the validator instance.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     public function withValidator($validator): void
     {
@@ -135,7 +130,7 @@ class StoreSequenceEmailRequest extends FormRequest
             }
 
             // Validate trigger conditions if provided
-            if ($this->has('trigger_conditions') && !empty($this->trigger_conditions)) {
+            if ($this->has('trigger_conditions') && ! empty($this->trigger_conditions)) {
                 $this->validateTriggerConditions($validator);
             }
         });
@@ -144,7 +139,7 @@ class StoreSequenceEmailRequest extends FormRequest
     /**
      * Validate that the template is accessible to the current tenant.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateTemplateAccessibility($validator): void
     {
@@ -152,14 +147,14 @@ class StoreSequenceEmailRequest extends FormRequest
             ->where('tenant_id', tenant()->id)
             ->first();
 
-        if (!$template) {
+        if (! $template) {
             $validator->errors()->add(
                 'template_id',
                 'The selected template is not accessible to your organization.'
             );
         }
 
-        if ($template && !$template->is_active) {
+        if ($template && ! $template->is_active) {
             $validator->errors()->add(
                 'template_id',
                 'The selected template is not active.'
@@ -170,7 +165,7 @@ class StoreSequenceEmailRequest extends FormRequest
     /**
      * Validate send order doesn't create large gaps in sequence.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateSendOrderSequence($validator): void
     {
@@ -184,13 +179,13 @@ class StoreSequenceEmailRequest extends FormRequest
         $requestedOrder = $this->send_order;
 
         // Check if this creates a gap larger than 1
-        if (!empty($existingOrders)) {
+        if (! empty($existingOrders)) {
             $maxExisting = max($existingOrders);
 
             if ($requestedOrder > $maxExisting + 1) {
                 $validator->errors()->add(
                     'send_order',
-                    'Send order cannot create gaps larger than 1. Next available order is ' . ($maxExisting + 1) . '.'
+                    'Send order cannot create gaps larger than 1. Next available order is '.($maxExisting + 1).'.'
                 );
             }
         }
@@ -199,18 +194,19 @@ class StoreSequenceEmailRequest extends FormRequest
     /**
      * Validate trigger conditions structure.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateTriggerConditions($validator): void
     {
         $triggerConditions = $this->trigger_conditions;
 
         foreach ($triggerConditions as $index => $condition) {
-            if (!isset($condition['event'])) {
+            if (! isset($condition['event'])) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     'Trigger condition must have an event.'
                 );
+
                 continue;
             }
 
@@ -223,7 +219,7 @@ class StoreSequenceEmailRequest extends FormRequest
                 'behavior_event',
             ];
 
-            if (!in_array($condition['event'], $validEvents)) {
+            if (! in_array($condition['event'], $validEvents)) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     "Event '{$condition['event']}' is not valid."
@@ -240,10 +236,7 @@ class StoreSequenceEmailRequest extends FormRequest
     /**
      * Validate condition parameters based on event type.
      *
-     * @param string $event
-     * @param array $conditions
-     * @param int $index
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateConditionParameters(string $event, array $conditions, int $index, $validator): void
     {
@@ -257,7 +250,7 @@ class StoreSequenceEmailRequest extends FormRequest
         };
 
         foreach ($requiredParams as $param) {
-            if (!isset($conditions[$param])) {
+            if (! isset($conditions[$param])) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.conditions.{$param}",
                     "Parameter '{$param}' is required for event '{$event}'."
@@ -266,14 +259,14 @@ class StoreSequenceEmailRequest extends FormRequest
         }
 
         // Validate specific parameter formats
-        if (isset($conditions['delay_minutes']) && (!is_int($conditions['delay_minutes']) || $conditions['delay_minutes'] < 0)) {
+        if (isset($conditions['delay_minutes']) && (! is_int($conditions['delay_minutes']) || $conditions['delay_minutes'] < 0)) {
             $validator->errors()->add(
                 "trigger_conditions.{$index}.conditions.delay_minutes",
                 'Delay minutes must be a positive integer.'
             );
         }
 
-        if (isset($conditions['link_url']) && !filter_var($conditions['link_url'], FILTER_VALIDATE_URL)) {
+        if (isset($conditions['link_url']) && ! filter_var($conditions['link_url'], FILTER_VALIDATE_URL)) {
             $validator->errors()->add(
                 "trigger_conditions.{$index}.conditions.link_url",
                 'Link URL must be a valid URL.'

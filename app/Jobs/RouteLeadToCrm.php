@@ -2,14 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Models\Lead;
 use App\Models\CrmIntegration;
+use App\Models\Lead;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Job for routing a lead to a specific CRM system
@@ -19,9 +18,10 @@ use Illuminate\Support\Facades\DB;
  */
 class RouteLeadToCrm implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
+
     public $backoff = [60, 300, 900]; // 1 min, 5 min, 15 min
 
     /**
@@ -47,17 +47,18 @@ class RouteLeadToCrm implements ShouldQueue
             Log::info('Starting lead routing to CRM', [
                 'lead_id' => $this->lead->id,
                 'crm_provider' => $this->crmIntegration->provider,
-                'routing_metadata' => $this->routingMetadata
+                'routing_metadata' => $this->routingMetadata,
             ]);
 
             // Verify CRM integration is still active
-            if (!$this->crmIntegration->is_active) {
+            if (! $this->crmIntegration->is_active) {
                 Log::warning('CRM integration no longer active, marking lead as unrouted', [
                     'lead_id' => $this->lead->id,
-                    'crm_provider' => $this->crmIntegration->provider
+                    'crm_provider' => $this->crmIntegration->provider,
                 ]);
 
                 $this->recordRoutingFailure('CRM integration not active');
+
                 return;
             }
 
@@ -66,10 +67,11 @@ class RouteLeadToCrm implements ShouldQueue
                 Log::info('Lead already routed to this CRM, skipping', [
                     'lead_id' => $this->lead->id,
                     'crm_provider' => $this->crmIntegration->provider,
-                    'crm_id' => $this->lead->crm_id
+                    'crm_id' => $this->lead->crm_id,
                 ]);
 
                 $this->recordSuccessfulRouting();
+
                 return;
             }
 
@@ -84,7 +86,7 @@ class RouteLeadToCrm implements ShouldQueue
                     'lead_id' => $this->lead->id,
                     'crm_provider' => $this->crmIntegration->provider,
                     'crm_id' => $this->lead->crm_id,
-                    'routing_metadata' => $this->routingMetadata
+                    'routing_metadata' => $this->routingMetadata,
                 ]);
 
             } else {
@@ -97,7 +99,7 @@ class RouteLeadToCrm implements ShouldQueue
                 'crm_provider' => $this->crmIntegration->provider,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-                'attempt' => $this->attempts()
+                'attempt' => $this->attempts(),
             ]);
 
             $this->recordRoutingFailure($e->getMessage());
@@ -123,12 +125,12 @@ class RouteLeadToCrm implements ShouldQueue
             'routing_strategy' => $this->routingMetadata['strategy'] ?? 'primary',
             'crm_id' => $this->lead->crm_id,
             'sync_result' => $syncResult,
-            'routed_at' => now()->toISOString()
+            'routed_at' => now()->toISOString(),
         ];
 
         $this->lead->addActivity(
             'crm_routing_success',
-            'Lead routed to ' . $this->crmIntegration->provider,
+            'Lead routed to '.$this->crmIntegration->provider,
             null,
             $activityData
         );
@@ -138,7 +140,7 @@ class RouteLeadToCrm implements ShouldQueue
             'success' => true,
             'lead_id' => $this->lead->id,
             'routed_via' => $this->routingMetadata,
-            'routed_at' => now()->toISOString()
+            'routed_at' => now()->toISOString(),
         ]);
     }
 
@@ -152,12 +154,12 @@ class RouteLeadToCrm implements ShouldQueue
             'routing_strategy' => $this->routingMetadata['strategy'] ?? 'unknown',
             'failure_reason' => $reason,
             'attempt' => $this->attempts(),
-            'failed_at' => now()->toISOString()
+            'failed_at' => now()->toISOString(),
         ];
 
         $this->lead->addActivity(
             'crm_routing_failed',
-            'Lead routing failed to ' . $this->crmIntegration->provider,
+            'Lead routing failed to '.$this->crmIntegration->provider,
             $reason,
             $activityData
         );
@@ -169,7 +171,7 @@ class RouteLeadToCrm implements ShouldQueue
             'routing_failed' => true,
             'failure_reason' => $reason,
             'attempts' => $this->attempts(),
-            'failed_at' => now()->toISOString()
+            'failed_at' => now()->toISOString(),
         ]);
     }
 
@@ -180,11 +182,11 @@ class RouteLeadToCrm implements ShouldQueue
     {
         $updateData = [
             'synced_at' => now(),
-            'crm_provider' => $this->crmIntegration->provider
+            'crm_provider' => $this->crmIntegration->provider,
         ];
 
         // Add lead score if not already set
-        if (!isset($this->lead->score) || $this->lead->score === null) {
+        if (! isset($this->lead->score) || $this->lead->score === null) {
             $updateData['score'] = 50; // Default score for routed leads
         }
 
@@ -202,10 +204,10 @@ class RouteLeadToCrm implements ShouldQueue
             'lead_id' => $this->lead->id,
             'crm_provider' => $this->crmIntegration->provider,
             'error' => $errorMessage,
-            'sync_result' => $syncResult
+            'sync_result' => $syncResult,
         ]);
 
-        $this->recordRoutingFailure('CRM sync failed: ' . $errorMessage);
+        $this->recordRoutingFailure('CRM sync failed: '.$errorMessage);
 
         throw new \Exception($errorMessage);
     }
@@ -220,16 +222,16 @@ class RouteLeadToCrm implements ShouldQueue
             'crm_provider' => $this->crmIntegration->provider,
             'routing_metadata' => $this->routingMetadata,
             'error' => $exception->getMessage(),
-            'attempts' => $this->attempts()
+            'attempts' => $this->attempts(),
         ]);
 
         // Record permanent failure
-        $this->recordRoutingFailure('Permanent routing failure: ' . $exception->getMessage());
+        $this->recordRoutingFailure('Permanent routing failure: '.$exception->getMessage());
 
         // Mark lead as routing failed
         $this->lead->update([
             'routing_status' => 'failed',
-            'routing_failed_at' => now()
+            'routing_failed_at' => now(),
         ]);
 
         // Update CRM integration with permanent failure
@@ -239,7 +241,7 @@ class RouteLeadToCrm implements ShouldQueue
             'routing_permanently_failed' => true,
             'error' => $exception->getMessage(),
             'attempts' => $this->attempts(),
-            'failed_permanently_at' => now()->toISOString()
+            'failed_permanently_at' => now()->toISOString(),
         ]);
     }
 }

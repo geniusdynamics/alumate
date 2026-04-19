@@ -2,20 +2,31 @@
 
 namespace App\Services;
 
+use App\Services\TenantContextService;
 use App\Jobs\PublishScheduledPostJob;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Circle;
+use App\Models\Group;
+use App\Models\PostMedia;
+use App\Models\PostDraft;
+use App\Models\ScheduledPost;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
+use Exception;
 
-class PostService
+class PostService extends BaseService
 {
     protected MediaUploadService $mediaUploadService;
 
-    public function __construct(MediaUploadService $mediaUploadService)
+    public function __construct(MediaUploadService $mediaUploadService, TenantContextService $tenantContext)
     {
+        parent::__construct($tenantContext);
         $this->mediaUploadService = $mediaUploadService;
     }
 

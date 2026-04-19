@@ -1,5 +1,8 @@
 <?php
 
+// ABOUTME: This service handles security operations including two-factor authentication, failed login tracking, and security policy enforcement
+// ABOUTME: Provides comprehensive security monitoring and protection features for user accounts and system access
+
 namespace App\Services;
 
 use App\Models\FailedLoginAttempt;
@@ -7,16 +10,18 @@ use App\Models\SecurityEvent;
 use App\Models\SessionSecurity;
 use App\Models\TwoFactorAuth;
 use App\Models\User;
+use GeoIp2\Database\Reader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
 // Note: Google2FA package may not be installed, using fallback for secret generation
 // If needed, install with: composer require pragmarx/google2fa
 
-class SecurityService
+class SecurityService extends BaseService
 {
     public function __construct()
     {
@@ -231,7 +236,10 @@ class SecurityService
                                 'pattern_matched' => $pattern,
                                 'input_value' => $input,
                                 'request_path' => $request->path(),
-                            ]
+                            ],
+                            null,
+                            $request->ip(),
+                            $request->userAgent()
                         );
 
                         return true;
@@ -246,16 +254,17 @@ class SecurityService
     /**
      * Log security event
      */
-    public function logSecurityEvent(string $type, string $severity, string $description, array $metadata = [], ?int $userId = null): SecurityEvent
+    public function logSecurityEvent(string $type, string $severity, string $description, array $metadata = [], ?int $userId = null, ?string $ipAddress = null, ?string $userAgent = null): SecurityEvent
     {
+        // Avoid using request() helpers to prevent infinite loops
         $event = SecurityEvent::create([
             'event_type' => $type,
             'severity' => $severity,
             'description' => $description,
             'metadata' => $metadata,
             'user_id' => $userId,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
+            'ip_address' => $ipAddress ?? 'unknown',
+            'user_agent' => $userAgent ?? 'unknown',
             'occurred_at' => now(),
         ]);
 
@@ -270,36 +279,190 @@ class SecurityService
     }
 
     /**
-     * Check if IP is blocked
+     * Check if IP is blocked based on GeoIP location
      */
     public function isIpBlocked(string $ip): bool
     {
-        // Placeholder for IP blocking logic
-        return false;
+        try {
+            $databasePath = storage_path('app/geoip/GeoLite2-City.mmdb');
+
+            // Check if database exists
+            if (!file_exists($databasePath)) {
+                Log::warning('GeoIP database not found at: ' . $databasePath);
+                return false;
+            }
+
+            $reader = new Reader($databasePath);
+            $record = $reader->city($ip);
+
+            // Configure high-risk countries (customize as needed)
+            $riskyCodes = ['CN', 'RU', 'KP', 'IR', 'SY', 'CU', 'VE'];
+
+            if ($record && in_array($record->country->isoCode, $riskyCodes)) {
+                $this->logSecurityEvent(
+                    SecurityEvent::TYPE_SUSPICIOUS_ACTIVITY,
+                    SecurityEvent::SEVERITY_HIGH,
+                    'IP blocked due to high-risk country',
+                    [
+                        'ip_address' => $ip,
+                        'country' => $record->country->name ?? 'Unknown',
+                        'country_code' => $record->country->isoCode ?? 'Unknown',
+                    ]
+                );
+                return true;
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            Log::warning('GeoIP check failed: ' . $e->getMessage(), [
+                'ip' => $ip,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
     }
 
     /**
-     * Check for suspicious patterns
+     * Check for suspicious patterns in request (SQL injection, XSS, etc.)
      */
     public function checkSuspiciousPatterns(Request $request): bool
     {
-        // Placeholder for pattern detection
+        // Check both request content and input parameters
+        $content = $request->getContent();
+        $inputs = array_merge($request->all(), $request->headers->all());
+
+        // Add all input values to content for checking
+        foreach ($inputs as $key => $value) {
+            if (is_string($value)) {
+                $content .= ' ' . $value;
+            } elseif (is_array($value)) {
+                // Recursively check arrays for nested strings
+                $content .= ' ' . $this->flattenArrayToString($value);
+            }
+        }
+
+        // More comprehensive and normalized patterns to prevent bypasses
+        $patterns = [
+            // SQL Injection patterns - more comprehensive
+            '/(union(\s)+select|exec(\s)+\(|insert(\s)+into|delete(\s)+from|update(\s)+.+set|drop(\s)+(table|database|view)|alter(\s)+.+table|create(\s)+.+table|exec(\s)+xp_|exec(\s)+sp_|waitfor(\s)+delay)/i',
+
+            // Boolean-based SQL injection
+            '/(or\s+1\s*=\s*1|and\s+1\s*=\s*1|or\s+0\s*=\s*0|and\s+0\s*=\s*0)/i',
+
+            // Time-based SQL injection
+            '/(sleep\(|benchmark\(|waitfor(\s)+delay|pg_sleep\(|dbms_lock.sleep)/i',
+
+            // Common SQL keywords with obfuscation
+            '/(sel\b.*ect\b|ins\b.*ert\b|upd\b.*ate\b|del\b.*ete\b|dro\b.*p\b)/i',
+
+            // XSS patterns - more comprehensive
+            '/(<script|javascript:|vbscript:|onload=|onerror=|onmouseover=|onclick=|onfocus=|onblur=|onsubmit=|onchange=|onkeydown=|onkeypress=|onkeyup=)/i',
+
+            // URL-encoded XSS
+            '/(%3c|%3e|%22|%27|%3C|%3E|%22|%27)/i',
+
+            // Command injection patterns
+            '/(\|\||\`|&&|\$\(.*\)|`.*`)/',
+
+            // Path traversal with encoding
+            '/(\.\.\/|\.\.\\|%2e%2e%2f|%2e%2e\/|%2e%2e%5c|%2e%2e\\)/i',
+
+            // File inclusion
+            '/(include\s+|require\s+|include_once\s+|require_once\s+).*\(/i',
+
+            // Base64 encoded attempts
+            '/(JXNjcmlwdHx8c2NyaXB0|PHNjcmlwdHx8c2NyaXB0|PHNjcmlwdD58fHNjcmlwdD4=)/i',
+        ];
+
+        foreach ($patterns as $pattern) {
+            // Normalize content to detect encoded attempts
+            $normalizedContent = $this->normalizeContent($content);
+
+            if (preg_match($pattern, $content) || preg_match($pattern, $normalizedContent)) {
+                $this->logSecurityEvent(
+                    SecurityEvent::TYPE_MALICIOUS_REQUEST,
+                    SecurityEvent::SEVERITY_CRITICAL,
+                    'Suspicious pattern detected in request',
+                    [
+                        'pattern' => $pattern,
+                        'request_path' => $request->path(),
+                        'raw_content_length' => strlen($content),
+                        'normalized_content_length' => strlen($normalizedContent),
+                    ],
+                    null,
+                    $request->ip(),
+                    $request->userAgent()
+                );
+                return true;
+            }
+        }
+
         return false;
     }
 
     /**
-     * Detect rate limit violations
+     * Flatten array to string for security checking
      */
-    public function detectRateLimitViolation(string $identifier, int $maxAttempts, int $minutes): bool
+    private function flattenArrayToString(array $array): string
     {
-        $key = "rate_limit:{$identifier}";
-        $attempts = Cache::get($key, 0);
+        $result = '';
 
-        if ($attempts >= $maxAttempts) {
+        foreach ($array as $key => $value) {
+            if (is_string($value)) {
+                $result .= ' ' . $value;
+            } elseif (is_array($value)) {
+                $result .= ' ' . $this->flattenArrayToString($value);
+            } elseif (is_object($value)) {
+                $result .= ' ' . json_encode($value);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Normalize content to detect encoded attacks
+     */
+    private function normalizeContent(string $content): string
+    {
+        // Decode common encodings
+        $decoded = urldecode($content);
+        $decoded = html_entity_decode($decoded, ENT_QUOTES, 'UTF-8');
+
+        // Remove common whitespace variations
+        $decoded = preg_replace('/\s+/', ' ', $decoded);
+
+        return $decoded;
+    }
+
+    /**
+     * Detect rate limit violations using Laravel's RateLimiter
+     */
+    public function detectRateLimitViolation(string $identifier, int $maxAttempts = 5, int $decayMinutes = 1): bool
+    {
+        $key = 'security:' . $identifier;
+
+        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+            $availableAt = RateLimiter::availableAt($key);
+
+            $this->logSecurityEvent(
+                SecurityEvent::TYPE_RATE_LIMIT_EXCEEDED,
+                SecurityEvent::SEVERITY_MEDIUM,
+                'Rate limit exceeded for identifier',
+                [
+                    'identifier' => $identifier,
+                    'max_attempts' => $maxAttempts,
+                    'decay_minutes' => $decayMinutes,
+                    'available_at' => $availableAt->toDateTimeString(),
+                    'remaining_time' => now()->diffInSeconds($availableAt),
+                ]
+            );
+
             return true;
         }
 
-        Cache::put($key, $attempts + 1, now()->addMinutes($minutes));
+        // Record the attempt
+        RateLimiter::hit($key, $decayMinutes * 60); // Convert minutes to seconds
 
         return false;
     }

@@ -1,0 +1,524 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Component Library API",
+    "description": "The Component Library API provides comprehensive endpoints for managing reusable UI components, themes, media assets, and analytics for alumni engagement platforms.\n\n## Authentication\nAll endpoints require Bearer token authentication using Laravel Sanctum.\n\n## Rate Limiting\n- Standard endpoints: 1000 requests/minute\n- File uploads: 100 requests/minute  \n- Analytics: 500 requests/minute\n\n## Multi-tenancy\nAll data is automatically scoped to the authenticated user's tenant.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "api-support@example.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1",
+      "description": "Production server"
+    },
+    {
+      "url": "https://staging-api.example.com/v1",
+      "description": "Staging server"
+    },
+    {
+      "url": "http://localhost:8000/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/components": {
+      "get": {
+        "summary": "List components",
+        "description": "Retrieve a paginated list of components with optional filtering and sorting",
+        "tags": ["Components"],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Filter by component category",
+            "schema": {
+              "type": "string",
+              "enum": ["hero", "forms", "testimonials", "statistics", "ctas", "media"]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search by name or description",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 15
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort field",
+            "schema": {
+              "type": "string",
+              "enum": ["name", "created_at", "updated_at"],
+              "default": "created_at"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create component",
+        "description": "Create a new component with configuration and metadata",
+        "tags": ["Components"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComponentCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Component created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/components/{id}": {
+      "get": {
+        "summary": "Get component",
+        "description": "Retrieve a specific component with full details including theme and instances",
+        "tags": ["Components"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Component ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update component",
+        "description": "Update an existing component's configuration and metadata",
+        "tags": ["Components"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Component ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComponentUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Component updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete component",
+        "description": "Delete a component and all its instances",
+        "tags": ["Components"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Component ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Component deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Component": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Hero Section - Alumni"
+          },
+          "slug": {
+            "type": "string",
+            "example": "hero-section-alumni"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["hero", "forms", "testimonials", "statistics", "ctas", "media"],
+            "example": "hero"
+          },
+          "type": {
+            "type": "string",
+            "example": "individual"
+          },
+          "description": {
+            "type": "string",
+            "example": "Hero section optimized for individual alumni"
+          },
+          "config": {
+            "type": "object",
+            "example": {
+              "headline": "Welcome Back, Alumni",
+              "subheading": "Connect with your network",
+              "cta_text": "Get Started",
+              "background_type": "image"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "example": {
+              "tags": ["alumni", "hero", "conversion"],
+              "usage_count": 45,
+              "conversion_rate": 0.12
+            }
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ComponentCreateRequest": {
+        "type": "object",
+        "required": ["name", "category", "type", "config"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "example": "Custom Hero Section"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["hero", "forms", "testimonials", "statistics", "ctas", "media"],
+            "example": "hero"
+          },
+          "type": {
+            "type": "string",
+            "maxLength": 100,
+            "example": "custom"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "example": "Custom hero section for special campaigns"
+          },
+          "config": {
+            "type": "object",
+            "example": {
+              "headline": "Join Our Network",
+              "subheading": "Connect with thousands of alumni",
+              "cta_text": "Sign Up Now"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "example": {
+              "tags": ["custom", "campaign", "hero"]
+            }
+          }
+        }
+      },
+      "ComponentUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "category": {
+            "type": "string",
+            "enum": ["hero", "forms", "testimonials", "statistics", "ctas", "media"]
+          },
+          "type": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "config": {
+            "type": "object"
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ComponentResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Component"
+          }
+        }
+      },
+      "ComponentListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Component"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          "links": {
+            "$ref": "#/components/schemas/PaginationLinks"
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "current_page": {
+            "type": "integer"
+          },
+          "per_page": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "last_page": {
+            "type": "integer"
+          }
+        }
+      },
+      "PaginationLinks": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string"
+          },
+          "last": {
+            "type": "string"
+          },
+          "prev": {
+            "type": "string",
+            "nullable": true
+          },
+          "next": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Authentication required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}

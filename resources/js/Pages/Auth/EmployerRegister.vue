@@ -1,11 +1,10 @@
-<script setup>
-import { Head, useForm, Link } from '@inertiajs/vue3';
-import AuthenticationCard from '@/components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/components/AuthenticationCardLogo.vue';
-import InputError from '@/components/InputError.vue';
-import InputLabel from '@/components/InputLabel.vue';
-import PrimaryButton from '@/components/PrimaryButton.vue';
-import TextInput from '@/components/TextInput.vue';
+﻿<script setup lang="ts">
+import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const currentStep = ref(1);
@@ -17,7 +16,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    
+
     // Company Information
     company_name: '',
     company_address: '',
@@ -29,22 +28,34 @@ const form = useForm({
     company_description: '',
     established_year: '',
     employee_count: '',
-    
+
     // Contact Person Information
     contact_person_name: '',
     contact_person_title: '',
     contact_person_email: '',
     contact_person_phone: '',
-    
+
     // Legal Agreements
     terms_accepted: false,
     privacy_policy_accepted: false,
 });
 
 const industries = [
-    'Technology', 'Healthcare', 'Finance', 'Education', 'Manufacturing',
-    'Retail', 'Construction', 'Transportation', 'Hospitality', 'Agriculture',
-    'Energy', 'Media', 'Government', 'Non-profit', 'Other'
+    'Technology',
+    'Healthcare',
+    'Finance',
+    'Education',
+    'Manufacturing',
+    'Retail',
+    'Construction',
+    'Transportation',
+    'Hospitality',
+    'Agriculture',
+    'Energy',
+    'Media',
+    'Government',
+    'Non-profit',
+    'Other',
 ];
 
 const companySizes = [
@@ -77,7 +88,7 @@ const getStepTitle = (step) => {
     const titles = {
         1: 'Account Information',
         2: 'Company Details',
-        3: 'Contact & Legal'
+        3: 'Contact & Legal',
     };
     return titles[step];
 };
@@ -86,36 +97,30 @@ const getStepTitle = (step) => {
 <template>
     <Head title="Employer Registration" />
 
-    <div class="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="flex min-h-screen flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-2xl">
             <div class="text-center">
                 <AuthenticationCardLogo class="mx-auto" />
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                    Employer Registration
-                </h2>
-                <p class="mt-2 text-sm text-gray-600">
-                    Join our platform to find qualified graduates
-                </p>
+                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Employer Registration</h2>
+                <p class="mt-2 text-sm text-gray-600">Join our platform to find qualified graduates</p>
             </div>
         </div>
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                
+            <div class="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
                 <!-- Progress Steps -->
                 <div class="mb-8">
                     <div class="flex items-center justify-between">
                         <div v-for="step in totalSteps" :key="step" class="flex items-center">
-                            <div :class="[
-                                'flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium',
-                                step <= currentStep ? 'bg-indigo-600 text-white' : 'bg-gray-300 text-gray-500'
-                            ]">
+                            <div
+                                :class="[
+                                    'flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium',
+                                    step <= currentStep ? 'bg-indigo-600 text-white' : 'bg-gray-300 text-gray-500',
+                                ]"
+                            >
                                 {{ step }}
                             </div>
-                            <div v-if="step < totalSteps" :class="[
-                                'flex-1 h-1 mx-4',
-                                step < currentStep ? 'bg-indigo-600' : 'bg-gray-300'
-                            ]"></div>
+                            <div v-if="step < totalSteps" :class="['mx-4 h-1 flex-1', step < currentStep ? 'bg-indigo-600' : 'bg-gray-300']"></div>
                         </div>
                     </div>
                     <div class="mt-2 text-center">
@@ -126,10 +131,9 @@ const getStepTitle = (step) => {
                 </div>
 
                 <form @submit.prevent="submit">
-                    
                     <!-- Step 1: Account Information -->
                     <div v-if="currentStep === 1" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div>
                                 <InputLabel for="name" value="Full Name *" />
                                 <TextInput
@@ -146,14 +150,7 @@ const getStepTitle = (step) => {
 
                             <div>
                                 <InputLabel for="email" value="Email Address *" />
-                                <TextInput
-                                    id="email"
-                                    v-model="form.email"
-                                    type="email"
-                                    class="mt-1 block w-full"
-                                    required
-                                    autocomplete="email"
-                                />
+                                <TextInput id="email" v-model="form.email" type="email" class="mt-1 block w-full" required autocomplete="email" />
                                 <InputError class="mt-2" :message="form.errors.email" />
                             </div>
 
@@ -186,39 +183,23 @@ const getStepTitle = (step) => {
 
                         <div>
                             <InputLabel for="company_name" value="Company Name *" />
-                            <TextInput
-                                id="company_name"
-                                v-model="form.company_name"
-                                type="text"
-                                class="mt-1 block w-full"
-                                required
-                            />
+                            <TextInput id="company_name" v-model="form.company_name" type="text" class="mt-1 block w-full" required />
                             <InputError class="mt-2" :message="form.errors.company_name" />
                         </div>
                     </div>
 
                     <!-- Step 2: Company Details -->
                     <div v-if="currentStep === 2" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div>
                                 <InputLabel for="company_address" value="Company Address" />
-                                <TextInput
-                                    id="company_address"
-                                    v-model="form.company_address"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                />
+                                <TextInput id="company_address" v-model="form.company_address" type="text" class="mt-1 block w-full" />
                                 <InputError class="mt-2" :message="form.errors.company_address" />
                             </div>
 
                             <div>
                                 <InputLabel for="company_phone" value="Company Phone" />
-                                <TextInput
-                                    id="company_phone"
-                                    v-model="form.company_phone"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                />
+                                <TextInput id="company_phone" v-model="form.company_phone" type="text" class="mt-1 block w-full" />
                                 <InputError class="mt-2" :message="form.errors.company_phone" />
                             </div>
 
@@ -290,13 +271,7 @@ const getStepTitle = (step) => {
 
                             <div>
                                 <InputLabel for="employee_count" value="Number of Employees" />
-                                <TextInput
-                                    id="employee_count"
-                                    v-model="form.employee_count"
-                                    type="number"
-                                    min="1"
-                                    class="mt-1 block w-full"
-                                />
+                                <TextInput id="employee_count" v-model="form.employee_count" type="number" min="1" class="mt-1 block w-full" />
                                 <InputError class="mt-2" :message="form.errors.employee_count" />
                             </div>
                         </div>
@@ -316,9 +291,9 @@ const getStepTitle = (step) => {
 
                     <!-- Step 3: Contact & Legal -->
                     <div v-if="currentStep === 3" class="space-y-6">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Contact Person Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="rounded-lg bg-gray-50 p-4">
+                            <h3 class="mb-4 text-lg font-medium text-gray-900">Contact Person Information</h3>
+                            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                                 <div>
                                     <InputLabel for="contact_person_name" value="Contact Person Name *" />
                                     <TextInput
@@ -333,12 +308,7 @@ const getStepTitle = (step) => {
 
                                 <div>
                                     <InputLabel for="contact_person_title" value="Job Title" />
-                                    <TextInput
-                                        id="contact_person_title"
-                                        v-model="form.contact_person_title"
-                                        type="text"
-                                        class="mt-1 block w-full"
-                                    />
+                                    <TextInput id="contact_person_title" v-model="form.contact_person_title" type="text" class="mt-1 block w-full" />
                                     <InputError class="mt-2" :message="form.errors.contact_person_title" />
                                 </div>
 
@@ -356,19 +326,14 @@ const getStepTitle = (step) => {
 
                                 <div>
                                     <InputLabel for="contact_person_phone" value="Contact Phone" />
-                                    <TextInput
-                                        id="contact_person_phone"
-                                        v-model="form.contact_person_phone"
-                                        type="text"
-                                        class="mt-1 block w-full"
-                                    />
+                                    <TextInput id="contact_person_phone" v-model="form.contact_person_phone" type="text" class="mt-1 block w-full" />
                                     <InputError class="mt-2" :message="form.errors.contact_person_phone" />
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Legal Agreements</h3>
+                        <div class="rounded-lg bg-blue-50 p-4">
+                            <h3 class="mb-4 text-lg font-medium text-gray-900">Legal Agreements</h3>
                             <div class="space-y-4">
                                 <label class="flex items-start">
                                     <input
@@ -398,17 +363,24 @@ const getStepTitle = (step) => {
                             </div>
                         </div>
 
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd"
+                                        />
                                     </svg>
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium text-yellow-800">Verification Required</h3>
                                     <div class="mt-2 text-sm text-yellow-700">
-                                        <p>Your account will be pending verification after registration. You'll be able to post jobs once your company is verified by our team.</p>
+                                        <p>
+                                            Your account will be pending verification after registration. You'll be able to post jobs once your
+                                            company is verified by our team.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -422,34 +394,25 @@ const getStepTitle = (step) => {
                                 v-if="currentStep > 1"
                                 type="button"
                                 @click="prevStep"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Previous
                             </button>
                         </div>
 
                         <div class="flex items-center space-x-4">
-                            <Link
-                                :href="route('login')"
-                                class="text-sm text-gray-600 hover:text-gray-900"
-                            >
-                                Already have an account?
-                            </Link>
+                            <Link :href="route('login')" class="text-sm text-gray-600 hover:text-gray-900"> Already have an account? </Link>
 
                             <button
                                 v-if="currentStep < totalSteps"
                                 type="button"
                                 @click="nextStep"
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Next
                             </button>
 
-                            <PrimaryButton
-                                v-if="currentStep === totalSteps"
-                                :class="{ 'opacity-25': form.processing }"
-                                :disabled="form.processing"
-                            >
+                            <PrimaryButton v-if="currentStep === totalSteps" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                                 Register Company
                             </PrimaryButton>
                         </div>
@@ -459,3 +422,15 @@ const getStepTitle = (step) => {
         </div>
     </div>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+

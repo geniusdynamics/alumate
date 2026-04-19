@@ -5,17 +5,19 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\EventCheckIn;
 use App\Models\EventRegistration;
+use App\Models\Institution;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class EventsService
+class EventsService extends BaseService
 {
     protected JitsiMeetService $jitsiMeetService;
 
-    public function __construct(JitsiMeetService $jitsiMeetService)
+    public function __construct(JitsiMeetService $jitsiMeetService, TenantContextService $tenantContext)
     {
+        parent::__construct($tenantContext);
         $this->jitsiMeetService = $jitsiMeetService;
     }
 

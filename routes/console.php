@@ -27,3 +27,13 @@ Artisan::command('homepage:cleanup-metrics', function () {
     $this->info("Deleted {$deleted} old analytics events");
 
 })->purpose('Clean up old monitoring data')->daily();
+// Cache warming scheduled task
+Artisan::command('cache:warm', function () {
+    $this->info('Starting cache warming process...');
+
+    // Dispatch cache warming job
+    \App\Jobs\WarmCacheJob::dispatch();
+
+    $this->info('Cache warming job dispatched successfully');
+
+})->purpose('Warm application caches')->hourly();

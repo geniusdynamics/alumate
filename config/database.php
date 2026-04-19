@@ -101,7 +101,13 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode' => env('DB_SSLMODE', 'require'),
+            'options' => env('APP_ENV') === 'production' ? [
+                PDO::ATTR_EMULATE_PREPARES => true,
+                PDO::ATTR_PERSISTENT => true,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ] : [],
         ],
 
         'central' => [
@@ -153,6 +159,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Read / Write Connections
+    |--------------------------------------------------------------------------
+    |
+    | Database clusters can support a read / write connection. This allows
+    | you to use a single database connection for reads and writes, while
+    | maintaining separate read-only connections for read operations.
+    |
+    */
+
+    'read_write' => [
+        'read' => [
+            'host' => env('DB_READ_HOST'),
+        ],
+        'write' => [
+            'host' => env('DB_WRITE_HOST'),
+        ],
+        'sticky' => env('DB_STICKY_READS', true),
+        'read_write_separation' => env('DB_READ_WRITE_SEPARATION', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Migration Repository Table
     |--------------------------------------------------------------------------
     |
@@ -183,9 +211,9 @@ return [
         'client' => env('REDIS_CLIENT', 'phpredis'),
 
         'options' => [
-            'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
-            'persistent' => env('REDIS_PERSISTENT', false),
+            'cluster' => env('REDIS_CLUSTER_ENABLED', false) ? 'redis' : env('REDIS_CLUSTER', 'redis'),
+            'prefix' => env('REDIS_PREFIX', env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_')),
+            'persistent' => env('REDIS_PERSISTENT', env('APP_ENV') === 'production'),
         ],
 
         'default' => [
@@ -204,6 +232,24 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_CACHE_DB', '1'),
+        ],
+
+        'session' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_SESSION_DB', '2'),
+        ],
+
+        'queue' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_QUEUE_DB', '3'),
         ],
 
     ],
